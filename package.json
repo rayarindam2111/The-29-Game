@@ -1,0 +1,11 @@
+{
+  "name": "29-game",
+  "version": "0.0.1",
+  "description": "29 - The Card Game",
+  "main": "server.js",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
+  }
+}

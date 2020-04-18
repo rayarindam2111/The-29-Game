@@ -1,0 +1,4 @@
+room deleted broadcast and reset to home screen
+player might have disconnected -> give option to quit or continue
+adjust left right margins based on calculations
+play button centering to be done

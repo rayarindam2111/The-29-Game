@@ -1,0 +1,280 @@
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	background-image: url('../img/back.jpg');
+	background-position: center;
+	background-size: cover;
+	min-height: 361px;
+}
+.row, .col{
+	margin:0;
+}
+
+.row-top {
+	height: 20%;
+}
+.row-center {
+	height: 60%;
+}
+.row-bottom {
+	height: 20%;
+}
+
+.col {
+	height :100%;
+}
+
+.col-left {
+	padding-left: 0!important;
+}
+.col-right {
+	padding-right: 0!important;
+}
+
+.notopmargin {
+	margin-top: 0;
+}
+
+.box-left,.box-right {
+	transform: rotate(-90deg);
+	width: 28em;
+}
+
+.box-top,.box-bottom {
+	width: 28em;
+}
+
+.box-left {
+	margin-left: -156px;
+}
+
+.box-right {
+	margin-right: -156px;
+}
+
+.box-left > div , .box-right > div , .box-top > div , .box-bottom > div {
+	width: inherit;
+}
+
+.main {
+	height:100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.boxes > div {
+	margin-bottom: 0;
+}
+
+.cardcontainer {
+	position: absolute;
+	max-width: 480px;
+	height: 180px;
+}
+
+.boxes {
+	position: absolute;
+	z-index: 1000;
+}
+
+.playercards {
+	max-width: 100%;
+	height: 180px;
+	width: 118px;
+	position: absolute;
+	background-size: cover;
+}
+
+.movable {
+	bottom: 0;
+	border-radius: 12px;
+	box-shadow: 0 -1px 6px 2px rgb(21, 160, 160,.6);
+	transition: bottom .15s, box-shadow .1s;
+}
+
+.movable:hover {
+	bottom: 12px;
+	box-shadow: -2px -2px 15px -1px rgba(0,0,0,0.4)!important;
+}
+
+.cardselected {
+	bottom: 12px!important;
+	box-shadow: -2px -2px 15px -1px rgba(0,0,.5,0.7)!important;
+}
+
+#cardboxleft {
+	transform:rotate(90deg);
+}
+
+#cardboxright {
+	transform:rotate(-90deg);
+}
+
+#cardboxtop {
+	transform: rotate(180deg);
+}
+
+.carddisabled {
+	pointer-events: none;
+	box-shadow:none!important;
+}
+
+.centerplay {
+	max-width: 100%;
+	height: 245px;
+	width: 160px;
+	position: absolute;
+	background-size: cover;
+	border-radius: 12px;
+	box-shadow: -2px -2px 15px -1px rgba(0,0,0,0.3);
+}
+
+#lefttable {
+	margin-left: -239px;
+    margin-top: 27px;
+    transform: rotate(-7deg);
+}
+
+#righttable {
+	margin-left: 36px;
+    transform: rotate(1deg);
+}
+
+#toptable {
+	margin-top: -110px;
+	margin-left: -90px;
+    transform: rotate(14deg);
+}
+
+#bottomtable {
+	margin-top: 106px;
+    margin-left: -102px;
+    transform: rotate(-15deg);
+}
+
+#trumpcard {
+	margin-left:15px;
+}
+
+#trumpcard>img {
+	border-radius: 12px;
+	box-shadow: 0 -1px 6px 2px rgb(21, 160, 160,.4);
+	transition: box-shadow .15s;
+}
+
+#trumpcard>img:hover {
+	box-shadow: 0px 0px 11px 5px rgba(0,0,0,0.5);
+}
+
+.active-border{
+	padding: 5px;
+    border-radius: 50%;
+    background-color:rgb(153, 184, 206);
+    background-image:
+        linear-gradient(91deg, transparent 50%, rgb(56, 85, 95) 50%),
+        linear-gradient(90deg, rgb(56, 85, 95) 50%, transparent 50%);
+}
+
+.lowpad {
+	padding: 12px!important;
+}
+
+.deleteroom {
+	margin-left: 5px;
+}
+
+.animcards {
+	animation: opacitychange .8s;
+}
+
+@keyframes opacitychange {
+  0% {opacity:0;}
+  100% {opacity:1;}
+}
+
+.labelstat {
+	font-weight: bold;
+}
+
+.flexcenter {
+	display: flex!important;
+	align-items:center;
+}
+
+.centerplay {
+	display: none;
+}
+
+h6 {
+	font-size: 1.1rem!important;
+}
+
+#topname > div.col.s4,#leftname > div.col.s4,#rightname > div.col.s4,#bottomname > div.col.s4 {
+	padding-left:0;
+}
+
+#topname > div.col.s5,#leftname > div.col.s5,#rightname > div.col.s5,#bottomname > div.col.s5 {
+	padding-left:0;
+}
+
+#topname > div.col.s4 > h5,#leftname > div.col.s4 > h5,#rightname > div.col.s4 > h5,#bottomname > div.col.s4 > h5 {
+	margin: .656rem 0 .656rem 0;
+	line-height: initial;
+	font-family: "Roboto Slab",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+.hover-text {
+	margin: 0;
+}
+
+#chatmessage {
+    margin: 0;
+}
+
+.fixed-chat {
+	position: fixed;
+    right: 25px;
+    bottom: 35px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    z-index: 2000;
+}	
+
+.mvboxes {
+	animation: bxs 1.6s infinite;
+}
+
+#playerwait{
+    border-radius: 2px;
+    background-color: rgba(255,255,255,0.9);
+    box-shadow: 0px 0px 42px 0px inset rgba(0,100,255,0.1);
+    font-size: 2.1rem;
+    font-family: "Roboto Slab",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    color: #184972;
+    line-height: 4.5rem;
+	display: none;
+}
+
+#playerwait:after{
+	animation: textchange 1.5s infinite linear;
+    content: '';
+    display: inline-block;
+    min-width: 30px;
+}
+
+@keyframes textchange {
+  0% {content:'';}
+  33% {content:'.';}
+  66% {content:'..';}
+  100% {content:'...';}
+}
+
+@keyframes bxs {
+  0% {box-shadow: 0px 0px 44px 1px rgba(67,107,233,0.35) inset;}
+  50% {box-shadow: 0px 0px 44px 1px rgba(255,77,233,0.2) inset;}
+  100% {box-shadow: 0px 0px 44px 1px rgba(67,107,233,0.35) inset;}
+}

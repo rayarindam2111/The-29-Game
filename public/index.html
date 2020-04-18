@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
+	<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
+	<title>The 29 Game</title>
+	<link rel="icon" href="./favicon.ico"> 
+	<meta name="viewport" content="user-scalable=no"/>
+	<meta name="theme-color" content="#1b4b7c">
+</head>
+<body>
+	<div id="preload" style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.98);z-index:5000;">
+		<a class="btn-floating btn-large cyan pulse" style="width:120px;height:120px;"><i style="line-height:120px;font-size:5rem" class="material-icons">sync</i></a>
+	</div>
+	<div id="imgload" style="position:absolute;z-index:-1;opacity:0.02;"></div>
+	<script type="text/javascript">
+		var values = ['J','9','A','10','K','Q','8','7'];
+		var suits = ['S', 'D', 'C', 'H'];
+		var others = ["cards/BLUE_BACK.PNG","cards/GREEN_BACK.PNG","cards/PURPLE_BACK.PNG"];
+		for(var i = 0; i < suits.length; i++)
+			for(var x = 0; x < values.length; x++){	
+				var preloadLink = document.createElement("link");
+				preloadLink.href = "img/cards/"+values[x]+suits[i]+".PNG";
+				preloadLink.rel = "preload";
+				preloadLink.as = "image";
+				preloadLink.onload="alert('"+values[x]+suits[i]+"');";
+				document.head.appendChild(preloadLink);
+			}
+		
+		for(var i = 0; i < others.length; i++){
+			var preloadLink = document.createElement("link");
+			preloadLink.href = "img/"+others[i];
+			preloadLink.rel = "preload";
+			preloadLink.as = "image";
+			document.head.appendChild(preloadLink);
+		}
+		
+		for(var i = 0; i < suits.length; i++)
+			for(var x = 0; x < values.length; x++){	
+				var imgSrc = document.createElement("img");
+				imgSrc.src = "img/cards/"+values[x]+suits[i]+".PNG";
+				document.getElementById("imgload").appendChild(imgSrc);
+			}
+			
+		for(var i = 0; i < others.length; i++){
+			var imgSrc = document.createElement("img");
+			imgSrc.src = "img/"+others[i];
+			document.getElementById("imgload").appendChild(imgSrc);
+		}
+	</script>
+	<div class="row row-top">
+		<div class="col s12 main loc-top">
+			<div class="cardcontainer" id="cardboxtop" style="top: 0;"></div>
+			<div class="boxes box-top" style="top:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin">
+				  <div id="topname" class="row valign-wrapper">
+					<div class="col s3 flexcenter">
+					 <img src="img/face-top.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timetop">
+					</div>
+					<div class="col s4">
+					  <h5 class="truncate">-</h5>
+					</div>
+					<div class="col s5">
+						<h6>
+						  <span id="toptrump" class="trumpshow red-text labelstat">T&nbsp;</span>
+						  <span class="black-text labelstat">R:</span>
+						  <span id="topround" class="black-text round">-</span>
+						  <span class="black-text labelstat">&nbsp;P:</span>
+						  <span id="toppoint" class="black-text score">-</span>
+						  <span class="black-text labelstat">&nbsp;B:</span>
+						  <span id="topbid" class="black-text trump">-</span>
+						</h6>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row row-center">
+		<div class="col s1 main col-left">
+			<div class="cardcontainer" id="cardboxleft" style="left: 0;"></div>
+			<div class="boxes box-left" style="left:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
+				  <div id="leftname" class="row valign-wrapper">
+					<div class="col s3 flexcenter">
+					  <img src="img/face-left.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timeleft">
+					</div>
+					<div class="col s4">
+					  <h5 class="truncate">-</h5>
+					</div>
+					<div class="col s5">
+						<h6>
+						  <span id="lefttrump" class="trumpshow red-text labelstat">T&nbsp;</span>
+						  <span class="black-text labelstat">R:</span>
+						  <span id="leftround" class="black-text round">-</span>
+						  <span class="black-text labelstat">&nbsp;P:</span>
+						  <span id="leftpoint" class="black-text score">-</span>
+						  <span class="black-text labelstat">&nbsp;B:</span>
+						  <span id="leftbid" class="black-text trump">-</span>
+						</h6>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+		<div class="col s4 main col-center">
+			<div id="trumpcard" style="position:absolute" class="carddisabled">
+				<img src="" alt="" class="responsive-img">
+			</div>
+		</div>
+		<div id="maintable" class="col s6 main col-center">
+				<div id="playerwait">&nbsp;Waiting for Players</div>
+				<div class="centerplay" id="lefttable"><img src="" alt="" class="responsive-img"></div>
+				<div class="centerplay" id="bottomtable"><img src="" alt="" class="responsive-img"></div>
+				<div class="centerplay" id="righttable"><img src="" alt="" class="responsive-img"></div>
+				<div class="centerplay" id="toptable"><img src="" alt="" class="responsive-img"></div>
+		</div>
+		<div class="col s1 main col-right">
+			<div class="cardcontainer" id="cardboxright" style="right: 0;"></div>
+			<div class="boxes box-right" style="right:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
+				  <div id="rightname" class="row valign-wrapper">
+					<div class="col s3 flexcenter">
+					  <img src="img/face-right.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timeright">
+					</div>
+					<div class="col s4">
+					  <h5 class="truncate">-</h5>
+					</div>
+					<div class="col s5">
+						<h6>
+						  <span id="righttrump" class="trumpshow red-text labelstat">T&nbsp;</span>
+						  <span class="black-text labelstat">R:</span>
+						  <span id="rightround" class="black-text round">-</span>
+						  <span class="black-text labelstat">&nbsp;P:</span>
+						  <span id="rightpoint" class="black-text score">-</span>
+						  <span class="black-text labelstat">&nbsp;B:</span>
+						  <span id="rightbid" class="black-text trump">-</span>
+						</h6>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row row-bottom">
+		<div class="col s12 main loc-bottom">
+			<div class="cardcontainer" id="cardboxbottom" style="bottom: 0;"></div>
+			<div class="boxes box-bottom" style="bottom:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad">
+				  <div id="bottomname" class="row valign-wrapper">
+					<div class="col s3 flexcenter">
+					  <img src="img/face-bottom.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timebottom">
+					</div>
+					<div class="col s4">
+					  <h5 class="truncate">-</h5>
+					</div>
+					<div class="col s5">
+						<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;" disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;&nbsp;PLAY</span></a>
+						<h6>
+						  <span id="bottomtrump" class="trumpshow red-text labelstat">T&nbsp;</span>
+						  <span class="black-text labelstat">R:</span>
+						  <span id="bottomround" class="black-text round">-</span>
+						  <span class="black-text labelstat">&nbsp;P:</span>
+						  <span id="bottompoint" class="black-text score">-</span>
+						  <span class="black-text labelstat">&nbsp;B:</span>
+						  <span id="bottombid" class="black-text trump">-</span>
+						</h6>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Chat -->
+	<div  id="chatopen" class="fixed-chat scale-transition scale-out">
+		<a class="btn-floating btn-large red waves-effect waves-light" href="#">
+			<i class="large material-icons">chat</i>
+		</a>
+	</div>
+	
+	<!-- Modals -->
+	<div id="modal-joingame" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Join Game</h4>
+			<div class="input-field">
+				<input id="username" type="text" class="validate">
+				<label for="username">Your Name</label>
+			</div>
+			<div class="input-field">
+				<select id="teamselect" class="icons">
+				  <option value="" disabled selected>Select</option>
+				  <option value="purple" data-icon="img/purple.png" id="optpurple">Team Purple</option>
+				  <option value="green" data-icon="img/green.png" id="optgreen">Team Green</option>
+				</select>
+				<label>Choose your team</label>
+			</div>
+			<div style="display:flex;justify-content:center;"><img alt="" class="responsive-img" src="img/join.jpg"></div>
+		</div>
+		<div class="modal-footer">
+		  <a href="#!" class="waves-effect waves-red btn-flat" id="backtoroomlist"> GO BACK </a>
+		  <a href="#!" class="waves-effect waves-green btn-flat" id="joingame"> JOIN GAME </a>
+		</div>
+    </div>
+
+	<div id="modal-roomlist" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>29: Select a game room</h4>
+			<div class="collection" id="divroom">
+				<a href="#!" class="collection-item flexcenter">
+					<i class="small material-icons">swap_vertical_circle</i><span> &nbsp;Connecting to server</span>
+				</a>
+				<div class="progress" style="margin:0">
+					<div class="indeterminate"></div>
+				</div>
+			</div>
+			<ul id="rooms-list" class="collapsible rooms-notloaded">
+			</ul>
+			<ul class="collapsible rooms-notloaded">
+				<li>
+					<div class="collapsible-header" id="addroomdock"><i class="material-icons">control_point</i>Add Room</div>
+					<div class="collapsible-body">
+						<form id="form-addroom" action="#">
+							<label for="room_NEW">Room name</label>
+							<input placeholder="Room name cannot be blank" id="room_NEW" type="text" class="validate">
+							<label for="room_NEW_pass">Room password</label>
+							<input placeholder="Create a room password" id="room_NEW_pass" type="password" class="validate">
+							<button type="submit" class="waves-effect waves-light btn">CREATE ROOM</button>
+						</form>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="modal-footer">
+			<a href="#!" id="roomrefresh" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">refresh</i> REFRESH </a>
+		</div>
+    </div>
+	
+	<div id="modal-bid" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4>Bid</h4>
+				<ul id="bidlog" class="collection">
+				</ul>
+				<ul id="bidchange" class="collection">
+					<li class="collection-item">
+						<form action="#">
+							<h5 class="center">Place your Bid:</h5>
+							<div class="flexcenter" style="justify-content:center;">
+								<p style="display:inline-block;width:90%" class="range-field">
+									<input type="range" id="bidrange" min="16" max="28" value="16"/>
+								</p>
+								<h5 id="bidupdate" class="center lime accent-4" style="display:inline-block;width:8%;margin:0;border-radius:20px;padding:5px;margin-left:8px;">-</h5>
+							</div>
+							<a id="bidraise" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">arrow_drop_up</i> PLACE BID</div></a>
+							<a id="bidpass" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">fiber_manual_record</i> PASS BID</div></a>
+						</form>
+					</li>
+				</ul>
+				<ul id="trumpset" class="collection">
+					<li class="collection-item">
+						<form action="#">
+							<h5 class="center">Choose Trump Suit:</h5>
+							<br>
+							<ul id="trumpOpt" class="tabs">
+								<li class="tab"><a class="active" style="display:flex;align-items:center" href="#dummyd">Hearts&nbsp;<img src="./img/hearts.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Spades&nbsp;<img src="./img/spades.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Diamonds&nbsp;<img src="./img/diamonds.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Clubs&nbsp;<img src="./img/clubs.png" height=25 width=25></a></li>
+							</ul>
+							<div id="dummyd" style="height:0;width:0;display:none;opacity:0"></div>
+							<hr>
+							<a id="trumpsetok" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;SET TRUMP</div></a>
+						</form>
+					</li>
+				</ul>
+				<ul id="biddouble" class="collection">
+					<li class="collection-item">
+						<form action="#">
+							<h5 id="doubletext" class="center">Double:</h5>
+							<br>
+							<div id = "biddoubleopt">
+							</div>
+							<hr>
+							<a id="biddoubleok" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;OK</div></a>
+						</form>
+					</li>
+				</ul>
+		</div>
+		<div class="modal-footer">
+			<h5 class="center">BID FOR POINTS</h5>
+		</div>
+    </div>
+	
+	<div id="modal-trumpyesno" class="modal bottom-sheet">
+		<div class="modal-content center-align">
+			<div class="row">
+				<div class="col s12">
+				  <div class="card blue-grey darken-1">
+					<div class="card-content white-text">
+					  <span class="card-title">Open Trump?</span>
+					  <p>Are you sure you want to open the trump card?</p>
+					</div>
+					<div class="card-action">
+					  <a href="#" class="btn red waves-effect waves-light" id="trumpyes"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;YES</div></a>&nbsp;&nbsp;
+					  <a href="#" class="btn waves-effect waves-light" id="trumpno"><div class="flexcenter"><i class="material-icons">close</i>&nbsp;NO</div></a>
+					</div>
+				  </div>
+				</div>
+			</div>
+		</div>
+    </div>
+	
+	<div id="modal-gameover" class="modal">
+		<div class="modal-content">
+			<h3>Game Over</h3>
+			<hr>
+			<h4 id="winmessage"></h4>
+			<br>
+			<br>
+		</div>
+		<div class="modal-footer">
+			<a href="./" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">refresh</i> GO TO HOME PAGE </a>
+		</div>
+    </div>
+	
+	<div id="modal-chat" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h3>Chat</h3><span>Click anywhere outside the chat window to close it</span>
+			<ul id="chatlog" class="collection">
+			</ul>
+		</div>
+		<div class="modal-footer">
+			<form id="form-chat" action="#">
+				<div class="input-field hover-text flexcenter">
+					<div style="width:90%"><input placeholder="Type a message" id="chatmessage" type="text" class="validate"></div>
+					<div style="width:10%"><button type="submit" class="waves-effect waves-light btn" style="width:90%;">SEND</button></div>
+				</div>
+			</form>
+		</div>
+    </div>
+
+	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="js/materialize.min.js"></script>
+	<script type="text/javascript" src="js/socket.io.js"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>
+        
