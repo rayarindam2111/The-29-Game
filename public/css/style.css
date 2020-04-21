@@ -92,7 +92,7 @@ body {
 .movable {
 	bottom: 0;
 	border-radius: 12px;
-	box-shadow: 0 -1px 6px 2px rgb(21, 160, 160,.6);
+	box-shadow: 0 -1px 6px 2px rgba(21, 160, 160,.6);
 	transition: bottom .15s, box-shadow .1s;
 }
 
@@ -131,6 +131,7 @@ body {
 	background-size: cover;
 	border-radius: 12px;
 	box-shadow: -2px -2px 15px -1px rgba(0,0,0,0.3);
+	animation: opacitychange .17s;
 }
 
 #lefttable {
@@ -162,7 +163,7 @@ body {
 
 #trumpcard>img {
 	border-radius: 12px;
-	box-shadow: 0 -1px 6px 2px rgb(21, 160, 160,.4);
+	box-shadow: 0 -1px 6px 2px rgba(21, 160, 160,.4);
 	transition: box-shadow .15s;
 }
 

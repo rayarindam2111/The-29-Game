@@ -101,6 +101,9 @@ function initModals() {
 	});
 	$('#modal-joingame').modal({
 		dismissible: false,
+		onOpenStart: function (modal, trigger) {
+			$('#modal-credits').modal('close');
+		}
 	});
 	$('#modal-bid').modal({
 		dismissible: false,
@@ -119,6 +122,15 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			$('#modal-chat').modal('close');
+		}
+	});
+	$('#modal-credits').modal({
+		dismissible: true,
+		onOpenStart: function (modal, trigger) {
+			canvasLoad(true);
+		},
+		onCloseEnd: function (modal, trigger) {
+			canvasLoad(false);
 		}
 	});
 	$('#modal-chat').modal({
@@ -486,12 +498,12 @@ function bidProcess(data) {
 
 	if(data.player==player){
 		if(data.bidwinner==player||data.bidwinner=='-100'){
-			$('#bidrange').attr('min',parseInt(data.currentbid)).attr('value',parseInt(data.currentbid));
+			$('#bidrange').attr('min',parseInt(data.currentbid)).attr('value',parseInt(data.currentbid)).val(parseInt(data.currentbid));
 			$('#bidupdate').html(parseInt(data.currentbid));
 			gVars.raiseOrMatch = 'matched bid to&nbsp;';
 		}
 		else {
-			$('#bidrange').attr('min',parseInt(data.currentbid)+1).attr('value',parseInt(data.currentbid)+1);
+			$('#bidrange').attr('min',parseInt(data.currentbid)+1).attr('value',parseInt(data.currentbid)+1).val(parseInt(data.currentbid)+1);
 			$('#bidupdate').html(parseInt(data.currentbid)+1);
 			gVars.raiseOrMatch = 'raised bid to&nbsp;';
 		}
@@ -560,6 +572,11 @@ $('#trumpcard').click(function(){
 
 $('#chatopen').click(function(){
 	$('#modal-chat').modal('open');
+	return false;
+});
+
+$('#credits').click(function(){
+	$('#modal-credits').modal('open');
 	return false;
 });
 
@@ -1080,7 +1097,7 @@ socket.on('trump',function(data){
 
 socket.on('marriage',function(data){
 	var d = parseInt(data.biddouble)==1?'':' x' + data.biddouble;
-	var playername = playerFromNumber(data.player);
+	var playername = playerFromNumber(numberFromPlayer(data.player));
 	if(playername.team=='green')
 		playername.player = gVars.greenplayers[playername.id];
 	else
@@ -1091,7 +1108,7 @@ socket.on('marriage',function(data){
 			var z = playerFromNumber(i);
 			$(bidelemfromidteam(z.player)).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));	
 		}
-	}, data.delay=='play'?3800:500);
+	}, data.delay=='play'?1400:500);
 });
 
 socket.on('chat',function(data){
@@ -1107,6 +1124,90 @@ window.mobilecheck = function() {
   return check;
 };
 var zoom = 1;
+var animation = false;
+function canvasLoad(start){
+	animation = start;
+	const canvas = document.querySelector("canvas");
+	const ctx = canvas.getContext("2d");
+	const colors = [
+		"#b4b2b5",
+		"#dfd73f",
+		"#6ed2dc",
+		"#66cf5d",
+		"#c542cb",
+		"#d0535e",
+		"#3733c9"
+	];
+	let w=700, h=300, rAF;
+
+	function texts(color) {
+		ctx.font = "10vh Bungee Outline";
+		ctx.shadowBlur = 30;
+		ctx.shadowColor = color;
+		ctx.fillStyle = color;
+		ctx.setTransform(1, -0.15, 0, 1, 0, -10);
+		ctx.fillText("CARDS", w / 2, h / 2 - 5);
+
+		ctx.fillStyle = "white";
+		ctx.shadowBlur = 30;
+		ctx.shadowColor = color;
+		ctx.fillText("CARDS", w / 2, h / 2);
+
+		ctx.font = "9vh Bungee Inline";
+		ctx.shadowBlur = 30;
+		ctx.shadowColor = color;
+		ctx.fillStyle = "#fff";
+		ctx.setTransform(1, -0.15, 0, 1, 0, -10);
+		ctx.fillText(
+			"29",
+			w / 2,
+			h / 2 + h / 10
+		);
+
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+	}
+	
+	function glitch() {
+		if(animation) 
+			rAF = window.requestAnimationFrame(glitch);
+		else
+		{
+			ctx.clearRect(0, 0, w, h);
+			return;
+		}
+
+		ctx.fillStyle = "#1a191c";
+		ctx.fillRect(0, 0, w, h);
+
+		texts(colors[Math.floor(Math.random() * 7)]);
+		ctx.shadowBlur = 0;
+		ctx.shadowColor = "none";
+
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+		for (let i = 0; i < 400; i++) {
+			ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.01})`;
+			ctx.fillRect(
+				Math.floor(Math.random() * innerWidth),
+				Math.floor(Math.random() * innerHeight),
+				Math.floor(Math.random() * 30) + 1,
+				Math.floor(Math.random() * 30) + 1
+			);
+
+			ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.1})`;
+			ctx.fillRect(
+				Math.floor(Math.random() * innerWidth),
+				Math.floor(Math.random() * innerHeight),
+				Math.floor(Math.random() * 30) + 1,
+				Math.floor(Math.random() * 30) + 1
+			);
+		}
+		ctx.setTransform(1, 0, 0, .8, .2, 0);
+	}
+	(animation)?glitch():ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 
 $(function(){
 	timeout(0,$(".active-border"));

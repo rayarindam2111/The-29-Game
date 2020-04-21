@@ -161,7 +161,7 @@ class Cards {
 		for(var i = 0; i < this.suits.length; i++)
 			for(var x = 0; x < this.values.length; x++)
 				this.playable_deck.push(this.values[x]+this.suits[i]);
-		this.randomizeCards();
+		//this.randomizeCards();
 	}
 	
 	randomizeCards(){
@@ -192,7 +192,7 @@ class Cards {
 		}
 		
 		if(!okay)
-			randomizeCards();
+			this.randomizeCards();
 	}
 	
 	getPlayableCardsRandomized() {
@@ -215,7 +215,7 @@ class Cards {
 			case 'J': rank = 8;break;
 			default: rank = -1;
 		}
-		return {'card':card,'suit':suit,'point':point,'rank':rank};
+		return {'card':card,'val':val,'suit':suit,'point':point,'rank':rank};
 	}
 	
 };
@@ -255,6 +255,8 @@ class Game {
 		this.lastplayer = '';
 		this.lastplayercard = '';
 		this.firstcard = [];
+		
+		this.marriage_not_d = true;
 		
 		this.points = [0,0,0,0];
 		this.cards = new Array();
@@ -477,23 +479,34 @@ class Game {
 	}
 	
 	checkMarriage(delay){
-		if(this.trump_open)
-			for(var i=0;i<4;i++)
+		if(this.trump_open && this.marriage_not_d){
+			for(var i=0;i<4;i++){
+				var rWon = false;
+				for(var wc=0;wc<this.winlog.length;wc++){
+					if(this.teamFromNumber(this.winlog[wc])==this.teamFromNumber(i)){
+						rWon = true;
+						break;
+					}
+				}
+				if(!rWon)
+					continue;
 				if(this.checkM(this.cards[i],this.trump_card)){
 					if(this.teamFromNumber(this.bid_winner)==this.teamFromNumber(i))
-						this.bid_value = Math.max(16,this.bid_value-4);
+						this.bid_value = Math.max(16,parseInt(this.bid_value)-4);
 					else
-						this.bid_value = Math.min(28,this.bid_value+4);
+						this.bid_value = Math.min(28,parseInt(this.bid_value)+4);
 					
 					var x = 29 - this.bid_value;
 					var teambids = [x,x,x,x];
 					teambids[this.bid_winner] = parseInt(this.bid_value);
 					teambids[this.nextTeamPlayer(this.bid_winner)] = parseInt(this.bid_value);
 					
-					
+					this.marriage_not_d = false;
 					io.in(this.roomID).emit('marriage', {'player':this.playerFromNumber(i),'bidvalues':teambids,'biddouble':this.biddouble,'biddoubleteam':this.biddoubleteam,'delay':delay});
 					return true;
 				}
+			}
+		}
 		return false;
 	}	
 	
