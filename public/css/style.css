@@ -1,5 +1,12 @@
 html {
 	height: 100%;
+	font-family:-apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+input[type=range]::-webkit-slider-thumb {
+	height: 20px;
+	width: 20px;
+	margin: -7px 0 0 0;
 }
 
 body {
@@ -176,7 +183,7 @@ body {
     border-radius: 50%;
     background-color:rgb(153, 184, 206);
     background-image:
-        linear-gradient(91deg, transparent 50%, rgb(56, 85, 95) 50%),
+        linear-gradient(90deg, transparent 50%, rgb(56, 85, 95) 50%),
         linear-gradient(90deg, rgb(56, 85, 95) 50%, transparent 50%);
 }
 
@@ -243,16 +250,36 @@ h6 {
     padding-top: 15px;
     margin-bottom: 0;
     z-index: 2000;
-}	
+}
+
+.network{
+	position: fixed;
+    left: 25px;
+    bottom: 35px;
+	opacity: .9;
+	box-shadow: inset 0px 0px 17px 0.1px rgba(0,0,0,.45);
+    padding: 5px;
+    border-radius: 2.5px;
+	color: #fafafa;
+	font-size: small;
+}
 
 .mvboxes {
 	animation: bxs 1.6s infinite;
 }
 
+.zio {
+	animation: zinout .6s;
+}
+
+.isb {
+	display: inline-block;
+}
+
 #playerwait{
     border-radius: 2px;
     background-color: rgba(255,255,255,0.9);
-    box-shadow: 0px 0px 42px 0px inset rgba(0,100,255,0.1);
+    box-shadow: inset 0px 0px 42px 0px rgba(0,100,255,0.1);
     font-size: 2.1rem;
     font-family: "Roboto Slab",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
     color: #184972;
@@ -267,6 +294,12 @@ h6 {
     min-width: 30px;
 }
 
+.network-icon {
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-image: linear-gradient(to right,#fafafa 99%,#fafafa 100%);
+}
+
 @keyframes textchange {
   0% {content:'';}
   33% {content:'.';}
@@ -275,7 +308,13 @@ h6 {
 }
 
 @keyframes bxs {
-  0% {box-shadow: 0px 0px 44px 1px rgba(67,107,233,0.35) inset;}
-  50% {box-shadow: 0px 0px 44px 1px rgba(255,77,233,0.2) inset;}
-  100% {box-shadow: 0px 0px 44px 1px rgba(67,107,233,0.35) inset;}
+  0% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
+  50% {box-shadow: inset 0px 0px 44px 1px #dce4ff;}
+  100% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
+}
+
+@keyframes zinout {
+  0% {transform: scale(1);}
+  50% {transform: scale(2.2);}
+  100% {transform: scale(1);}
 }

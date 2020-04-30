@@ -1,6 +1,6 @@
 var express = require('express'), app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http,{pingInterval: 7000, pingTimeout: 60000}); // http,{pingInterval: 5000, pingTimeout: 60000}
 var port = process.env.PORT || 3000;
 const colors = require('colors');
 
@@ -28,8 +28,8 @@ class rooms {
 		console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
 	}
 
-	removeRoom(id) {
-		var index  = this.room_ids.indexOf(id);
+	removeRoom(ID) {
+		var index  = this.room_ids.indexOf(ID);
 		if (index > -1) {
 			this.room_ids.splice(index, 1);
 			this.room_names.splice(index, 1);
@@ -39,11 +39,11 @@ class rooms {
 			this.room_teamgreen.splice(index, 1);
 			this.room_game.splice(index, 1);
 			this.room_count -= 1;
-			console.log(colors.bgBlue.red('Room deleted: ' + id));
+			console.log(colors.bgBlue.red('Room deleted: ' + ID));
 			return {'success':true};
 		}
 		else {
-			console.log(colors.bgRed.black('Room deletion failed: ' + id));
+			console.log(colors.bgRed.black('Room deletion failed: ' + ID));
 			return {'success':false,'wrongpass':false};
 		}
 		  
@@ -155,19 +155,25 @@ class rooms {
 
 class Cards {
 	constructor() {
-		this.values = ['J','9','A','10','K','Q','8','7']; //6 not considered
+		this.values = ['8','A','10','K','Q','J','7','9']; //6 not considered
 		this.suits = ['S', 'D', 'C', 'H'];
 		this.playable_deck = new Array();
 		for(var i = 0; i < this.suits.length; i++)
 			for(var x = 0; x < this.values.length; x++)
 				this.playable_deck.push(this.values[x]+this.suits[i]);
-		//this.randomizeCards();
+		this.randomizeCards();
 	}
 	
+	arrayRotate(count) {
+		count -= this.playable_deck.length * Math.floor(count / this.playable_deck.length);
+		this.playable_deck.push.apply(this.playable_deck, this.playable_deck.splice(0, count));
+	}
+		
 	randomizeCards(){
 		//randomize playable cards
-		for (var i = 0; i < 1000; i++)
-		{
+		this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
+		this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
+		for (var i = 0; i < 1500; i++){
 			var location1 = Math.floor((Math.random() * this.playable_deck.length));
 			var location2 = Math.floor((Math.random() * this.playable_deck.length));
 			if(location1!=location2) {
@@ -178,8 +184,9 @@ class Cards {
 		}
 		
 		//check if one person gets all zero points cards
+		var okay;
 		for(var playernum=0;playernum<4;playernum++){
-			var okay = false;
+			okay = false;
 			for(var i=playernum*4;i<playernum*4 + 4;i++)
 				if(Cards.cardDetail(this.playable_deck[i]).point!=0)
 					{okay=true;break;}
@@ -561,8 +568,11 @@ class Game {
 	}
 	
 	checkWin(winner,fromPlay){
+		if(fromPlay)
+			this.checkMarriage('play');
+			
 		var round_state = 'nl';//normal
-		
+			
 		if(this.points[this.bid_winner]>=this.bid_value)
 			round_state = this.teamwin(this.bid_winner);
 		else if (this.points[this.nextPlayer(this.bid_winner,'anti')] > 28-this.bid_value)
@@ -582,10 +592,7 @@ class Game {
 			catch(err) {
 				console.log(colors.bgRed.black('Room deletion failed: ' + this.roomID + '\nError: ' + err.message));
 			}
-		}
-		else
-			if(fromPlay)
-				this.checkMarriage('play');
+		}		
 	}
 	
 	teamwin(player) {
@@ -652,7 +659,7 @@ http.listen(port, function(){
 });
 
 io.on('connection', function(socket){
-  
+
   socket.on('disconnect', function(){
 
   });
@@ -684,6 +691,11 @@ io.on('connection', function(socket){
 			}
 		}
 	}
+  });
+  
+  socket.on('recon',function(msg){
+	socket.join(msg.id);
+	console.log(colors.bgBlue.red(msg.playername + ' reconnected in room ' + msg.id));
   });
   
   socket.on('deleteroom', function(msg){

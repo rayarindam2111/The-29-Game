@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
-	<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=Bungee+Outline&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&family=Bungee+Inline&family=Bungee+Outline&display=swap" rel="stylesheet">
 	<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
 	<title>The 29 Game</title>
 	<link rel="icon" href="./favicon.ico"> 
 	<meta name="viewport" content="user-scalable=no"/>
 	<meta name="theme-color" content="#1b4b7c">
+	<meta charset="utf-8">
+	<meta name="description" content="The classic card game 29, now in your browser!">
+	<meta name="author" content="Arindam Ray">
+	<meta property="og:title" content="The 29 Game">
+	<meta property="og:image" content="./favicon.ico">
+	<meta property="og:description" content="The classic card game 29, now in your browser!">
 </head>
 <body>
 	<div id="preload" style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.98);z-index:5000;">
@@ -57,7 +62,7 @@
 			<div class="boxes box-top" style="top:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin">
 				  <div id="topname" class="row valign-wrapper">
-					<div class="col s3 flexcenter">
+					<div class="col s3 flexcenter" style="justify-content:center">
 					 <img src="img/face-top.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timetop">
 					</div>
 					<div class="col s4">
@@ -65,13 +70,13 @@
 					</div>
 					<div class="col s5">
 						<h6>
-						  <span id="toptrump" class="trumpshow red-text labelstat">T&nbsp;</span>
-						  <span class="black-text labelstat">R:</span>
-						  <span id="topround" class="black-text round">-</span>
-						  <span class="black-text labelstat">&nbsp;P:</span>
-						  <span id="toppoint" class="black-text score">-</span>
-						  <span class="black-text labelstat">&nbsp;B:</span>
-						  <span id="topbid" class="black-text trump">-</span>
+						  <div id="toptrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+						  <div class="isb labelstat">R:</div>
+						  <div id="topround" class="isb round">-</div>
+						  <div class="isb labelstat">&nbsp;P:</div>
+						  <div id="toppoint" class="isb score">-</div>
+						  <div class="isb labelstat">&nbsp;B:</div>
+						  <div id="topbid" class="isb trump">-</div>
 						</h6>
 					</div>
 				  </div>
@@ -85,7 +90,7 @@
 			<div class="boxes box-left" style="left:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
 				  <div id="leftname" class="row valign-wrapper">
-					<div class="col s3 flexcenter">
+					<div class="col s3 flexcenter" style="justify-content:center">
 					  <img src="img/face-left.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timeleft">
 					</div>
 					<div class="col s4">
@@ -93,13 +98,13 @@
 					</div>
 					<div class="col s5">
 						<h6>
-						  <span id="lefttrump" class="trumpshow red-text labelstat">T&nbsp;</span>
-						  <span class="black-text labelstat">R:</span>
-						  <span id="leftround" class="black-text round">-</span>
-						  <span class="black-text labelstat">&nbsp;P:</span>
-						  <span id="leftpoint" class="black-text score">-</span>
-						  <span class="black-text labelstat">&nbsp;B:</span>
-						  <span id="leftbid" class="black-text trump">-</span>
+						  <div id="lefttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+						  <div class="isb labelstat">R:</div>
+						  <div id="leftround" class="isb round">-</div>
+						  <div class="isb labelstat">&nbsp;P:</div>
+						  <div id="leftpoint" class="isb score">-</div>
+						  <div class="isb labelstat">&nbsp;B:</div>
+						  <div id="leftbid" class="isb trump">-</div>
 						</h6>
 					</div>
 				  </div>
@@ -123,7 +128,7 @@
 			<div class="boxes box-right" style="right:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
 				  <div id="rightname" class="row valign-wrapper">
-					<div class="col s3 flexcenter">
+					<div class="col s3 flexcenter" style="justify-content:center">
 					  <img src="img/face-right.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timeright">
 					</div>
 					<div class="col s4">
@@ -131,13 +136,13 @@
 					</div>
 					<div class="col s5">
 						<h6>
-						  <span id="righttrump" class="trumpshow red-text labelstat">T&nbsp;</span>
-						  <span class="black-text labelstat">R:</span>
-						  <span id="rightround" class="black-text round">-</span>
-						  <span class="black-text labelstat">&nbsp;P:</span>
-						  <span id="rightpoint" class="black-text score">-</span>
-						  <span class="black-text labelstat">&nbsp;B:</span>
-						  <span id="rightbid" class="black-text trump">-</span>
+						  <div id="righttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+						  <div class="isb labelstat">R:</div>
+						  <div id="rightround" class="isb round">-</div>
+						  <div class="isb labelstat">&nbsp;P:</div>
+						  <div id="rightpoint" class="isb score">-</div>
+						  <div class="isb labelstat">&nbsp;B:</div>
+						  <div id="rightbid" class="isb trump">-</div>
 						</h6>
 					</div>
 				  </div>
@@ -151,7 +156,7 @@
 			<div class="boxes box-bottom" style="bottom:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad">
 				  <div id="bottomname" class="row valign-wrapper">
-					<div class="col s3 flexcenter">
+					<div class="col s3 flexcenter" style="justify-content:center">
 					  <img src="img/face-bottom.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="timebottom">
 					</div>
 					<div class="col s4">
@@ -160,13 +165,13 @@
 					<div class="col s5">
 						<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;" disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;&nbsp;PLAY</span></a>
 						<h6>
-						  <span id="bottomtrump" class="trumpshow red-text labelstat">T&nbsp;</span>
-						  <span class="black-text labelstat">R:</span>
-						  <span id="bottomround" class="black-text round">-</span>
-						  <span class="black-text labelstat">&nbsp;P:</span>
-						  <span id="bottompoint" class="black-text score">-</span>
-						  <span class="black-text labelstat">&nbsp;B:</span>
-						  <span id="bottombid" class="black-text trump">-</span>
+						  <div id="bottomtrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+						  <div class="isb labelstat">R:</div>
+						  <div id="bottomround" class="isb round">-</div>
+						  <div class="isb labelstat">&nbsp;P:</div>
+						  <div id="bottompoint" class="isb score">-</div>
+						  <div class="isb labelstat">&nbsp;B:</div>
+						  <div id="bottombid" class="isb trump">-</div>
 						</h6>
 					</div>
 				  </div>
@@ -179,6 +184,11 @@
 		<a class="btn-floating btn-large red waves-effect waves-light" href="#">
 			<i class="large material-icons">chat</i>
 		</a>
+	</div>
+	<!-- Network -->
+	<div id="network" class="flexcenter network">
+		<i class="material-icons network-icon">network_cell</i>&nbsp;
+		<span></span>
 	</div>
 	
 	<!-- Modals -->
@@ -269,10 +279,10 @@
 							<h5 class="center">Choose Trump Suit:</h5>
 							<br>
 							<ul id="trumpOpt" class="tabs">
-								<li class="tab"><a class="active" style="display:flex;align-items:center" href="#dummyd">Hearts&nbsp;<img src="./img/hearts.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Spades&nbsp;<img src="./img/spades.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Diamonds&nbsp;<img src="./img/diamonds.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Clubs&nbsp;<img src="./img/clubs.png" height=25 width=25></a></li>
+								<li class="tab"><a class="active" style="display:flex;align-items:center" href="#dummyd">Hearts&nbsp;<img src="img/H.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Spades&nbsp;<img src="img/S.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Diamonds&nbsp;<img src="img/D.png" height=25 width=25></a></li>
+								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Clubs&nbsp;<img src="img/C.png" height=25 width=25></a></li>
 							</ul>
 							<div id="dummyd" style="height:0;width:0;display:none;opacity:0"></div>
 							<hr>
@@ -294,7 +304,7 @@
 				</ul>
 		</div>
 		<div class="modal-footer">
-			<h5 class="center">BID FOR POINTS</h5>
+			<h6 class="center">BID FOR POINTS</h6>
 		</div>
     </div>
 	

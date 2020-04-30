@@ -44,14 +44,13 @@ function indexOfMax(arr) {
 	return maxIndex;
 }
 
-function timeout(percent,$elem){
-    var icircle = percent*360/100;   
-    if (icircle<=180){
-        $($elem).css('background-image','linear-gradient(' + (90+icircle) + 'deg, transparent 50%, rgb(56, 85, 95) 50%),linear-gradient(90deg, rgb(56, 85, 95) 50%, transparent 50%)');
-    }
-    else{
-        $($elem).css('background-image','linear-gradient(' + (icircle-90) + 'deg, transparent 50%, rgb(153, 184, 206) 50%),linear-gradient(90deg, rgb(56, 85, 95) 50%, transparent 50%)');
-    }
+function timeout(percent,elem,team,first){
+	var icircle = percent*360/100;
+	var c1 = (team=='green')?'#a0ce90':'#c5c2cb';
+	var c2 = (team=='green')?'#127513':'#4d2c91';
+	if(first) 
+		$(elem).css('background-color',c1);
+    (icircle<=180)?$(elem).css('background-image','linear-gradient(' + (90+icircle) + 'deg, transparent 50%, '+c2+' 50%),linear-gradient(90deg, '+c2+' 50%, transparent 50%)'):$(elem).css('background-image','linear-gradient(' + (icircle-90) + 'deg, transparent 50%, '+c1+' 50%),linear-gradient(90deg, '+c2+' 50%, transparent 50%)');
 }
 
 function generateStack(cards,box,color) {
@@ -64,14 +63,20 @@ function generateStack(cards,box,color) {
 		cards.sort(function(a, b){
 			var aCard = cardDetail(a);
 			var bCard = cardDetail(b);
-			
 			var aVal = aCard.rank + (aCard.suit=='H'?500:aCard.suit=='S'?400:aCard.suit=='D'?300:200);
 			var bVal = bCard.rank + (bCard.suit=='H'?500:bCard.suit=='S'?400:bCard.suit=='D'?300:200);
-			
-			return bVal - aVal});
-			
+			return bVal - aVal;
+		});
+		try{
+			$('.tooltipped').tooltip('destroy');
+			$('.material-tooltip').remove();
+		}
+		catch(e){
+		}
 		for(var i=0;i<cards.length;i++)
-			$(box).append('<div class="playercards" style="left:' + (i*gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i+10) + ';" card="' + cards[i] + '"></div>');
+			$(box).append('<div class="playercards tooltipped" data-position="top" data-tooltip="P: ' + cardDetail(cards[i]).point + '" style="left:' + (i*gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i+10) + ';" card="' + cards[i] + '"></div>');
+		var elems = document.querySelectorAll('.tooltipped');
+		M.Tooltip.init(elems, {enterDelay:0,exitDelay:0,inDuration:150,outDuration:150});
 	}
 	else
 		for(var i=0;i<cards.length;i++)
@@ -103,6 +108,7 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			$('#modal-credits').modal('close');
+			$('#joingame').removeAttr('disabled');
 		}
 	});
 	$('#modal-bid').modal({
@@ -122,6 +128,7 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			$('#modal-chat').modal('close');
+			$('#chatopen').hide();
 		}
 	});
 	$('#modal-credits').modal({
@@ -143,11 +150,15 @@ function initModals() {
 
 function resetRound(){
 	clearInterval(gVars.timer);
-	timeout(0,$(".active-border"));
+	for(var i=0;i<4;i++){
+		var t = playerFromNumber(i);
+		timeout(0,timeelemfromidteam(t.player),t.team,false);
+	}
 	$('#bidlog').html('');
 	$('#trumpsetok').attr('disabled','');
 	$('.trumpshow').hide();
 	$('.boxes>div').removeClass('mvboxes');
+	gVars.sound_turn.stop();
 	gVars.allcards = [];
 	gVars.trumpOpen = false;
 }
@@ -206,6 +217,7 @@ $('#joingame').click(function(){
 	gVars.myname = $('#username').val();
 	gVars.myteam = $("#teamselect").val();
 	M.toast({html: 'Joining Game...',displayLength:3000});
+	$('#joingame').attr('disabled','');
 	socket.emit('addplayer',{'id':gVars.curRoomID,'playername':gVars.myname,'team':gVars.myteam});
 	return false;
 });
@@ -242,6 +254,26 @@ function joingame() {
 		$('#playMove').removeClass('white');
 		$('#playMove').addClass('purple');
 	}
+	for(var i=0;i<4;i++){
+		var t = playerFromNumber(i);
+		timeout(0,timeelemfromidteam(t.player),t.team,true);
+	}
+	document.title = 'The 29 Game - [' + gVars.myname + ']';
+	window.onbeforeunload = function() {
+        return "Are you sure you want to leave the game?";
+    }
+	if(!gVars.isMobile){
+		var full = document.documentElement;
+		if (full.requestFullscreen) 
+			full.requestFullscreen();
+		else if (full.mozRequestFullScreen)
+			full.mozRequestFullScreen();
+		else if (full.webkitRequestFullscreen)
+			full.webkitRequestFullscreen();
+		else if (full.msRequestFullscreen)
+			full.msRequestFullscreen();
+	}
+	gVars.matchRunning = true; 
 }
 
 function teamselectrefresh(){
@@ -519,44 +551,44 @@ function bidProcess(data) {
 }
 
 $('#bidraise').click(function(){
-	socket.emit('bid',{'id':gVars.curRoomID,'passed':false,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;' + gVars.raiseOrMatch  + '<span class="red-text">'+$('#bidrange').val()+'</span>','over':{'isOver':false}});
 	$('#bidchange').hide();
+	socket.emit('bid',{'id':gVars.curRoomID,'passed':false,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;' + gVars.raiseOrMatch  + '<span class="red-text">'+$('#bidrange').val()+'</span>','over':{'isOver':false}});
 	return false;
 });
 
 $('#bidpass').click(function(){
-	socket.emit('bid',{'id':gVars.curRoomID,'passed':true,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;passed the bid','over':{'isOver':false}});
 	$('#bidchange').hide();
+	socket.emit('bid',{'id':gVars.curRoomID,'passed':true,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;passed the bid','over':{'isOver':false}});
 	return false;
 });
 
 $('#biddoubleok').click(function(){
+	$('#biddouble').hide();
 	var m = parseInt($('input[name="groupD"]:checked').val());
 	var textm = (m==1)?'did not '+gVars.bidDouble:((m==2)?'doubled':'redoubled');
 	socket.emit('bid',{'id':gVars.curRoomID,'passed':'','amount':'','player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;' + textm,'over':{'isOver':gVars.bidDouble+'end','multiplier':m,'team':gVars.myteam}});
-	$('#biddouble').hide();
 	return false;
 });
 
 $('#playMove').click(function(){
+	$('#playMove').attr('disabled','');
 	socket.emit('play',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'card':gVars.currentCard,'firstplay':gVars.firstplay});
 	//cardPlayed(gVars.myteam+gVars.myUserID,gVars.currentCard);
-	$('#playMove').attr('disabled','');
 	return false;
 });
 
 $('#trumpyes').click(function(){
-	socket.emit('trump',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'operation':'open'});
 	$('#cardboxbottom').addClass('carddisabled');
 	$('#modal-trumpyesno').modal('close');
+	socket.emit('trump',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'operation':'open'});
 	return false;
 });
 
 $('#trumpsetok').click(function(){
+	$('#trumpset').hide();
 	var tIndex = document.getElementById('trumpOpt').M_Tabs.index;
 	var tSuit = tIndex==0?'H':tIndex==1?'S':tIndex==2?'D':'C';
 	socket.emit('trump',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'suit':tSuit,'operation':'set',log:'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;set the Trump'});
-	$('#trumpset').hide();
 	return false;
 });
 
@@ -639,6 +671,7 @@ function cardPlayed(player,card,deckcards){
 	$(tableelemfromidteam(player)).css('z-index',gVars.currentPlayerPos*10);
 	$(tableelemfromidteam(player)+'>img').attr('src','img/cards/'+card+'.PNG');
 	$(tableelemfromidteam(player)).show();
+	gVars.sound_play.play();
 	generateStack(deckcards,cardboxfromidteam(cur.player),unqIndex==cur.player?'nocolor':cur.team);	
 }
 
@@ -667,13 +700,19 @@ function playProcess(data){
 		M.toast({html: 'New Round',displayLength:2000});
 	}
 	else if(data.op.re=='go'){
+		gVars.matchRunning = false;
 		M.toast({html: 'Game Over',displayLength:2000});
+		window.onbeforeunload = null;
 	}
 
 	enableTrump(false);
+	gVars.sound_turn.stop();
 	var player = gVars.myteam + gVars.myUserID;
 	clearInterval(gVars.timer);
-	timeout(0,$(".active-border"));
+	for(var i=0;i<4;i++){
+		var t = playerFromNumber(i);
+		timeout(0,timeelemfromidteam(t.player),t.team,false);
+	}
 	
 	if(data.op.fp){
 		setTimeout(function() {
@@ -694,8 +733,19 @@ function playProcess(data){
 			}
 			
 			for(var i=0;i<4;i++){
-				$(pointelemfromidteam(playerFromNumber(i).player)).html(data.op.pt[i]);
-				$(roundelemfromidteam(playerFromNumber(i).player)).html(data.op.rs[i]);
+				var p = pointelemfromidteam(playerFromNumber(i).player);
+				var r = roundelemfromidteam(playerFromNumber(i).player);
+				var memp = $(p).html();
+				var memr = $(r).html();
+				console.log(memp);
+				console.log(data.op.pt[i]);
+				$(p).html(data.op.pt[i]);
+				$(r).html(data.op.rs[i]);
+				console.log($(p).html());
+				if($(p).html()!=memp)
+					zio(p);
+				if($(r).html()!=memr)
+					zio(r);
 			}
 			gVars.currentPlayerPos = 0;
 			$('.centerplay').hide();
@@ -750,22 +800,29 @@ function startTimer(data,player){
 	var telem = timeelemfromidteam(data.pl);
 	var xName = playerFromNumber(numberFromPlayer(data.pl));
 	if(xName.team == 'green')
-		xName = gVars.greenplayers[xName.id];
+		xName.player = gVars.greenplayers[xName.id];
 	else
-		xName = gVars.purpleplayers[xName.id];
+		xName.player = gVars.purpleplayers[xName.id];
 	
 	$('.boxes>div').removeClass('mvboxes');
 	$(boxelemfromidteam(data.pl)).addClass('mvboxes');
+	if(player==data.pl)
+		gVars.sound_turn.play();
 	
 	gVars.timer = setInterval(function(){ 
-		gVars.timerCount = (gVars.timerCount+.25)%100;
+		gVars.timerCount = (gVars.timerCount+.5)%100;
 		if(gVars.timerCount==99)
 			if(player==data.pl)
 				M.toast({html: 'Please play a card', displayLength:3000});
 			else
-				M.toast({html: xName + ' has not played a card for 1 minute', displayLength:3000});
-		timeout(gVars.timerCount, telem); 
-	}, 150);
+				M.toast({html: xName.player + ' has not played a card for 1 minute', displayLength:3000});
+		timeout(gVars.timerCount, telem, xName.team,false); 
+	}, 300);
+}
+
+function zio(elem){
+	$(elem).removeClass('zio');
+	setTimeout(function(){$(elem).addClass('zio');},50);
 }
 
 var gVars =  {
@@ -787,6 +844,10 @@ var gVars =  {
 	timerCount : '',    // counter timer 0-100
 	timer : '',         // timer element
 	trumpSetter : '',   // player who set trump (green0,purple1 etc.)
+	sound_turn : '',    // sound for player turn
+	sound_play : '',    // sound for player play
+	isMobile : '',	    // if device is a mobile device
+	matchRunning : '',   // true/false, if a match has started & is running
 	
 	set purpleplayers(data) {
 		purpleplayers = data;
@@ -895,6 +956,30 @@ var gVars =  {
 	},
 	get trumpSetter() {
 		return trumpSetter;
+	},
+	set sound_turn(data) {
+		sound_turn = data;
+	},
+	get sound_turn() {
+		return sound_turn;
+	},
+	set sound_play(data) {
+		sound_play = data;
+	},
+	get sound_play() {
+		return sound_play;
+	},
+	set isMobile(data) {
+		isMobile = data;
+	},
+	get isMobile() {
+		return isMobile;
+	},
+	set matchRunning(data) {
+		matchRunning = data;
+	},
+	get matchRunning() {
+		return matchRunning;
 	}
 };
 
@@ -909,6 +994,7 @@ function shiftzoom(large,small){
 }
 
 //socket functions only
+gVars.matchRunning = false;
 var socket = io();
 
 socket.on('roomlist', function(data) {
@@ -952,6 +1038,7 @@ socket.on('addplayer', function(data) {
 		joingame();
 	}
 	else {
+		$('#joingame').removeAttr('disabled');
 		M.toast({html: 'Error: Room may be full. Retry or try another room',displayLength:3000});
 	}
 });
@@ -1038,9 +1125,14 @@ socket.on('bidover',function(data){
 		playername.player = gVars.purpleplayers[playername.id];
 	setTimeout(function() {
 		$("#modal-bid").modal('close');
+
 		for(var i=0;i<4;i++){
 			var z = playerFromNumber(i);
-			$(bidelemfromidteam(z.player)).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));	
+			var b = bidelemfromidteam(z.player);
+			var memb = $(b).html();
+			$(b).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));
+			if($(b).html()!=memb)
+				zio(b);
 		}
 		M.toast({html: playername.player + ' of Team ' + playername.team.toUpperCase() +' won the bid',displayLength:2000});
 	}, 3000);
@@ -1081,6 +1173,10 @@ socket.on('trump',function(data){
 		$('#trumpcard>img').attr('src','img/cards/'+data.card+'.PNG');
 	}
 	else if(data.operation=='set'){
+		if(data.player==gVars.myteam+gVars.myUserID)
+			$(trumpelemfromidteam(data.player)).html('<img alt="T" src="img/' + cardDetail(data.card).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;">');
+		else
+			$(trumpelemfromidteam(data.player)).html('T&nbsp;');
 		$(trumpelemfromidteam(data.player)).show();
 		gVars.trumpSetter = data.player;
 		//preload trump image
@@ -1104,17 +1200,43 @@ socket.on('marriage',function(data){
 		playername.player = gVars.purpleplayers[playername.id];
 	setTimeout(function() {
 		M.toast({html: playername.player + ' of Team ' + playername.team.toUpperCase() +'&nbsp;has a marriage!', displayLength:4000});
+
 		for(var i=0;i<4;i++){
 			var z = playerFromNumber(i);
-			$(bidelemfromidteam(z.player)).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));	
+			var b = bidelemfromidteam(z.player);
+			var memb = $(b).html();
+			$(b).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));
+			if($(b).html()!=memb)
+				zio(b);
 		}
 	}, data.delay=='play'?1400:500);
+});
+
+socket.on('reconnect_attempt',function(number){
+	M.toast({html: 'Reconnecteing... ('+number+')',displayLength:1000});
+});
+
+socket.on('reconnect',function(){
+	if(gVars.matchRunning)
+		socket.emit('recon',{'id':gVars.curRoomID,'playername':gVars.myname});
+	M.toast({html: 'Reconnected',displayLength:1500});
 });
 
 socket.on('chat',function(data){
 	M.toast({html: data.msg,displayLength:2000});
 	$('#chatlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.msg + '</li>');
 	$("#modal-chat>.modal-content").scrollTop($("#modal-chat>.modal-content")[0].scrollHeight);
+});
+
+socket.on('pong',function(latency){
+	$('#network>span').html(latency+'ms');
+	var isChromium = !!window.chrome;
+	if(latency>380)
+		isChromium?$('#network>i').css('background-image','linear-gradient(to right,#d00 36%,rgba(255,255,255,.13) 36%)'):$('#network>i').css('color','#d00');
+	else if(latency>120)
+		isChromium?$('#network>i').css('background-image','linear-gradient(to right,#dd0 64%,rgba(255,255,255,.13) 64%)'):$('#network>i').css('color','#dd0');
+	else
+		isChromium?$('#network>i').css('background-image','linear-gradient(to right,#0d0 99%,#0d0 100%)'):$('#network>i').css('color','#0d0');
 });
 
 //document load
@@ -1208,9 +1330,36 @@ function canvasLoad(start){
 	(animation)?glitch():ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+//audio
+class sound{
+	constructor(src,loop=false){
+		this.sound = new Audio(src); 
+		if(loop)
+			if(typeof this.sound.loop == 'boolean')
+				this.sound.loop = true;
+			else
+				this.sound.addEventListener('ended', function() {
+					this.currentTime = 0;
+					this.play();
+				}, false);
+		this.sound.setAttribute("preload", "auto");
+		this.sound.setAttribute("controls", "none");
+		this.sound.style.display = "none";
+		document.body.appendChild(this.sound);
+	}
+    play(){
+        this.sound.play();
+    }
+    stop(){
+        this.sound.pause();
+    }    
+}
 
 $(function(){
-	timeout(0,$(".active-border"));
+	gVars.sound_turn = new sound('img/ting.mp3',true);
+	gVars.sound_play = new sound('img/play.mp3');
+	if(!window.chrome)//not chromium
+		$('#network>i').removeClass('network-icon');
     initModals();
 	$('.collapsible').collapsible();
 	$('select').formSelect();
@@ -1222,10 +1371,10 @@ $(function(){
 	gVars.timer = '';
 	gVars.trumpOpen = false;
 	gVars.currentPlayerPos = 0;
-	
+	gVars.isMobile = mobilecheck();
 	//UI resize 
 	$('body').css('zoom',shiftzoom(1920,1080));
-    if (mobilecheck()){
+    if (gVars.isMobile){
 		$(window).on( "orientationchange", function( event ) {
 			$(window).one('resize', function() {
 				zoom = shiftzoom(1920,1080);
@@ -1237,6 +1386,7 @@ $(function(){
 			   //event.orientation
 			});
 		});
+		M.toast({html: 'You can rotate your device to change the orientation!',displayLength:2000});
 	}
 	else{
 		$(window).resize(function() {
