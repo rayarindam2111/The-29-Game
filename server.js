@@ -97,10 +97,10 @@ class rooms {
 	getTeams(ID) {
 		var index  = this.room_ids.indexOf(ID);
 		if (index > -1) {
-			return {'success':true,'teampurple':this.room_teampurple[index],'teamgreen':this.room_teamgreen[index]};
+			return {'s':true,'tp':this.room_teampurple[index],'tg':this.room_teamgreen[index]};
 		}
 		else
-			return {'success':false};
+			return {'s':false};
 	}
 	
 	startGamePlay(ID) {
@@ -359,10 +359,10 @@ class Game {
 		for(var i=0;i<this.cards.length;i++)
 			for(var j=0;j<this.cards[i].length;j++)
 				cardString += this.cards[i][j];
-		var d = {'cards':cardString,'members':noOfMembers,'delay':delay};
-		this.emitlog[0].push('cardstack');
+		var d = {'c':cardString,'m':noOfMembers,'d':delay};
+		this.emitlog[0].push('cst');
 		this.emitlog[1].push(d);
-		io.in(this.roomID).emit('cardstack',d);
+		io.in(this.roomID).emit('cst',d);
 	}
 	
 	bidListRemove(player){
@@ -724,9 +724,9 @@ io.on('connection', function(socket){
 	if(reply.success==true){
 		socket.join(msg.id);
 		var r = Rooms.getTeams(msg.id);
-		if(r.success){
-			socket.to(msg.id).emit('playerrefresh', r );
-			if(r.teampurple.length+r.teamgreen.length==4)
+		if(r.s){
+			socket.to(msg.id).emit('prf', r);
+			if(r.tp.length+r.tg.length==4)
 			{
 				Rooms.startGamePlay(msg.id);
 			}
@@ -739,16 +739,16 @@ io.on('connection', function(socket){
 	if(emitLog == -1)
 		return;
 	socket.join(msg.id);
-	console.log(colors.bgBlue.red(msg.playername + ' reconnected in room ' + msg.id));
+	console.log(colors.bgBlue.red(msg.pl + ' reconnected in room ' + msg.id));
 	if(parseInt(msg.LM)==0){
 		var r = Rooms.getTeams(msg.id);
-		if(r.success)
-			socket.emit('playerrefresh', r);
+		if(r.s)
+			socket.emit('prf', r);
 	}
 	if(emitLog == -2)
 		return;
 	//console.log(parseInt(msg.LM)+'\t'+emitLog[0].length);
-	for(var i = parseInt(msg.LM) + 1;i<=emitLog[0].length;i++)
+	for(var i=parseInt(msg.LM)+1;i<=emitLog[0].length;i++)
 		socket.emit(emitLog[0][i-1],emitLog[1][i-1]);
   });
   

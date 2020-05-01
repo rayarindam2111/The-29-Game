@@ -924,14 +924,14 @@ socket.on('deleteroom', function(data) {
 	}		
 });
 
-socket.on('playerrefresh', function(data) {
-	gVars.purpleplayers = data.teampurple;
-	gVars.greenplayers = data.teamgreen;
+socket.on('prf', function(data) {
+	gVars.purpleplayers = data.tp;
+	gVars.greenplayers = data.tg;
 	//teamselectrefresh();
 	playscreenTeamUpdate();	
 });
 
-socket.on('cardstack',function(data){
+socket.on('cst',function(data){
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	$('#playerwait').hide();
 	$('#trumpcard>img').attr('src','img/cards/BLUE_BACK.PNG');
@@ -939,28 +939,28 @@ socket.on('cardstack',function(data){
 	var i = 0;
 	var cardcount = 0;
 	var cardlist = new Array();
-	while(i<data.cards.length){
+	while(i<data.c.length){
 		cardcount++;
-		if(data.cards.substring(i,i+1)=='1'){
-			cardlist.push(data.cards.substring(i,i+3));
+		if(data.c.substring(i,i+1)=='1'){
+			cardlist.push(data.c.substring(i,i+3));
 			i += 3;
 		}
 		else{
-			cardlist.push(data.cards.substring(i,i+2));
+			cardlist.push(data.c.substring(i,i+2));
 			i += 2;
 		}
 	}
 	var cards = new Array();
-	for(var i=0;i<parseInt(data.members);i++)
+	for(var i=0;i<parseInt(data.m);i++)
 		cards[i] = new Array();
-	var cPerMember = cardcount/parseInt(data.members);
-	for(var i=0;i<parseInt(data.members);i++){
+	var cPerMember = cardcount/parseInt(data.m);
+	for(var i=0;i<parseInt(data.m);i++){
 		for(var j=0;j<cPerMember;j++){
 			cards[i].push(cardlist[i*cPerMember+j]);
 		}
 	}			
 		
-	if(data.delay)
+	if(data.d)
 		setTimeout(function() {
 				buildcardstack(cards);
 			}, 1000);
@@ -1084,13 +1084,21 @@ socket.on('marriage',function(data){
 });
 
 socket.on('reconnect_attempt',function(number){
-	M.toast({html: 'Reconnecting... ('+number+')',displayLength:1000});
+	$('#network>i').hide();
+	$('#network>span').hide();
+	$('#network>div').show();
+	console.log('Reconnecting... ('+number+')');
+	//M.toast({html: 'Reconnecting... ('+number+')',displayLength:1000});
 });
 
 socket.on('reconnect',function(){
-	M.toast({html: 'Reconnected',displayLength:1500});
+	$('#network>div').hide();
+	$('#network>i').show();
+	$('#network>span').show();
+	console.log('Reconnected');
+	//M.toast({html: 'Reconnected',displayLength:1500});
 	if(gVars.matchRunning)
-		socket.emit('recon',{'id':gVars.curRoomID,'playername':gVars.myname,'LM':gVars.sockMsgCount});
+		socket.emit('recon',{'id':gVars.curRoomID,'pl':gVars.myname,'LM':gVars.sockMsgCount});
 });
 
 socket.on('chat',function(data){
@@ -1100,7 +1108,7 @@ socket.on('chat',function(data){
 });
 
 socket.on('pong',function(latency){
-	$('#network>span').html(latency+'ms');
+	$('#network>span').html('&nbsp;'+latency+'ms');
 	var isChromium = !!window.chrome;
 	if(latency>380)
 		isChromium?$('#network>i').css('background-image','linear-gradient(to right,#d00 36%,rgba(255,255,255,.13) 36%)'):$('#network>i').css('color','#d00');
