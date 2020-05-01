@@ -1,6 +1,6 @@
 var express = require('express'), app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http,{pingInterval: 7000, pingTimeout: 60000}); // http,{pingInterval: 5000, pingTimeout: 60000}
+var io = require('socket.io')(http,{pingInterval: 6000, pingTimeout: 15000}); // http,{pingInterval: 5000, pingTimeout: 60000}
 var port = process.env.PORT || 3000;
 const colors = require('colors');
 
@@ -23,7 +23,7 @@ class rooms {
 		this.room_ids.push(name+timestamp);
 		this.room_teampurple.push([]);
 		this.room_teamgreen.push([]);
-		this.room_game.push([]);
+		this.room_game.push('');
 		this.room_count += 1;
 		console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
 	}
@@ -116,7 +116,7 @@ class rooms {
 	sendBidtoRoom(msg){
 		var index  = this.room_ids.indexOf(msg.id);
 		if (index > -1) {
-			this.room_game[index].bidReceive(msg.passed,msg.amount,msg.player,msg.log,msg.over);
+			this.room_game[index].bidReceive(msg.ps,msg.am,msg.pl,msg.l,msg.o);
 		}
 		else
 			console.log(colors.bgRed.black('Bid receive error: ' + msg.id));
@@ -125,7 +125,7 @@ class rooms {
 	sendPlaytoRoom(msg) {
 		var index  = this.room_ids.indexOf(msg.id);
 		if (index > -1) {
-			this.room_game[index].nextPlayReceive(msg.player,msg.card,msg.firstplay);
+			this.room_game[index].nextPlayReceive(msg.pl,msg.c,msg.fp);
 		}
 		else
 			console.log(colors.bgRed.black('Play receive error: ' + msg.id));
@@ -134,10 +134,10 @@ class rooms {
 	sendTrumptoRoom(msg) {
 		var index  = this.room_ids.indexOf(msg.id);
 		if (index > -1) {
-			if(msg.operation=='open')
-				this.room_game[index].trumpOpenReceive(msg.player);
-			else if(msg.operation=='set')
-				this.room_game[index].trumpSetReceive(msg.player,msg.suit,msg.log);
+			if(msg.op=='open')
+				this.room_game[index].trumpOpenReceive(msg.pl);
+			else if(msg.op=='set')
+				this.room_game[index].trumpSetReceive(msg.pl,msg.s,msg.l);
 		}
 		else
 			console.log(colors.bgRed.black('Trump receive error: ' + msg.id));
@@ -150,6 +150,17 @@ class rooms {
 		}
 		else
 			console.log(colors.bgRed.black('Chat receive error: ' + msg.id));
+	}
+
+	getRoomEmitLog(id){
+		var index  = this.room_ids.indexOf(id);
+		if (index > -1) {
+			return this.room_game[index]!=''?this.room_game[index].getEmitLog():-2;
+		}
+		else {
+			console.log(colors.bgRed.black('Room does not exist: ' + id));
+			return -1;
+		}
 	}
 };
 
@@ -233,7 +244,16 @@ class Game {
 		this.rounds_won = [0,0,0,0]; //total rounds won
 		this.delayed_distribute = false;
 		this.playerStart = Math.floor((Math.random() * 4));
+		
+		this.emitlog = new Array();
+		this.emitlog[0] = new Array();
+		this.emitlog[1] = new Array();
+
 		this.resetRound();
+	}
+	
+	getEmitLog() {
+		return this.emitlog ;
 	}
 	
 	resetRound() {
@@ -339,8 +359,10 @@ class Game {
 		for(var i=0;i<this.cards.length;i++)
 			for(var j=0;j<this.cards[i].length;j++)
 				cardString += this.cards[i][j];
-			
-		io.in(this.roomID).emit('cardstack',{'cards':cardString,'members':noOfMembers,'delay':delay});
+		var d = {'cards':cardString,'members':noOfMembers,'delay':delay};
+		this.emitlog[0].push('cardstack');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('cardstack',d);
 	}
 	
 	bidListRemove(player){
@@ -361,16 +383,16 @@ class Game {
 	startBid() {
 		var playerteam = this.teamFromNumber(this.playerStart);
 		this.bid_current_player = this.playerStart;
-		var log = 'Bidding started by Team&nbsp;<span class="' + playerteam + '-text">' + playerteam.toUpperCase() + '</span>';
-		this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,true,log,false,this.delayed_distribute);
+		var log = 'Bidding started by Team&nbsp;<' + playerteam + '>' + playerteam.toUpperCase() + '</' + playerteam + '>';
+		this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,true,log,'',this.delayed_distribute);
 	}
 	
 	//external receive link
 	bidReceive(passed,amount,player,log,over) {
-		if(over.isOver=='doubleend') {
-			if(parseInt(over.multiplier)>=this.biddouble){
-				this.biddouble = parseInt(over.multiplier);
-				this.biddoubleteam = over.team;
+		if(over.iO=='D') {
+			if(parseInt(over.m)>=this.biddouble){
+				this.biddouble = parseInt(over.m);
+				this.biddoubleteam = over.t;
 			}
 			this.biddoublehits.log += (log+'.&nbsp;');
 			this.biddoublehits.val += 1;
@@ -378,16 +400,16 @@ class Game {
 				if(this.biddouble == 1)
 					this.bidOver(this.bid_winner,this.biddoublehits.log);
 				else
-					this.nextBidEmit('',this.bid_winner,'',false,this.biddoublehits.log,'redouble',0);
+					this.nextBidEmit('',this.bid_winner,'',false,this.biddoublehits.log,'RD',0);
 				
 			}
 			return;
 		}		
-		else if(over.isOver=='redoubleend')
+		else if(over.iO=='R')
 		{
-			if(parseInt(over.multiplier)>this.biddouble){
-				this.biddouble = parseInt(over.multiplier);
-				this.biddoubleteam = over.team;
+			if(parseInt(over.m)>this.biddouble){
+				this.biddouble = parseInt(over.m);
+				this.biddoubleteam = over.t;
 			}
 			
 			this.bidredoublehits.log += (log+'.&nbsp;');
@@ -406,7 +428,7 @@ class Game {
 			if((this.bid_chances.reduce((a, b) => a + b, 0))==4){
 				if(this.bid_winner==-100)
 					this.bid_winner = this.playerStart;
-				this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,false,log,'settrump',0);
+				this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,false,log,'ST',0);
 				return;
 			}
 			this.bid_current_player = this.nextBidder(this.bid_current_player);
@@ -428,22 +450,26 @@ class Game {
 				this.bid_next_player = this.numberFromPlayer(player);
 			}
 			if(amount==28 || this.bid_next_player==this.bid_current_player){
-				this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,false,log,'settrump',0);
+				this.nextBidEmit(this.bid_current_player,this.bid_winner,this.bid_value,false,log,'ST',0);
 				return;
 			}
 		}
-		this.nextBidEmit(this.bid_current_player,this.bid_winner_round,this.bid_value,false,log,'none',0);	
+		this.nextBidEmit(this.bid_current_player,this.bid_winner_round,this.bid_value,false,log,'',0);	
 	}
 	
 	nextBidEmit(player,bidwinner,currentbid,firstbid,log,biddouble,delay){
-		io.in(this.roomID).emit('bid', {'player':this.playerFromNumber(player),
-								'bidwinner':this.playerFromNumber(bidwinner),
-								'currentbid':currentbid,
-								'firstbid':firstbid,
-								'log':log,
-								'biddouble':biddouble,
-								'delay':delay
-		});	
+		var d = {   'pl':this.playerFromNumber(player),
+					'bw':this.playerFromNumber(bidwinner),
+					'cb':currentbid,
+					'fb':firstbid,
+					'l':log,
+					'bd':biddouble,
+					'd':delay
+		};
+		
+		this.emitlog[0].push('bid');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('bid', d);	
 	}
 	
 	bidOver(player,log) {
@@ -451,25 +477,31 @@ class Game {
 		var teambids = [x,x,x,x];
 		teambids[player] = parseInt(this.bid_value);
 		teambids[this.nextTeamPlayer(player)] = parseInt(this.bid_value);
-		io.in(this.roomID).emit('bidover', {'winner':player,'bidvalues':teambids,'biddouble':this.biddouble,'biddoubleteam':this.biddoubleteam,'log':log});	
+		var d = {'w':player,'b':teambids,'bd':this.biddouble,'bdt':this.biddoubleteam,'l':log};
+		this.emitlog[0].push('bidover');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('bidover', d);	
 		this.distributeCards(4,4,false);
 		this.nextPlayEmit(true,this.playerStart,'nl');
 	}
 	
 	nextPlayEmit(firstplay,curPlayer,roundend) {
 		this.current_player = curPlayer;
-		io.in(this.roomID).emit('play', {'pl':this.playerFromNumber(curPlayer),
-								   		 'lp':this.playerFromNumber(this.lastplayer),
-								   		 'lpc':this.lastplayercard,
-										 'lpac':this.cards[this.lastplayer],
-										 'op':{ //options
-											 'fp':firstplay,
-											 'fc':this.firstcard,
-											 'pt':this.points,
-											 're':roundend, //'normal','roundover','gameover'
-											 'rs':this.rounds_won
-										 }
-		});
+		var d = {'pl':this.playerFromNumber(curPlayer),
+				 'lp':this.playerFromNumber(this.lastplayer),
+				 'lpc':this.lastplayercard,
+				 'lpac':this.cards[this.lastplayer],
+				 'op':{ //options
+					 'fp':firstplay,
+					 'fc':this.firstcard,
+					 'pt':this.points,
+					 're':roundend, //'normal','roundover','gameover'
+					 'rs':this.rounds_won
+				 }
+		};
+		this.emitlog[0].push('play');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('play', d);
 	}
 	
 	checkM(stack,trump){
@@ -507,9 +539,12 @@ class Game {
 					var teambids = [x,x,x,x];
 					teambids[this.bid_winner] = parseInt(this.bid_value);
 					teambids[this.nextTeamPlayer(this.bid_winner)] = parseInt(this.bid_value);
-					
 					this.marriage_not_d = false;
-					io.in(this.roomID).emit('marriage', {'player':this.playerFromNumber(i),'bidvalues':teambids,'biddouble':this.biddouble,'biddoubleteam':this.biddoubleteam,'delay':delay});
+					
+					var d = {'pl':this.playerFromNumber(i),'b':teambids,'bd':this.biddouble,'bdt':this.biddoubleteam,'d':delay};
+					this.emitlog[0].push('marriage');
+					this.emitlog[1].push(d);
+					io.in(this.roomID).emit('marriage', d);
 					return true;
 				}
 			}
@@ -624,7 +659,10 @@ class Game {
 	trumpOpenReceive(player){
 		this.trump_open = true;
 		this.trump_opener = this.numberFromPlayer(player);
-		io.in(this.roomID).emit('trump', {'player':this.playerFromNumber(this.trump_opener),'card':this.trump_card,'operation':'open'});
+		var d = {'pl':this.playerFromNumber(this.trump_opener),'c':this.trump_card,'op':'open'};
+		this.emitlog[0].push('trump');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('trump', d);
 		var wincheck = this.checkMarriage('trump');
 		if(wincheck)
 			this.checkWin('',false);
@@ -634,8 +672,11 @@ class Game {
 		this.trump_setter = this.numberFromPlayer(player);
 		var val = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // 2 to 5
 		this.trump_card = val + suit;
-		io.in(this.roomID).emit('trump', {'player':this.playerFromNumber(this.trump_setter),'card':this.trump_card,'operation':'set'});
-		this.nextBidEmit(this.bid_player,this.bid_winner,this.bid_value,false,log,'double',0);
+		var d = {'pl':this.playerFromNumber(this.trump_setter),'c':this.trump_card,'op':'set'};
+		this.emitlog[0].push('trump');
+		this.emitlog[1].push(d);
+		io.in(this.roomID).emit('trump', d);
+		this.nextBidEmit(this.bid_player,this.bid_winner,this.bid_value,false,log,'D',0);
 	}
 
 	//external emit link
@@ -652,7 +693,7 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));
 
 http.listen(port, function(){
 	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
@@ -694,8 +735,21 @@ io.on('connection', function(socket){
   });
   
   socket.on('recon',function(msg){
+	var emitLog = Rooms.getRoomEmitLog(msg.id);
+	if(emitLog == -1)
+		return;
 	socket.join(msg.id);
 	console.log(colors.bgBlue.red(msg.playername + ' reconnected in room ' + msg.id));
+	if(parseInt(msg.LM)==0){
+		var r = Rooms.getTeams(msg.id);
+		if(r.success)
+			socket.emit('playerrefresh', r);
+	}
+	if(emitLog == -2)
+		return;
+	//console.log(parseInt(msg.LM)+'\t'+emitLog[0].length);
+	for(var i = parseInt(msg.LM) + 1;i<=emitLog[0].length;i++)
+		socket.emit(emitLog[0][i-1],emitLog[1][i-1]);
   });
   
   socket.on('deleteroom', function(msg){

@@ -85,8 +85,8 @@ function generateStack(cards,box,color) {
 	$(box).css('width', (totWidth) +'px');
 	$(box).css('padding-left','5px');
 	$(box).css('padding-right','5px');
-	if(box=='#cardboxleft') $(box).css('margin-left', (imageheight/2 - totWidth/2) +'px');
-	if(box=='#cardboxright') $(box).css('margin-right', (imageheight/2 - totWidth/2) +'px');
+	if(box=='#leftcardbox') $(box).css('margin-left', (imageheight/2 - totWidth/2) +'px');
+	if(box=='#rightcardbox') $(box).css('margin-right', (imageheight/2 - totWidth/2) +'px');
 }
 
 function sock_up_poprooms(){
@@ -152,7 +152,7 @@ function resetRound(){
 	clearInterval(gVars.timer);
 	for(var i=0;i<4;i++){
 		var t = playerFromNumber(i);
-		timeout(0,timeelemfromidteam(t.player),t.team,false);
+		timeout(0,elemfromidteam('#','time',t.player),t.team,false);
 	}
 	$('#bidlog').html('');
 	$('#trumpsetok').attr('disabled','');
@@ -196,7 +196,7 @@ $('#form-addroom').submit(function () {
 $('#form-chat').submit(function () {
 	if($("#chatmessage").val().trim()=="")
 		return false;
-	var msg = '<span class="' + gVars.myteam + '-text">' + gVars.myname + ':&nbsp;</span>&nbsp;' + $("#chatmessage").val();
+	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + $("#chatmessage").val();
 	$("#chatmessage").val('');
 	socket.emit('chat',{'id':gVars.curRoomID,'msg':msg});	
 	return false;
@@ -256,7 +256,7 @@ function joingame() {
 	}
 	for(var i=0;i<4;i++){
 		var t = playerFromNumber(i);
-		timeout(0,timeelemfromidteam(t.player),t.team,true);
+		timeout(0,elemfromidteam('#','time',t.player),t.team,true);
 	}
 	document.title = 'The 29 Game - [' + gVars.myname + ']';
 	window.onbeforeunload = function() {
@@ -299,180 +299,36 @@ function teamselectrefresh(){
 	$('#teamselect').formSelect();
 }
 
-function playerelemfromidteam(teamAndID) {
+function elemfromidteam(selector,suffix,teamAndID) {
 	var carr = ['green0','purple0','green1','purple1']; //order of play
 	var direction = ['w','n','e','s'];
 	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
 	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
 	var indexPos = carr.indexOf(teamAndID);
 	switch(direction[indexPos]) {
-		case 'w':   return '#leftname';
+		case 'w':   return selector+'left'+suffix;
 					break;
-		case 'n':	return '#topname';
+		case 'n':	return selector+'top'+suffix;
 					break;
-		case 'e':	return '#rightname';
+		case 'e':	return selector+'right'+suffix;
 					break;
-		case 's':	return '#bottomname';
-					break;		
-	}	
-}
-
-function tableelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#lefttable';
-					break;
-		case 'n':	return '#toptable';
-					break;
-		case 'e':	return '#righttable';
-					break;
-		case 's':	return '#bottomtable';
-					break;		
-	}	
-}
-
-function timeelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#timeleft';
-					break;
-		case 'n':	return '#timetop';
-					break;
-		case 'e':	return '#timeright';
-					break;
-		case 's':	return '#timebottom';
-					break;		
-	}	
-}
-
-function boxelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '.box-left>div';
-					break;
-		case 'n':	return '.box-top>div';
-					break;
-		case 'e':	return '.box-right>div';
-					break;
-		case 's':	return '.box-bottom>div';
-					break;		
-	}	
-}
-
-function trumpelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#lefttrump';
-					break;
-		case 'n':	return '#toptrump';
-					break;
-		case 'e':	return '#righttrump';
-					break;
-		case 's':	return '#bottomtrump';
-					break;		
-	}	
-}
-
-function bidelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#leftbid';
-					break;
-		case 'n':	return '#topbid';
-					break;
-		case 'e':	return '#rightbid';
-					break;
-		case 's':	return '#bottombid';
-					break;		
-	}	
-}
-
-function pointelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#leftpoint';
-					break;
-		case 'n':	return '#toppoint';
-					break;
-		case 'e':	return '#rightpoint';
-					break;
-		case 's':	return '#bottompoint';
-					break;		
-	}	
-}
-
-function roundelemfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#leftround';
-					break;
-		case 'n':	return '#topround';
-					break;
-		case 'e':	return '#rightround';
-					break;
-		case 's':	return '#bottomround';
-					break;		
-	}	
-}
-
-function cardboxfromidteam(teamAndID) {
-	var carr = ['green0','purple0','green1','purple1']; //order of play
-	var direction = ['w','n','e','s'];
-	arrayRotate(direction,carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	//direction.rotate(carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
-	var indexPos = carr.indexOf(teamAndID);
-	switch(direction[indexPos]) {
-		case 'w':   return '#cardboxleft';
-					break;
-		case 'n':	return '#cardboxtop';
-					break;
-		case 'e':	return '#cardboxright';
-					break;
-		case 's':	return '#cardboxbottom';
+		case 's':	return selector+'bottom'+suffix;
 					break;		
 	}	
 }
 
 function playscreenTeamUpdate() {
 	for(var i=0;i<gVars.greenplayers.length;i++)
-		$(playerelemfromidteam('green'+i)+'>div>h5').html(gVars.greenplayers[i]);
+		$(elemfromidteam('#','name','green'+i)+'>div>h5').html(gVars.greenplayers[i]);
 	for(var i=0;i<gVars.purpleplayers.length;i++)
-		$(playerelemfromidteam('purple'+i)+'>div>h5').html(gVars.purpleplayers[i]);
+		$(elemfromidteam('#','name','purple'+i)+'>div>h5').html(gVars.purpleplayers[i]);
 }
 
-$('#cardboxbottom').click(function(event){
+$('#bottomcardbox').click(function(event){
 	var clickedCard = event.target;
-	if($(clickedCard).attr('id')=='cardboxbottom')
+	if($(clickedCard).attr('id')=='bottomcardbox')
 		return false;
-	$('#cardboxbottom>*').removeClass('cardselected');
+	$('#bottomcardbox>*').removeClass('cardselected');
 	$(clickedCard).addClass('cardselected');
 	$('#playMove').removeAttr('disabled');
 	gVars.currentCard = $(clickedCard).attr('card');
@@ -484,10 +340,12 @@ $('#bidrange').on('input', function () {
 });
 
 function bidProcess(data) {
-	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.log + '</li>');
+	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' 
+						+ data.l 
+						+ '</li>');
 
-	if(data.biddouble=='settrump'){
-		if(gVars.myteam +gVars.myUserID == data.bidwinner){
+	if(data.bd=='ST'){
+		if(gVars.myteam+gVars.myUserID == data.bw){
 			$('#trumpset').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 		}
@@ -495,12 +353,12 @@ function bidProcess(data) {
 			$('#trumpset').hide();
 		return;		
 	}
-	else if(data.biddouble=='double')
+	else if(data.bd=='D')
 	{
-		gVars.bidDouble = 'double';
+		gVars.bidDouble = 'D';
 		$('#doubletext').html('Double');
 		$('#biddoubleopt').html('<label><input name="groupD" type="radio" value="1" checked /><span>Pass</span></label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input name="groupD" type="radio" value="2" /><span>Double</span></label>');
-		var winner = playerFromNumber(numberFromPlayer(data.bidwinner));
+		var winner = playerFromNumber(numberFromPlayer(data.bw));
 		if(gVars.myteam != winner.team){
 			$('#biddouble').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
@@ -509,11 +367,11 @@ function bidProcess(data) {
 			$('#biddouble').hide();
 		return;	
 	}
-	else if(data.biddouble=='redouble') {
-		gVars.bidDouble = 'redouble';
+	else if(data.bd=='RD') {
+		gVars.bidDouble = 'R';
 		$('#doubletext').html('Redouble');
 		$('#biddoubleopt').html('<label><input name="groupD" type="radio" value="1" checked /><span>Pass</span></label>&nbsp;&nbsp;&nbsp;&nbsp;<label><input name="groupD" type="radio" value="4" /><span>Redouble</span></label>');
-		var winner = playerFromNumber(numberFromPlayer(data.bidwinner));
+		var winner = playerFromNumber(numberFromPlayer(data.bw));
 		if(gVars.myteam == winner.team){
 			$('#biddouble').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
@@ -526,20 +384,20 @@ function bidProcess(data) {
 		$('#biddouble').hide();
 	
 	var player = gVars.myteam + gVars.myUserID;
-	gVars.currentBid = data.currentbid;
+	gVars.currentBid = data.cb;
 
-	if(data.player==player){
-		if(data.bidwinner==player||data.bidwinner=='-100'){
-			$('#bidrange').attr('min',parseInt(data.currentbid)).attr('value',parseInt(data.currentbid)).val(parseInt(data.currentbid));
-			$('#bidupdate').html(parseInt(data.currentbid));
+	if(data.pl==player){
+		if(data.bw==player||data.bw=='-100'){
+			$('#bidrange').attr('min',parseInt(data.cb)).attr('value',parseInt(data.cb)).val(parseInt(data.cb));
+			$('#bidupdate').html(parseInt(data.cb));
 			gVars.raiseOrMatch = 'matched bid to&nbsp;';
 		}
 		else {
-			$('#bidrange').attr('min',parseInt(data.currentbid)+1).attr('value',parseInt(data.currentbid)+1).val(parseInt(data.currentbid)+1);
-			$('#bidupdate').html(parseInt(data.currentbid)+1);
+			$('#bidrange').attr('min',parseInt(data.cb)+1).attr('value',parseInt(data.cb)+1).val(parseInt(data.cb)+1);
+			$('#bidupdate').html(parseInt(data.cb)+1);
 			gVars.raiseOrMatch = 'raised bid to&nbsp;';
 		}
-		if(data.bidwinner=='-100')
+		if(data.bw=='-100')
 			gVars.raiseOrMatch = 'started bid at&nbsp;';
 		$('#bidchange').show();
 		$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
@@ -552,35 +410,38 @@ function bidProcess(data) {
 
 $('#bidraise').click(function(){
 	$('#bidchange').hide();
-	socket.emit('bid',{'id':gVars.curRoomID,'passed':false,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;' + gVars.raiseOrMatch  + '<span class="red-text">'+$('#bidrange').val()+'</span>','over':{'isOver':false}});
+	if(gVars.raiseOrMatch == 'matched bid to&nbsp;' && parseInt($('#bidrange').attr('min'))!=parseInt($('#bidrange').val()))
+		gVars.raiseOrMatch = 'raised bid to&nbsp;';
+	socket.emit('bid',{'id':gVars.curRoomID,'ps':false,'am':$('#bidrange').val(),'pl':gVars.myteam+gVars.myUserID,'l':'<' + gVars.myteam + '>' + gVars.myname + '</'+ gVars.myteam +'>&nbsp;' + gVars.raiseOrMatch  + '<red>'+$('#bidrange').val()+'</red>','o':{'iO':''}});
 	return false;
 });
 
 $('#bidpass').click(function(){
 	$('#bidchange').hide();
-	socket.emit('bid',{'id':gVars.curRoomID,'passed':true,'amount':$('#bidrange').val(),'player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;passed the bid','over':{'isOver':false}});
+	socket.emit('bid',{'id':gVars.curRoomID,'ps':true,'am':$('#bidrange').val(),'pl':gVars.myteam+gVars.myUserID,'l':'<' + gVars.myteam + '>' + gVars.myname + '</'+ gVars.myteam +'>&nbsp;passed the bid','o':{'iO':''}});
 	return false;
 });
 
 $('#biddoubleok').click(function(){
 	$('#biddouble').hide();
 	var m = parseInt($('input[name="groupD"]:checked').val());
-	var textm = (m==1)?'did not '+gVars.bidDouble:((m==2)?'doubled':'redoubled');
-	socket.emit('bid',{'id':gVars.curRoomID,'passed':'','amount':'','player':gVars.myteam+gVars.myUserID,'log':'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;' + textm,'over':{'isOver':gVars.bidDouble+'end','multiplier':m,'team':gVars.myteam}});
+	var t = gVars.bidDouble=='D'?'double':'redouble';
+	var textm = (m==1)?'did not '+t:((m==2)?'doubled':'redoubled');
+	socket.emit('bid',{'id':gVars.curRoomID,'ps':'','am':'','pl':gVars.myteam+gVars.myUserID,'l':'<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + textm,'o':{'iO':gVars.bidDouble,'m':m,'t':gVars.myteam}});
 	return false;
 });
 
 $('#playMove').click(function(){
 	$('#playMove').attr('disabled','');
-	socket.emit('play',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'card':gVars.currentCard,'firstplay':gVars.firstplay});
+	socket.emit('play',{'id':gVars.curRoomID,'pl':gVars.myteam+gVars.myUserID,'c':gVars.currentCard,'fp':gVars.firstplay});
 	//cardPlayed(gVars.myteam+gVars.myUserID,gVars.currentCard);
 	return false;
 });
 
 $('#trumpyes').click(function(){
-	$('#cardboxbottom').addClass('carddisabled');
+	$('#bottomcardbox').addClass('carddisabled');
 	$('#modal-trumpyesno').modal('close');
-	socket.emit('trump',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'operation':'open'});
+	socket.emit('trump',{'id':gVars.curRoomID,'pl':gVars.myteam+gVars.myUserID,'op':'open'});
 	return false;
 });
 
@@ -588,7 +449,7 @@ $('#trumpsetok').click(function(){
 	$('#trumpset').hide();
 	var tIndex = document.getElementById('trumpOpt').M_Tabs.index;
 	var tSuit = tIndex==0?'H':tIndex==1?'S':tIndex==2?'D':'C';
-	socket.emit('trump',{'id':gVars.curRoomID,'player':gVars.myteam+gVars.myUserID,'suit':tSuit,'operation':'set',log:'<span class="' + gVars.myteam + '-text">' + gVars.myname + '</span>&nbsp;set the Trump'});
+	socket.emit('trump',{'id':gVars.curRoomID,'pl':gVars.myteam+gVars.myUserID,'s':tSuit,'op':'set','l':'<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump'});
 	return false;
 });
 
@@ -638,8 +499,8 @@ function checkSuitEnable(arr, val) {
 }
 
 function hasSuit(suit){
-	for(var i=0;i<$('#cardboxbottom>.playercards').length;i++){
-		var elem = $('#cardboxbottom>.playercards')[i];
+	for(var i=0;i<$('#bottomcardbox>.playercards').length;i++){
+		var elem = $('#bottomcardbox>.playercards')[i];
 		var card = cardDetail($(elem).attr('card'));
 		if(suit==card.suit)
 			return true;
@@ -648,8 +509,8 @@ function hasSuit(suit){
 }
 
 function enableCards(suits) {
-	for(var i=0;i<$('#cardboxbottom>.playercards').length;i++){
-		var elem = $('#cardboxbottom>.playercards')[i];
+	for(var i=0;i<$('#bottomcardbox>.playercards').length;i++){
+		var elem = $('#bottomcardbox>.playercards')[i];
 		var card = cardDetail($(elem).attr('card'));
 		$(elem).removeClass('cardselected');
 		if(checkSuitEnable(suits,card.suit)){
@@ -668,23 +529,23 @@ function cardPlayed(player,card,deckcards){
 		return;
 	var unqIndex = gVars.myteam + gVars.myUserID;
 	var cur = playerFromNumber(numberFromPlayer(player));
-	$(tableelemfromidteam(player)).css('z-index',gVars.currentPlayerPos*10);
-	$(tableelemfromidteam(player)+'>img').attr('src','img/cards/'+card+'.PNG');
-	$(tableelemfromidteam(player)).show();
+	$(elemfromidteam('#','table',player)).css('z-index',gVars.currentPlayerPos*10);
+	$(elemfromidteam('#','table',player)+'>img').attr('src','img/cards/'+card+'.PNG');
+	$(elemfromidteam('#','table',player)).show();
 	gVars.sound_play.play();
-	generateStack(deckcards,cardboxfromidteam(cur.player),unqIndex==cur.player?'nocolor':cur.team);	
+	generateStack(deckcards,elemfromidteam('#','cardbox',cur.player),unqIndex==cur.player?'nocolor':cur.team);	
 }
 
 function buildcardstack(data){
 	var unqIndex = gVars.myteam + gVars.myUserID;
 	for(var i=0;i<data.length;i++){
 		var player = playerFromNumber(i);
-		generateStack(data[i],cardboxfromidteam(player.player),unqIndex==player.player?'nocolor':player.team);
+		generateStack(data[i],elemfromidteam('#','cardbox',player.player),unqIndex==player.player?'nocolor':player.team);
 	}
-	$('#cardboxbottom').addClass("animcards");
-	$('#cardboxtop').addClass("animcards");
-	$('#cardboxleft').addClass("animcards");
-	$('#cardboxright').addClass("animcards");
+	$('#bottomcardbox').addClass("animcards");
+	$('#topcardbox').addClass("animcards");
+	$('#leftcardbox').addClass("animcards");
+	$('#rightcardbox').addClass("animcards");
 	M.toast({html: 'Cards distributed - 4',displayLength:2000});
 }
 
@@ -711,7 +572,7 @@ function playProcess(data){
 	clearInterval(gVars.timer);
 	for(var i=0;i<4;i++){
 		var t = playerFromNumber(i);
-		timeout(0,timeelemfromidteam(t.player),t.team,false);
+		timeout(0,elemfromidteam('#','time',t.player),t.team,false);
 	}
 	
 	if(data.op.fp){
@@ -733,15 +594,12 @@ function playProcess(data){
 			}
 			
 			for(var i=0;i<4;i++){
-				var p = pointelemfromidteam(playerFromNumber(i).player);
-				var r = roundelemfromidteam(playerFromNumber(i).player);
+				var p = elemfromidteam('#','point',playerFromNumber(i).player);
+				var r = elemfromidteam('#','round',playerFromNumber(i).player);
 				var memp = $(p).html();
 				var memr = $(r).html();
-				console.log(memp);
-				console.log(data.op.pt[i]);
 				$(p).html(data.op.pt[i]);
 				$(r).html(data.op.rs[i]);
-				console.log($(p).html());
 				if($(p).html()!=memp)
 					zio(p);
 				if($(r).html()!=memr)
@@ -751,7 +609,7 @@ function playProcess(data){
 			$('.centerplay').hide();
 			$('.centerplay>img').attr('src','');
 			if(player==data.pl){
-				$('#cardboxbottom').removeClass('carddisabled');
+				$('#bottomcardbox').removeClass('carddisabled');
 				if(data.op.re=='nl')
 					M.toast({html: 'Your turn',displayLength:2000});
 			}
@@ -761,7 +619,7 @@ function playProcess(data){
 	}
 	else{
 		if(player==data.pl){
-			$('#cardboxbottom').removeClass('carddisabled');
+			$('#bottomcardbox').removeClass('carddisabled');
 			if(data.op.re=='nl')
 				M.toast({html: 'Your turn',displayLength:2000});
 		}
@@ -790,14 +648,14 @@ function playProcess(data){
 		}
 	}
 	else{
-		$('#cardboxbottom').addClass('carddisabled');
+		$('#bottomcardbox').addClass('carddisabled');
 		$('#playMove').attr('disabled','');
 	}
 }
 
 function startTimer(data,player){	
 	gVars.timerCount = 0;
-	var telem = timeelemfromidteam(data.pl);
+	var telem = elemfromidteam('#','time',data.pl);
 	var xName = playerFromNumber(numberFromPlayer(data.pl));
 	if(xName.team == 'green')
 		xName.player = gVars.greenplayers[xName.id];
@@ -805,7 +663,7 @@ function startTimer(data,player){
 		xName.player = gVars.purpleplayers[xName.id];
 	
 	$('.boxes>div').removeClass('mvboxes');
-	$(boxelemfromidteam(data.pl)).addClass('mvboxes');
+	$(elemfromidteam('.','-box>div',data.pl)).addClass('mvboxes');
 	if(player==data.pl)
 		gVars.sound_turn.play();
 	
@@ -847,7 +705,8 @@ var gVars =  {
 	sound_turn : '',    // sound for player turn
 	sound_play : '',    // sound for player play
 	isMobile : '',	    // if device is a mobile device
-	matchRunning : '',   // true/false, if a match has started & is running
+	matchRunning : '',  // true/false, if a match has started & is running
+	sockMsgCount : '',  // socket msg received count
 	
 	set purpleplayers(data) {
 		purpleplayers = data;
@@ -980,6 +839,12 @@ var gVars =  {
 	},
 	get matchRunning() {
 		return matchRunning;
+	},
+	set sockMsgCount(data) {
+		sockMsgCount = data;
+	},
+	get sockMsgCount() {
+		return sockMsgCount;
 	}
 };
 
@@ -1067,6 +932,7 @@ socket.on('playerrefresh', function(data) {
 });
 
 socket.on('cardstack',function(data){
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	$('#playerwait').hide();
 	$('#trumpcard>img').attr('src','img/cards/BLUE_BACK.PNG');
 	
@@ -1103,22 +969,24 @@ socket.on('cardstack',function(data){
 });
 
 socket.on('bid',function(data){
-	if(data.firstbid)
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
+	if(data.fb)
 		setTimeout(function() {
 				$("#modal-bid").modal('open');
 				bidProcess(data);		
-			}, data.delay?3500:2500);
+			}, data.d?3500:2500);
 	else
 		bidProcess(data);
 				
 });
 
 socket.on('bidover',function(data){
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	$('#biddouble').hide();
-	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.log + '</li>');
+	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.l + '</li>');
 	$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
-	var d = parseInt(data.biddouble)==1?'':' x' + data.biddouble;
-	var playername = playerFromNumber(data.winner);
+	var d = parseInt(data.bd)==1?'':' x' + data.bd;
+	var playername = playerFromNumber(data.w);
 	if(playername.team=='green')
 		playername.player = gVars.greenplayers[playername.id];
 	else
@@ -1128,9 +996,9 @@ socket.on('bidover',function(data){
 
 		for(var i=0;i<4;i++){
 			var z = playerFromNumber(i);
-			var b = bidelemfromidteam(z.player);
+			var b = elemfromidteam('#','bid',z.player);
 			var memb = $(b).html();
-			$(b).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));
+			$(b).html(data.b[i]+((z.team==data.bdt)?d:''));
 			if($(b).html()!=memb)
 				zio(b);
 		}
@@ -1139,6 +1007,7 @@ socket.on('bidover',function(data){
 });
 
 socket.on('play',function(data){
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	if(data.op.fp && data.lp=='') //absolute first time
 		setTimeout(function() {
 			playProcess(data);		
@@ -1148,10 +1017,11 @@ socket.on('play',function(data){
 });
 
 socket.on('trump',function(data){
-	if(data.operation=='open'){
-		if(data.player==gVars.myteam+gVars.myUserID){
-			$('#cardboxbottom').removeClass('carddisabled');
-			var tCard = cardDetail(data.card);
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
+	if(data.op=='open'){
+		if(data.pl==gVars.myteam+gVars.myUserID){
+			$('#bottomcardbox').removeClass('carddisabled');
+			var tCard = cardDetail(data.c);
 			if(hasSuit(tCard.suit))
 				enableCards([tCard.suit]);
 			else
@@ -1159,7 +1029,7 @@ socket.on('trump',function(data){
 			M.toast({html: 'You opened the Trump',displayLength:3000});		
 		}
 		else{
-			var xName = playerFromNumber(numberFromPlayer(data.player));
+			var xName = playerFromNumber(numberFromPlayer(data.pl));
 			if(xName.team == 'green')
 				xName = gVars.greenplayers[xName.id];
 			else
@@ -1168,32 +1038,33 @@ socket.on('trump',function(data){
 			
 		}
 		gVars.trumpOpen = true;
-		gVars.trumpCard = data.card;
+		gVars.trumpCard = data.c;
 		enableTrump(false);
-		$('#trumpcard>img').attr('src','img/cards/'+data.card+'.PNG');
+		$('#trumpcard>img').attr('src','img/cards/'+data.c+'.PNG');
 	}
-	else if(data.operation=='set'){
-		if(data.player==gVars.myteam+gVars.myUserID)
-			$(trumpelemfromidteam(data.player)).html('<img alt="T" src="img/' + cardDetail(data.card).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;">');
+	else if(data.op=='set'){
+		if(data.pl==gVars.myteam+gVars.myUserID)
+			$(elemfromidteam('#','trump',data.pl)).html('<img alt="T" src="img/' + cardDetail(data.c).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;">');
 		else
-			$(trumpelemfromidteam(data.player)).html('T&nbsp;');
-		$(trumpelemfromidteam(data.player)).show();
-		gVars.trumpSetter = data.player;
+			$(elemfromidteam('#','trump',data.pl)).html('T&nbsp;');
+		$(elemfromidteam('#','trump',data.pl)).show();
+		gVars.trumpSetter = data.pl;
 		//preload trump image
 		var preloadLink = document.createElement('link');
-		preloadLink.href = 'img/cards/'+data.card+'.PNG';
+		preloadLink.href = 'img/cards/'+data.c+'.PNG';
 		preloadLink.rel = 'preload';
 		preloadLink.as = 'image';
 		document.head.appendChild(preloadLink);
 		var imgSrc = document.createElement('img');
-		imgSrc.src = 'img/cards/'+data.card+'.PNG';
+		imgSrc.src = 'img/cards/'+data.c+'.PNG';
 		document.getElementById('imgload').appendChild(imgSrc);
 	}
 });
 
 socket.on('marriage',function(data){
-	var d = parseInt(data.biddouble)==1?'':' x' + data.biddouble;
-	var playername = playerFromNumber(numberFromPlayer(data.player));
+	gVars.sockMsgCount = gVars.sockMsgCount + 1;
+	var d = parseInt(data.bd)==1?'':' x' + data.bd;
+	var playername = playerFromNumber(numberFromPlayer(data.pl));
 	if(playername.team=='green')
 		playername.player = gVars.greenplayers[playername.id];
 	else
@@ -1203,23 +1074,23 @@ socket.on('marriage',function(data){
 
 		for(var i=0;i<4;i++){
 			var z = playerFromNumber(i);
-			var b = bidelemfromidteam(z.player);
+			var b = elemfromidteam('#','bid',z.player);
 			var memb = $(b).html();
-			$(b).html(data.bidvalues[i]+((z.team==data.biddoubleteam)?d:''));
+			$(b).html(data.b[i]+((z.team==data.bdt)?d:''));
 			if($(b).html()!=memb)
 				zio(b);
 		}
-	}, data.delay=='play'?1400:500);
+	}, data.d=='play'?1400:500);
 });
 
 socket.on('reconnect_attempt',function(number){
-	M.toast({html: 'Reconnecteing... ('+number+')',displayLength:1000});
+	M.toast({html: 'Reconnecting... ('+number+')',displayLength:1000});
 });
 
 socket.on('reconnect',function(){
-	if(gVars.matchRunning)
-		socket.emit('recon',{'id':gVars.curRoomID,'playername':gVars.myname});
 	M.toast({html: 'Reconnected',displayLength:1500});
+	if(gVars.matchRunning)
+		socket.emit('recon',{'id':gVars.curRoomID,'playername':gVars.myname,'LM':gVars.sockMsgCount});
 });
 
 socket.on('chat',function(data){
@@ -1368,6 +1239,7 @@ $(function(){
 	$('.range-field>span').css('width','30px!important');
 	$('.trumpshow').hide();
 	$('#trumpset').hide();
+	gVars.sockMsgCount = 0;
 	gVars.timer = '';
 	gVars.trumpOpen = false;
 	gVars.currentPlayerPos = 0;
