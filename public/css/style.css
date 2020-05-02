@@ -334,9 +334,17 @@ purple {
 	color: #9c27b0!important; 
 }
 
+.bsize {
+	font-size: 3.4rem;
+}
+
+.msize {
+	font-size: 3rem;
+}
+
 .m29 {
-  font-family: 'Bungee Inline', 'Roboto Slab' , sans-serif;
-  font-size: 3.4rem;
+  font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
+  
   background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
   -webkit-text-stroke: 1px #0c233a;
   -webkit-background-clip: text;
