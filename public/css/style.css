@@ -1,3 +1,23 @@
+::selection {
+	background: #73b2f5;
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: #f1f1f1; 
+}
+ 
+::-webkit-scrollbar-thumb {
+	background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #555; 
+}
+
 html {
 	height: 100%;
 	font-family:-apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
@@ -359,6 +379,3 @@ purple {
     background-position: 30px 0, 30px 0, 30px 0;
   }
 }
-
-
-
