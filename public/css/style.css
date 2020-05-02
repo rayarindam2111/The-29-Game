@@ -333,3 +333,24 @@ green {
 purple {
 	color: #9c27b0!important; 
 }
+
+.m29 {
+  font-family: 'Bungee Inline', 'Roboto Slab' , sans-serif;
+  font-size: 3.4rem;
+  background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
+  -webkit-text-stroke: 1px #0c233a;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
+  background-size: 30px 30px;
+  background-position: 0 0;
+  animation: stripes 1s linear infinite;
+}
+
+@keyframes stripes {
+  100% {
+    background-position: 30px 0, 30px 0, 30px 0;
+  }
+}
+
+
+

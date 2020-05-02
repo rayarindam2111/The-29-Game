@@ -1,6 +1,6 @@
 var express = require('express'), app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http,{pingInterval: 6000, pingTimeout: 15000}); // http,{pingInterval: 5000, pingTimeout: 60000}
+var io = require('socket.io')(http,{pingInterval: 6000, pingTimeout: 8000}); // http,{pingInterval: 5000, pingTimeout: 60000}
 var port = process.env.PORT || 3000;
 const colors = require('colors');
 
