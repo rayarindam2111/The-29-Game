@@ -64,10 +64,12 @@ class rooms {
 	
 	checkLogin(ID,pass) {
 		var index  = this.room_ids.indexOf(ID);
-		if(index == -1 || this.room_passwords[index]!==pass)
-			return {'success':false};
+		if(index == -1)
+			return {'success':false,'wrongpass':false};
+		else if(this.room_passwords[index]!==pass)
+			return {'success':false,'wrongpass':true};
 		else
-			return {'success':true,'roomID':this.room_ids[index],'teampurple':this.room_teampurple[index],'teamgreen':this.room_teamgreen[index]};
+			return {'success':true,'roomID':this.room_ids[index],'roomN':this.room_names[index],'roomP':this.room_passwords[index],'tp':this.room_teampurple[index],'tg':this.room_teamgreen[index]};
 	}
 	
 	addPlayer(ID,name,team) {
@@ -702,7 +704,6 @@ http.listen(port, function(){
 io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
-
   });
   
   socket.on('roomlist', function(){
@@ -756,6 +757,8 @@ io.on('connection', function(socket){
 	var check = Rooms.checkLogin(msg.id,msg.passw);
 	if(check.success == true)
 		socket.emit('deleteroom',Rooms.removeRoom(msg.id));
+	else if(check.wrongpass == false)
+		socket.emit('deleteroom',{'success':false,'wrongpass':false});
 	else
 		socket.emit('deleteroom',{'success':false,'wrongpass':true});
   });

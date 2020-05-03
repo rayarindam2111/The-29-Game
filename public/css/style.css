@@ -15,7 +15,7 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #555; 
+	background: #555;
 }
 
 html {
@@ -300,6 +300,7 @@ h6 {
 }
 
 #playerwait{
+	cursor: pointer;
     border-radius: 2px;
     background-color: rgba(255,255,255,0.9);
     box-shadow: inset 0px 0px 42px 0px rgba(0,100,255,0.1);
@@ -308,6 +309,7 @@ h6 {
     color: #184972;
     line-height: 4.5rem;
 	display: none;
+	user-select: none;
 }
 
 #playerwait:after{
@@ -354,6 +356,19 @@ purple {
 	color: #9c27b0!important; 
 }
 
+.share-buttons img {
+	width: 58px;
+	padding: 6px;
+	border: 0;
+	box-shadow: 0;
+	display: inline;
+}
+
+.chatToast {
+    background: #fafafa;
+    color: #000;
+}
+
 .bsize {
 	font-size: 3.4rem;
 }
@@ -364,7 +379,6 @@ purple {
 
 .m29 {
   font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
-  
   background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
   -webkit-text-stroke: 1px #0c233a;
   -webkit-background-clip: text;

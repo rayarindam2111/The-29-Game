@@ -117,7 +117,7 @@
 			</div>
 		</div>
 		<div id="maintable" class="col s6 main col-center">
-				<div id="playerwait">&nbsp;Waiting for Players</div>
+				<div id="playerwait"><span style="padding-left:8px"><i class="material-icons">share</i></span>&nbsp;Waiting for Players</div>
 				<div class="centerplay" id="lefttable"><img src="" alt="" class="responsive-img"></div>
 				<div class="centerplay" id="bottomtable"><img src="" alt="" class="responsive-img"></div>
 				<div class="centerplay" id="righttable"><img src="" alt="" class="responsive-img"></div>
@@ -207,7 +207,7 @@
 	<!-- Modals -->
 	<div id="modal-joingame" class="modal modal-fixed-footer">
 		<div class="modal-content">
-			<h4 class="m29 msize">Join Game</h4>
+			<h4 class="mw29 msize">Join Game</h4>
 			<div class="input-field">
 				<input id="username" type="text" class="validate">
 				<label for="username">Your Name</label>
@@ -231,8 +231,8 @@
 	<div id="modal-roomlist" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<div style="display: inline-block;width: 100%;">
-				<h4 style="display:inline-block;" class="left m29 bsize">29: Select a game room</h4>
-				<h6 style="margin-top: 1rem;" class="right">
+				<h4 style="display:inline-block;" class="left m29 msize">29: Select a game room</h4>
+				<h6 style="margin-top: 1.5rem;" class="right">
 					<a class="blue-text" id="credits" href="#">Made with ❤ and Javascript</a>
 				</h6>
 			</div>
@@ -384,6 +384,55 @@
 					<div style="width:10%"><button type="submit" class="waves-effect waves-light btn" style="width:90%;">SEND</button></div>
 				</div>
 			</form>
+		</div>
+    </div>
+	
+	<div id="modal-share" class="modal">
+		<div class="modal-content">
+			<h3 class="m29 msize">Share</h3>
+			<h5 id="share-data" style="user-select:all;line-height:2.6rem"></h5>
+			<hr>
+			<div class="share-buttons">
+				<a href="http://www.facebook.com/sharer.php?u=https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/facebook.png" alt="Facebook">
+				</a>
+				<a href="https://plus.google.com/share?url=https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/google.png" alt="Google">
+				</a>
+				<a href="https://twitter.com/share?url=https://sins29.herokuapp.com&amp;text=The%2029%20Game&amp;hashtags=the29game" target="_blank">
+					<img src="img/share/twitter.png" alt="Twitter">
+				</a>
+				<a href="http://reddit.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+					<img src="img/share/reddit.png" alt="Reddit">
+				</a>
+				<a href="javascript:void((function()%7Bvar%20e=document.createElement('script');e.setAttribute('type','text/javascript');e.setAttribute('charset','UTF-8');e.setAttribute('src','http://assets.pinterest.com/js/pinmarklet.js?r='+Math.random()*99999999);document.body.appendChild(e)%7D)());">
+					<img src="img/share/pinterest.png" alt="Pinterest">
+				</a>
+				<a href="http://www.stumbleupon.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+					<img src="img/share/stumbleupon.png" alt="StumbleUpon">
+				</a>
+				<a href="http://www.tumblr.com/share/link?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+					<img src="img/share/tumblr.png" alt="Tumblr">
+				</a>
+				<a href="mailto:?Subject=The 29 Game&amp;Body=Play%20a%20game%20of%2029%20 https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/email.png" alt="Email">
+				</a>
+				<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/linkedin.png" alt="LinkedIn">
+				</a>
+				<a href="https://bufferapp.com/add?url=https://sins29.herokuapp.com&amp;text=The 29 Game" target="_blank">
+					<img src="img/share/buffer.png" alt="Buffer">
+				</a>
+				<a href="http://www.digg.com/submit?url=https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/diggit.png" alt="Digg">
+				</a>
+				<a href="http://vkontakte.ru/share.php?url=https://sins29.herokuapp.com" target="_blank">
+					<img src="img/share/vk.png" alt="VK">
+				</a>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a href="#" id="closeShare" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
 		</div>
     </div>
 

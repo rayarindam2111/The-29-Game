@@ -119,6 +119,7 @@ function initModals() {
 		onOpenStart: function (modal, trigger) {
 			resetRound();
 			$('#modal-chat').modal('close');
+			$('#modal-share').modal('close');
 		}		
 	});	
 	$('#modal-trumpyesno').modal({
@@ -145,6 +146,9 @@ function initModals() {
 		onOpenEnd: function (modal, trigger) {
 			$("#chatmessage").focus();
 		}
+	});
+	$('#modal-share').modal({
+		dismissible: true
 	});
 }
 
@@ -473,6 +477,11 @@ $('#credits').click(function(){
 	return false;
 });
 
+$('#closeShare').click(function(){
+	$('#modal-share').modal('close');
+	return false;
+});
+
 function cardDetail(card){
 	var suit = card.slice(card.length - 1, card.length);
 	var val = card.slice(0, card.length - 1);
@@ -671,9 +680,9 @@ function startTimer(data,player){
 		gVars.timerCount = (gVars.timerCount+.5)%100;
 		if(gVars.timerCount==99)
 			if(player==data.pl)
-				M.toast({html: 'Please play a card', displayLength:3000});
+				M.toast({html: 'Please play a card', classes:'red darken-1', displayLength:3000});
 			else
-				M.toast({html: xName.player + ' has not played a card for 1 minute', displayLength:3000});
+				M.toast({html: xName.player + ' has not played a card for a long time', classes:'red darken-1', displayLength:3000});
 		timeout(gVars.timerCount, telem, xName.team,false); 
 	}, 300);
 }
@@ -685,6 +694,8 @@ function zio(elem){
 
 var gVars =  {
 	curRoomID : '',     // abc12395829472
+	curRoomName : '',   // abc - only room name
+	curRoomPass : '',   // pY7hjbas& - only room pass
 	currentlogin : '',  // HTML element for login
 	purpleplayers : '', // ['pPlayer1','pPlayer2']
 	greenplayers : '',  // ['gPlayer1','gPlayer2']
@@ -725,6 +736,18 @@ var gVars =  {
 	},
 	get curRoomID() {
 		return curRoomID;
+	},
+	set curRoomName(data) {
+		curRoomName = data;
+	},
+	get curRoomName() {
+		return curRoomName;
+	},
+	set curRoomPass(data) {
+		curRoomPass = data;
+	},
+	get curRoomPass() {
+		return curRoomPass;
 	},
 	set currentlogin(data) {
 		currentlogin = data;
@@ -877,9 +900,11 @@ socket.on('roomlist', function(data) {
 
 socket.on('login', function(data) {
 	if(data.success){
+		gVars.curRoomName = data.roomN;
+		gVars.curRoomPass = data.roomP;
 		gVars.curRoomID = data.roomID;
-		gVars.purpleplayers = data.teampurple;
-		gVars.greenplayers = data.teamgreen;
+		gVars.purpleplayers = data.tp;
+		gVars.greenplayers = data.tg;
 		$("#modal-roomlist").modal('close');
 		$("#modal-joingame").modal('open');
 		teamselectrefresh();
@@ -919,7 +944,8 @@ socket.on('deleteroom', function(data) {
 		$(gVars.currentlogin).find("a").removeAttr('disabled');
 	}
 	else {
-		M.toast({html: 'Error deleting room. Room may have been deleted already',displayLength:3000});
+		$(gVars.currentlogin).find("input[name=roomPASS]").val('');
+		$(gVars.currentlogin).find("input[name=roomPASS]").attr("placeholder","Error - room may have been deleted already");
 		$(gVars.currentlogin).find("a").removeAttr('disabled');
 	}		
 });
@@ -1026,7 +1052,7 @@ socket.on('trump',function(data){
 				enableCards([tCard.suit]);
 			else
 				enableCards(['S','C','H','D']);
-			M.toast({html: 'You opened the Trump',displayLength:3000});		
+			M.toast({html: 'You opened the Trump',classes:'lime darken-3',displayLength:3000});		
 		}
 		else{
 			var xName = playerFromNumber(numberFromPlayer(data.pl));
@@ -1034,7 +1060,7 @@ socket.on('trump',function(data){
 				xName = gVars.greenplayers[xName.id];
 			else
 				xName = gVars.purpleplayers[xName.id];
-			M.toast({html: xName + ' opened the Trump',displayLength:3000});
+			M.toast({html: xName + ' opened the Trump',classes:'lime darken-3',displayLength:3000});
 			
 		}
 		gVars.trumpOpen = true;
@@ -1070,7 +1096,7 @@ socket.on('marriage',function(data){
 	else
 		playername.player = gVars.purpleplayers[playername.id];
 	setTimeout(function() {
-		M.toast({html: playername.player + ' of Team ' + playername.team.toUpperCase() +'&nbsp;has a marriage!', displayLength:4000});
+		M.toast({html: playername.player + ' of Team ' + playername.team.toUpperCase() +'&nbsp;has a marriage!',classes:'lime darken-3', displayLength:4000});
 
 		for(var i=0;i<4;i++){
 			var z = playerFromNumber(i);
@@ -1102,7 +1128,7 @@ socket.on('reconnect',function(){
 });
 
 socket.on('chat',function(data){
-	M.toast({html: data.msg,displayLength:2000});
+	M.toast({html: data.msg,classes:'chatToast',displayLength:2000});
 	$('#chatlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.msg + '</li>');
 	$("#modal-chat>.modal-content").scrollTop($("#modal-chat>.modal-content")[0].scrollHeight);
 });
@@ -1239,6 +1265,22 @@ $(function(){
 	gVars.sound_play = new sound('img/play.mp3');
 	if(!window.chrome)//not chromium
 		$('#network>i').removeClass('network-icon');
+	if (navigator.share)
+		$('#playerwait').click(function(){
+			navigator.share({
+				title: 'The 29 Game',
+				text: 'Play a game of 29 with me!\nRoomname: '+gVars.curRoomName+'\nPassword: '+gVars.curRoomPass+'\nLink:',
+				url: document.location.href
+			}).catch(console.error);
+			return false;
+		});
+	else {
+		$('#playerwait').click(function(){
+			$('#share-data').html('Play a game of 29 with me!<br>Roomname: '+gVars.curRoomName+'<br>Password: '+gVars.curRoomPass+'<br>Link: ' + '<a href="' + document.location.href +'" target="_blank">' +  document.location.href +'</a>');
+			$('#modal-share').modal('open');
+			return false;
+		});
+	}
     initModals();
 	$('.collapsible').collapsible();
 	$('select').formSelect();
