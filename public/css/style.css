@@ -109,6 +109,7 @@ body {
 .boxes {
 	position: absolute;
 	z-index: 1000;
+	user-select: none;
 }
 
 .playercards {
@@ -162,6 +163,8 @@ body {
 	border-radius: 12px;
 	box-shadow: -2px -2px 15px -1px rgba(0,0,0,0.3);
 	animation: opacitychange .17s;
+	display: none;
+	user-select: none;
 }
 
 #lefttable {
@@ -236,10 +239,6 @@ body {
 	align-items:center;
 }
 
-.centerplay {
-	display: none;
-}
-
 h6 {
 	font-size: 1.1rem!important;
 }
@@ -285,6 +284,7 @@ h6 {
     border-radius: 2.5px;
 	color: #fafafa;
 	font-size: small;
+	user-select: none;
 }
 
 .mvboxes {
@@ -323,25 +323,6 @@ h6 {
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-image: linear-gradient(to right,#fafafa 99%,#fafafa 100%);
-}
-
-@keyframes textchange {
-  0% {content:'';}
-  34% {content:'.';}
-  67% {content:'..';}
-  100% {content:'...';}
-}
-
-@keyframes bxs {
-  0% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
-  50% {box-shadow: inset 0px 0px 44px 1px #dce4ff;}
-  100% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
-}
-
-@keyframes zinout {
-  0% {transform: scale(1);}
-  50% {transform: scale(2.2);}
-  100% {transform: scale(1);}
 }
 
 red {
@@ -386,6 +367,30 @@ purple {
   background-size: 30px 30px;
   background-position: 0 0;
   animation: stripes 1s linear infinite;
+  user-select: none;
+}
+
+.white-text>h2, .white-text>h5 {
+	font-family: 'Roboto Slab',Roboto,sans-serif;
+}
+
+@keyframes textchange {
+  0% {content:'';}
+  34% {content:'.';}
+  67% {content:'..';}
+  100% {content:'...';}
+}
+
+@keyframes bxs {
+  0% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
+  50% {box-shadow: inset 0px 0px 44px 1px #dce4ff;}
+  100% {box-shadow: inset 0px 0px 44px 1px #2c76bd;}
+}
+
+@keyframes zinout {
+  0% {transform: scale(1);}
+  50% {transform: scale(2.2);}
+  100% {transform: scale(1);}
 }
 
 @keyframes stripes {

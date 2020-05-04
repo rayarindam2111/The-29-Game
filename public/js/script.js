@@ -482,6 +482,11 @@ $('#closeShare').click(function(){
 	return false;
 });
 
+$('#closeCredits').click(function(){
+	$('#modal-credits').modal('close');
+	return false;
+});
+
 function cardDetail(card){
 	var suit = card.slice(card.length - 1, card.length);
 	var val = card.slice(0, card.length - 1);
