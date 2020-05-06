@@ -4,6 +4,7 @@
 
 ::-webkit-scrollbar {
 	width: 8px;
+	height:8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -372,6 +373,31 @@ purple {
 
 .white-text>h2, .white-text>h5 {
 	font-family: 'Roboto Slab',Roboto,sans-serif;
+}
+
+#modal-chat > div.modal-content {
+    height: calc(100% - 102px);
+}
+
+#modal-chat > div.modal-footer {
+    height: 102px;
+}
+
+#modal-chat > div.modal-footer > div > div {
+	cursor:pointer;
+	transition: background-color .15s;
+}
+
+#modal-chat > div.modal-footer > div > div:hover {
+	background-color: #a2a2a2;
+}
+
+#modal-chat > div.modal-footer > div  {
+    text-align: left;
+    display: block;
+    white-space: nowrap;
+    overflow-x: auto;
+	user-select:none;
 }
 
 @keyframes textchange {

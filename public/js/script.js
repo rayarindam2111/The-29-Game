@@ -4,6 +4,14 @@ function arrayRotate(arr, count) {
   arr.push.apply(arr, arr.splice(0, count));
 }
 
+function encodeHTML(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function checkSpChars(t) {
+	return !(t.indexOf('&') == -1 && t.indexOf('<') == -1 && t.indexOf('>') == -1);
+}
+
 function playerFromNumber(number) {
 	//0->green0
 	//1->purple0
@@ -179,12 +187,12 @@ $('#form-addroom').submit(function () {
 		var usr = $('#room_NEW').val();
 		var pass = $('#room_NEW_pass').val();
 		var timestamp = Date.now();
-		if($('#room_NEW').val().trim() == ""){
+		if(usr.trim() == "" || checkSpChars(usr)){
 			$('#room_NEW').val('');
 			$('#room_NEW_pass').val('');
 			return false;
 		}
-		if($('#room_NEW_pass').val().trim() == ""){
+		if(pass.trim() == ""){
 			$('#room_NEW_pass').val('');
 			return false;
 		}	
@@ -200,7 +208,7 @@ $('#form-addroom').submit(function () {
 $('#form-chat').submit(function () {
 	if($("#chatmessage").val().trim()=="")
 		return false;
-	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + $("#chatmessage").val();
+	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + encodeHTML($("#chatmessage").val());
 	$("#chatmessage").val('');
 	socket.emit('chat',{'id':gVars.curRoomID,'msg':msg});	
 	return false;
@@ -213,12 +221,13 @@ $('#backtoroomlist').click(function(){
 });
 
 $('#joingame').click(function(){
-	if($('#username').val().trim() == ""){
+	var usrN = $('#username').val();
+	if(usrN.trim() == "" || checkSpChars(usrN)){
 		$('#username').val('');
-		M.toast({html: 'Name cannot be blank',displayLength:3000});
+		M.toast({html: 'Name cannot be blank or have special characters',displayLength:3000});
 		return false;
 	}
-	gVars.myname = $('#username').val();
+	gVars.myname = usrN;
 	gVars.myteam = $("#teamselect").val();
 	M.toast({html: 'Joining Game...',displayLength:3000});
 	$('#joingame').attr('disabled','');
@@ -484,6 +493,14 @@ $('#closeShare').click(function(){
 
 $('#closeCredits').click(function(){
 	$('#modal-credits').modal('close');
+	return false;
+});
+
+$('#modal-chat > div.modal-footer > div').click(function(e){
+	if(!$(e.target).hasClass('chip'))
+		return false;
+	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;<red>' + encodeHTML($(e.target).html())+'</red>';
+	socket.emit('chat',{'id':gVars.curRoomID,'msg':msg});	
 	return false;
 });
 
