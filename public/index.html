@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&family=Bungee+Inline&family=Bungee+Outline&display=swap" rel="stylesheet">
 	<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
 	<title>The 29 Game</title>
@@ -17,8 +17,9 @@
 	<meta property="og:description" content="The classic card game 29, now in your browser!">
 </head>
 <body style="overflow-x:hidden;">
-	<div id="preload" style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.98);z-index:5000;">
-		<a class="btn-floating btn-large cyan pulse" style="width:120px;height:120px;"><i style="line-height:120px;font-size:5rem" class="material-icons">sync</i></a>
+	<style class="pload">.l-p{overflow:visible;position:relative;background:#f3f3f3;border-radius:50%;width:120px;height:120px;display:flex;align-items:center;justify-content:center}.l-p::before{content:'';display:block;position:absolute;width:100%;height:100%;top:0;left:0;background-color:inherit;border-radius:inherit;transition:opacity .3s,transform .3s;animation:lp-anim 1s cubic-bezier(0.24,0,0.38,1) infinite;z-index:-1;}@keyframes lp-anim{0%{opacity:1;transform:scale(1)}50%{opacity:0;transform:scale(1.5)}100%{opacity:0;transform:scale(1.5)}}</style>
+	<div class="pload" style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.99);z-index:5000;">
+		<a class="l-p"><img width=64 height=64 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFo0lEQVR4Xu2bR6glVRCGv1FRMYI6JkRdmVDBGcxhYxZzQN0ZR8GcFcxgzglRTDtFnBlHwawgZsWNAdPGgIhZVyYM/FIF9Xq67z19us+lmTu1eZf3Tp1b9XedCv/pN4spl1lT7j9DBmAF4I/SD2jIAJwF3DKtAKwOfAysD/xbEoShRsChwHxga+D9aQTgHmAecDpwxzQC8DmwEbAAOGzaANgM+Mic/gFYu2QeGGIOOAO4NTz1onlgiAA8BewbACiaB4YGgJqfn4CVAgBF88DQANgDeN6c/xNYHiiaB4YGwA3AuQbAXcAp9rlYHhgaAO8BWwEfWB/wugFwGnBniXLYJwDLAn93MFJt79emfxNwIfALsLJ1hYd32LtRtS8ANgC2AZ7sYOQxwIOmv5flgmcBff4eWKdEP9AXAGfa4HJ+BwAeBo4CfgPWAH4HLgKutj39aHT4isVV+wLgNdt650zrlgG+A9YEngl9wI5A0TzQBwAK/y8BlS2NsTkkxnbAWwaeeADvBJcrnQf6AEDh78TFLoBHQ5tguAS40hS2CLOAflU0D/QBgBzeyYy/ALi+jee29lVAx+crYMOKftE80BUAD3/f5wngoJYA6Nio21O43wecWNEvmge6AhDDX3bntK3O/khftV5MUJSieaArADH83ejNjc9LDQRnf9RErWVJr6qryrB3iX6gCwAx/NXCql+XnADcn+o94OyPyl1TGVVXeE2JfqALADH897fQ1Tirbu64RAA2DdFyWagEVfUdgDfsl6cCGpR6kS4AePjr3K8LvGxP8FNAjqWIyI7bbKGc9F6gqqs88DOwCvAYcETK5ilrcgGI4X8vcBJwHeCtsHg89e/jxNkfkSCzgX9GKMQ8oP17kVwAYviLxHgROBBYZFYdHD43GRrZn0eBI8d4FPPAlsCHfSDgAMy1J5C651XAHHvK69kYrAzuT/1G4Lwxm0X253jggTHrm/KA6LPdUg0P62Truw6Ah1fbfVTCTg5Kus7S+VfC8u6wac/I/uhIORfQtL4pD4hA1VFqK2qx9+kKwO7AS+GbVf5UAXww0kjbJM7+KJQV0ilSlweuAC5NUa6smQFA2yPge4nAjCyQnPceYFdAPX6dRPbnZuCcRAfq8sBzwJ7At4BIlVSZcQRSlcati3Vdxqoy1Ekd+zNub/29mgfutvK4GrAQUFvdSnKrwKgvEbJKiKLHVBnqpI79STG8mgcU/n57rBKsvNJKSgCgUijHf7TKUr3fb2J/Ug1/WsnLKs7FgBKxZNSRa9y7BAB6Eh76VXJDhmwLvG0WRfYnFQBxDtfaYu0jNukvQMdgVNKt3b8EABpoPPlptteMH2UU+5MCwvbAm5WF7xgQKfoz1pQAQB3er4B+PgQcW7FqFPuT4oDygFrnVcPi2wHdKreWEgDICB+UPgM2CVaNY39SHfA84OuPBh5JVY7rSgEgXtBbYV1oiPKWRPZHE50muxyJeUD6GwNf5GxUCgDxgo+bQYeEzynsT4ofMQ98Y5cyKXqLrSkFgEZbf+q65/MbX2d/UmaFUQ7FPNDp/YFSAMj4T+z8K2OL2Y1d4uWAmpgu4nkgqwHyLy4JgMZbVQAfjPTaWwr7kwqK54GsBmgSAGjG9x5A87pmg/2shI1jf1JAUB54JbcBmgQA8XU3hbuqgsiLFPYnBQDlAY20GsmzpeQR0N4ajHTjK+JUA5Ikhf1JdUgzgTiCbCkJgIzSVdkBFetS2J9sh9oqlgag2rC0YX/a+pK1vjQAui5XonJpw/5kOdRWqTQAK9pgpPf9JLrfE4U1GCkNgBzVnZ8aofjuz1QB4PT3/yzsYDw3QyYRAbolEmF59iT+B6gtwJMAQPd4oqzr6LG29va+fhIAyOgXAF2FDU4mBYB4wpy3x4oDNikAijuS+wVLAchFbknRWxoBS8qTzPXjP87DJFBEylofAAAAAElFTkSuQmCC"></a>
 	</div>
 	<div id="imgload" style="position:absolute;z-index:-1;opacity:0.02;"></div>
 	<script type="text/javascript">
@@ -163,7 +164,10 @@
 					  <h5 class="truncate">-</h5>
 					</div>
 					<div class="col s5">
-						<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;" disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;&nbsp;PLAY</span></a>
+						<div style="display:inline-flex;width:100%">
+							<a href="#" id="changeView" class="btn orange darken-4 waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;padding:0 6px" disabled><i class="material-icons">low_priority</i></a>
+							<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;width:100%;margin-left:8px;" disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;PLAY</span></a>
+						</div>
 						<h6>
 						  <div id="bottomtrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
 						  <div class="isb labelstat">R:</div>
@@ -292,10 +296,11 @@
 							<h5 class="center">Choose Trump Suit:</h5>
 							<br>
 							<ul id="trumpOpt" class="tabs">
-								<li class="tab"><a class="active" style="display:flex;align-items:center" href="#dummyd">Hearts&nbsp;<img src="img/H.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Spades&nbsp;<img src="img/S.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Diamonds&nbsp;<img src="img/D.png" height=25 width=25></a></li>
-								<li class="tab"><a style="display:flex;align-items:center" href="#dummyd">Clubs&nbsp;<img src="img/C.png" height=25 width=25></a></li>
+								<li class="tab"><a class="active flexcenter" href="#dummyd">Hearts&nbsp;<img src="img/H.png" height=25 width=25></a></li>
+								<li class="tab"><a class="flexcenter" href="#dummyd">Spades&nbsp;<img src="img/S.png" height=25 width=25></a></li>
+								<li class="tab"><a class="flexcenter" href="#dummyd">Diamonds&nbsp;<img src="img/D.png" height=25 width=25></a></li>
+								<li class="tab"><a class="flexcenter" href="#dummyd">Clubs&nbsp;<img src="img/C.png" height=25 width=25></a></li>
+								<li class="tab"><a class="flexcenter" href="#dummyd">7<sup>th</sup>&nbsp;card&nbsp;<img src="img/7.png" height=25 width=25></a></li>
 							</ul>
 							<div id="dummyd" style="height:0;width:0;display:none;opacity:0"></div>
 							<hr>
@@ -381,6 +386,7 @@
 		</div>
 		<div class="modal-footer">
 			<div style="text-align:left">
+				<div class="chip">J-9-A-10-K-Q-8-7</div>
 				<div class="chip">Good game!</div>
 				<div class="chip">Got you!</div>
 				<div class="chip">I'll set the Trump</div>

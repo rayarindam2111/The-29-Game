@@ -186,7 +186,7 @@ class Cards {
 		//randomize playable cards
 		this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
 		this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
-		for (var i = 0; i < 1500; i++){
+		for (var i = 0; i < 1000; i++){
 			var location1 = Math.floor((Math.random() * this.playable_deck.length));
 			var location2 = Math.floor((Math.random() * this.playable_deck.length));
 			if(location1!=location2) {
@@ -196,22 +196,24 @@ class Cards {
 			}
 		}
 		
-		//check if one person gets all zero points cards
-		var okay;
-		for(var playernum=0;playernum<4;playernum++){
-			okay = false;
-			for(var i=playernum*4;i<playernum*4 + 4;i++)
-				if(Cards.cardDetail(this.playable_deck[i]).point!=0)
-					{okay=true;break;}
-			if(!okay){
-				for(var i=playernum*4 + 16;i<playernum*4 + 20;i++)
-					if(Cards.cardDetail(this.playable_deck[i]).point!=0)
-						{okay=true;break;}
+		//check if one person gets all zero points cards or all Jacks
+		var playernum;
+		for(playernum=0;playernum<4;playernum++){
+			var count = [0,0]; //no. of [non zero point cards, jacks]
+			for(var i=playernum*4;i<playernum*4 + 4;i++){
+				var t = Cards.cardDetail(this.playable_deck[i]);
+				if(t.point!=0)	count[0]++;
+				if(t.val=='J')	count[1]++;
 			}
-			if(!okay) break;	
+			for(var i=playernum*4 + 16;i<playernum*4 + 20;i++){
+				var t = Cards.cardDetail(this.playable_deck[i]);
+				if(t.point!=0)	count[0]++;
+				if(t.val=='J')	count[1]++;
+			}
+			if(count[0]==0 || count[1]==4) break;
 		}
 		
-		if(!okay)
+		if(playernum<4)
 			this.randomizeCards();
 	}
 	
@@ -259,8 +261,7 @@ class Game {
 	}
 	
 	resetRound() {
-		var cardpack = new Cards();
-		this.play_deck = cardpack.getPlayableCardsRandomized();
+		this.play_deck = new Cards().getPlayableCardsRandomized();
 		this.trump_card = '';
 		this.trump_open = false;
 		this.trump_opener = '';
@@ -484,6 +485,14 @@ class Game {
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('bidover', d);	
 		this.distributeCards(4,4,false);
+		if(this.trump_card == '') { //7th card chosen
+			var val = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // 2 to 5
+			this.trump_card = val + Cards.cardDetail(this.cards[this.trump_setter][6]).suit;
+			var d = {'pl':this.playerFromNumber(this.trump_setter),'c':this.trump_card,'op':'set','c7':this.cards[this.trump_setter][6]};
+			this.emitlog[0].push('trump');
+			this.emitlog[1].push(d);
+			io.in(this.roomID).emit('trump', d);
+		}
 		this.nextPlayEmit(true,this.playerStart,'nl');
 	}
 	
@@ -672,12 +681,14 @@ class Game {
 	
 	trumpSetReceive(player,suit,log){
 		this.trump_setter = this.numberFromPlayer(player);
-		var val = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // 2 to 5
-		this.trump_card = val + suit;
-		var d = {'pl':this.playerFromNumber(this.trump_setter),'c':this.trump_card,'op':'set'};
-		this.emitlog[0].push('trump');
-		this.emitlog[1].push(d);
-		io.in(this.roomID).emit('trump', d);
+		if(suit!='7'){
+			var val = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // 2 to 5
+			this.trump_card = val + suit;
+			var d = {'pl':this.playerFromNumber(this.trump_setter),'c':this.trump_card,'op':'set','c7':'f'};
+			this.emitlog[0].push('trump');
+			this.emitlog[1].push(d);
+			io.in(this.roomID).emit('trump', d);
+		}
 		this.nextBidEmit(this.bid_player,this.bid_winner,this.bid_value,false,log,'D',0);
 	}
 
@@ -695,7 +706,7 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));
+app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//
 
 http.listen(port, function(){
 	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
@@ -770,9 +781,11 @@ io.on('connection', function(socket){
   socket.on('play', function(msg){
 	Rooms.sendPlaytoRoom(msg);
   });
+  
   socket.on('trump', function(msg){
 		Rooms.sendTrumptoRoom(msg);
   });
+  
   socket.on('chat', function(msg){
 		Rooms.sendChat(msg);
   });

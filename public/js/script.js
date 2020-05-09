@@ -48,7 +48,7 @@ function indexOfMax(arr) {
 			max = arr[i];
 		}
 	}
-
+	
 	return maxIndex;
 }
 
@@ -61,20 +61,44 @@ function timeout(percent,elem,team,first){
     (icircle<=180)?$(elem).css('background-image','linear-gradient(' + (90+icircle) + 'deg, transparent 50%, '+c2+' 50%),linear-gradient(90deg, '+c2+' 50%, transparent 50%)'):$(elem).css('background-image','linear-gradient(' + (icircle-90) + 'deg, transparent 50%, '+c1+' 50%),linear-gradient(90deg, '+c2+' 50%, transparent 50%)');
 }
 
+function changeMode(mode){
+	var gap = 50;
+	var sortingArray = gVars.allcards.slice();
+	if(mode=='sort')
+		sortingArray.sort(function(a, b){
+				var aCard = cardDetail(a);
+				var bCard = cardDetail(b);
+				var aVal = aCard.rank + (aCard.suit=='H'?500:aCard.suit=='S'?400:aCard.suit=='D'?300:200);
+				var bVal = bCard.rank + (bCard.suit=='H'?500:bCard.suit=='S'?400:bCard.suit=='D'?300:200);
+				return bVal - aVal;
+			});
+
+	var result = $('#bottomcardbox>.playercards');
+	var cs = [];
+	for(var i=0;i<result.length;i++)
+		cs.push($(result[i]).attr('card'));
+	
+	for(var i=0;i<sortingArray.length;i++){
+		var pos = cs.indexOf(sortingArray[i]);
+		$(result[pos]).css('left',i*gap).css('z-index',i+10);
+	}
+}
+
 function generateStack(cards,box,color) {
 	var gap = 50;
 	var imagewidth = 118;
 	var imageheight = 180;
 	$(box).html('');
-	gVars.allcards = cards;
 	if(color=='nocolor'){
-		cards.sort(function(a, b){
-			var aCard = cardDetail(a);
-			var bCard = cardDetail(b);
-			var aVal = aCard.rank + (aCard.suit=='H'?500:aCard.suit=='S'?400:aCard.suit=='D'?300:200);
-			var bVal = bCard.rank + (bCard.suit=='H'?500:bCard.suit=='S'?400:bCard.suit=='D'?300:200);
-			return bVal - aVal;
-		});
+		gVars.allcards = cards.slice();
+		if(gVars.showMode=='sort')
+			cards.sort(function(a, b){
+				var aCard = cardDetail(a);
+				var bCard = cardDetail(b);
+				var aVal = aCard.rank + (aCard.suit=='H'?500:aCard.suit=='S'?400:aCard.suit=='D'?300:200);
+				var bVal = bCard.rank + (bCard.suit=='H'?500:bCard.suit=='S'?400:bCard.suit=='D'?300:200);
+				return bVal - aVal;
+			});
 		try{
 			$('.tooltipped').tooltip('destroy');
 			$('.material-tooltip').remove();
@@ -82,7 +106,7 @@ function generateStack(cards,box,color) {
 		catch(e){
 		}
 		for(var i=0;i<cards.length;i++)
-			$(box).append('<div class="playercards tooltipped" data-position="top" data-tooltip="P: ' + cardDetail(cards[i]).point + '" style="left:' + (i*gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i+10) + ';" card="' + cards[i] + '"></div>');
+			$(box).append('<div class="playercards tooltipped ' + (gVars.card7==cards[i]?'card7':'') + '" data-position="top" data-tooltip="P: ' + cardDetail(cards[i]).point + '" style="left:' + (i*gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i+10) + ';" card="' + cards[i] + '"></div>');
 		var elems = document.querySelectorAll('.tooltipped');
 		M.Tooltip.init(elems, {enterDelay:0,exitDelay:0,inDuration:150,outDuration:150});
 	}
@@ -451,6 +475,15 @@ $('#playMove').click(function(){
 	return false;
 });
 
+$('#changeView').click(function(){
+	if(gVars.showMode == 'sort')
+		gVars.showMode = 'orig';
+	else
+		gVars.showMode = 'sort';
+	changeMode(gVars.showMode);
+	return false;
+});
+
 $('#trumpyes').click(function(){
 	$('#bottomcardbox').addClass('carddisabled');
 	$('#modal-trumpyesno').modal('close');
@@ -461,7 +494,7 @@ $('#trumpyes').click(function(){
 $('#trumpsetok').click(function(){
 	$('#trumpset').hide();
 	var tIndex = document.getElementById('trumpOpt').M_Tabs.index;
-	var tSuit = tIndex==0?'H':tIndex==1?'S':tIndex==2?'D':'C';
+	var tSuit = tIndex==0?'H':tIndex==1?'S':tIndex==2?'D':tIndex==3?'C':'7';
 	socket.emit('trump',{'id':gVars.curRoomID,'pl':gVars.myteam+gVars.myUserID,'s':tSuit,'op':'set','l':'<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump'});
 	return false;
 });
@@ -496,11 +529,13 @@ $('#closeCredits').click(function(){
 	return false;
 });
 
-$('#modal-chat > div.modal-footer > div').click(function(e){
+$('#modal-chat>div.modal-footer>div').click(function(e){
 	if(!$(e.target).hasClass('chip'))
 		return false;
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;<red>' + encodeHTML($(e.target).html())+'</red>';
-	socket.emit('chat',{'id':gVars.curRoomID,'msg':msg});	
+	socket.emit('chat',{'id':gVars.curRoomID,'msg':msg});
+	$('#modal-chat>div.modal-footer>div').addClass('carddisabled');
+	setTimeout(function(){$('#modal-chat>div.modal-footer>div').removeClass('carddisabled')},3000);
 	return false;
 });
 
@@ -529,14 +564,29 @@ function checkSuitEnable(arr, val) {
   });
 }
 
-function hasSuit(suit){
+function hasSuit(suit,incCard7){
 	for(var i=0;i<$('#bottomcardbox>.playercards').length;i++){
 		var elem = $('#bottomcardbox>.playercards')[i];
+		if(incCard7 && $(elem).hasClass('card7'))
+			continue;
 		var card = cardDetail($(elem).attr('card'));
 		if(suit==card.suit)
 			return true;
 	}
 	return false;
+}
+
+function onlycard7left(){
+	var flag = false;
+	var length = $('#bottomcardbox>.playercards').length;
+	for(var i=0;i<length;i++){
+		var elem = $('#bottomcardbox>.playercards')[i];
+		if($(elem).hasClass('card7')){
+			flag = true;
+			break;
+		}
+	}
+	return (length == 1) && flag;
 }
 
 function enableCards(suits) {
@@ -545,12 +595,10 @@ function enableCards(suits) {
 		var card = cardDetail($(elem).attr('card'));
 		$(elem).removeClass('cardselected');
 		if(checkSuitEnable(suits,card.suit)){
-			$(elem).removeClass('carddisabled');
-			$(elem).addClass('movable');
+			$(elem).removeClass('carddisabled').addClass('movable');
 		}
 		else{
-			$(elem).addClass('carddisabled');
-			$(elem).removeClass('movable');
+			$(elem).addClass('carddisabled').removeClass('movable');
 		}
 	}
 }
@@ -578,6 +626,7 @@ function buildcardstack(data){
 	$('#leftcardbox').addClass("animcards");
 	$('#rightcardbox').addClass("animcards");
 	M.toast({html: 'Cards distributed - 4',displayLength:2000});
+	$('#changeView').removeAttr('disabled');
 }
 
 function enableTrump(select) {
@@ -590,6 +639,7 @@ function enableTrump(select) {
 function playProcess(data){
 	if(data.op.re=='ro'){
 		M.toast({html: 'New Round',displayLength:2000});
+		gVars.card7 = '';
 	}
 	else if(data.op.re=='go'){
 		gVars.matchRunning = false;
@@ -613,6 +663,7 @@ function playProcess(data){
 				$('#winmessage').html('<span class="'+winner+'-text">Team '+winner.toUpperCase()+'</span> wins the game.');
 				var text = '<table><thead><tr><th>Player Name</th><th>Rounds</th></tr></thead><tbody>';
 				for(var i=0;i<4;i++){
+					//mark
 					var xName = playerFromNumber(i);
 					if(xName.team == 'green')
 						xName.player = gVars.greenplayers[xName.id];
@@ -668,7 +719,7 @@ function playProcess(data){
 		else {
 			gVars.firstplay = false;
 			var playSuit = cardDetail(data.op.fc);
-			if(hasSuit(playSuit.suit)){
+			if(hasSuit(playSuit.suit,gVars.card7!='f' && !gVars.trumpOpen)){
 				enableCards([playSuit.suit]);
 			}
 			else {
@@ -677,6 +728,8 @@ function playProcess(data){
 				enableCards(['S','C','H','D']);
 			}
 		}
+		if(gVars.card7!='f' && !(onlycard7left()||gVars.trumpOpen))
+			$('.card7').addClass('carddisabled').removeClass('movable');
 	}
 	else{
 		$('#bottomcardbox').addClass('carddisabled');
@@ -687,6 +740,7 @@ function playProcess(data){
 function startTimer(data,player){	
 	gVars.timerCount = 0;
 	var telem = elemfromidteam('#','time',data.pl);
+	//mark
 	var xName = playerFromNumber(numberFromPlayer(data.pl));
 	if(xName.team == 'green')
 		xName.player = gVars.greenplayers[xName.id];
@@ -728,8 +782,7 @@ var gVars =  {
 	currentBid: '',     // 21, current bid value
 	raiseOrMatch: '',   // bid raise or match
 	bidDouble : '',     // 'double' or 'redouble'
-	trumpOpen : '',  // true or false, trump is open or not
-	trumpCard : '',     // '8D' , trump card
+	trumpOpen : '',     // true or false, trump is open or not
 	currentPlayerPos : '', // 0,1,2,3 tracks cards on center table
 	firstplay : '',     // if first play
 	timerCount : '',    // counter timer 0-100
@@ -740,19 +793,9 @@ var gVars =  {
 	isMobile : '',	    // if device is a mobile device
 	matchRunning : '',  // true/false, if a match has started & is running
 	sockMsgCount : '',  // socket msg received count
+	card7 : '',         // 7th card, '' if not used
+	showMode : '',      // 'sort', 'original' : cards shown in deck
 	
-	set purpleplayers(data) {
-		purpleplayers = data;
-	},
-	get purpleplayers() {
-		return purpleplayers;
-	},
-	set greenplayers(data) {
-		greenplayers = data;
-	},
-	get greenplayers() {
-		return greenplayers;
-	},
 	set curRoomID(data) {
 		curRoomID = data;
 	},
@@ -776,6 +819,18 @@ var gVars =  {
 	},
 	get currentlogin() {
 		return currentlogin;
+	},
+	set purpleplayers(data) {
+		purpleplayers = data;
+	},
+	get purpleplayers() {
+		return purpleplayers;
+	},
+	set greenplayers(data) {
+		greenplayers = data;
+	},
+	get greenplayers() {
+		return greenplayers;
 	},
 	set myname(data) {
 		myname = data;
@@ -824,12 +879,6 @@ var gVars =  {
 	},
 	get trumpOpen() {
 		return trumpOpen;
-	},
-	set trumpCard(data) {
-		trumpCard = data;
-	},
-	get trumpCard() {
-		return trumpCard;
 	},
 	set currentPlayerPos(data) {
 		currentPlayerPos = data;
@@ -890,6 +939,18 @@ var gVars =  {
 	},
 	get sockMsgCount() {
 		return sockMsgCount;
+	},
+	set card7(data) {
+		card7 = data;
+	},
+	get card7() {
+		return card7;
+	},
+	set showMode(data) {
+		showMode = data;
+	},
+	get showMode() {
+		return showMode;
 	}
 };
 
@@ -1034,6 +1095,7 @@ socket.on('bidover',function(data){
 	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.l + '</li>');
 	$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 	var d = parseInt(data.bd)==1?'':' x' + data.bd;
+	//mark
 	var playername = playerFromNumber(data.w);
 	if(playername.team=='green')
 		playername.player = gVars.greenplayers[playername.id];
@@ -1070,13 +1132,14 @@ socket.on('trump',function(data){
 		if(data.pl==gVars.myteam+gVars.myUserID){
 			$('#bottomcardbox').removeClass('carddisabled');
 			var tCard = cardDetail(data.c);
-			if(hasSuit(tCard.suit))
+			if(hasSuit(tCard.suit,false))
 				enableCards([tCard.suit]);
 			else
 				enableCards(['S','C','H','D']);
 			M.toast({html: 'You opened the Trump',classes:'lime darken-3',displayLength:3000});		
 		}
 		else{
+			//mark
 			var xName = playerFromNumber(numberFromPlayer(data.pl));
 			if(xName.team == 'green')
 				xName = gVars.greenplayers[xName.id];
@@ -1086,17 +1149,31 @@ socket.on('trump',function(data){
 			
 		}
 		gVars.trumpOpen = true;
-		gVars.trumpCard = data.c;
 		enableTrump(false);
 		$('#trumpcard>img').attr('src','img/cards/'+data.c+'.PNG');
 	}
 	else if(data.op=='set'){
-		if(data.pl==gVars.myteam+gVars.myUserID)
-			$(elemfromidteam('#','trump',data.pl)).html('<img alt="T" src="img/' + cardDetail(data.c).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;">');
+		if(data.pl==gVars.myteam+gVars.myUserID){
+			if(data.c7!='f') {//7th card
+				$(elemfromidteam('#','trump',data.pl)).html('<img alt="T" src="img/' + cardDetail(data.c).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;border:1px solid #000">');
+				gVars.card7 = data.c7;
+				for(var i=0;i<$('#bottomcardbox>.playercards').length;i++){
+					var elem = $('#bottomcardbox>.playercards')[i];
+					if($(elem).attr('card')==gVars.card7){
+						$(elem).addClass('card7');
+						break;
+					}
+				}
+				gVars.showMode = 'orig';
+			}
+			else
+				$(elemfromidteam('#','trump',data.pl)).html('<img alt="T" src="img/' + cardDetail(data.c).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;">');
+		}
 		else
 			$(elemfromidteam('#','trump',data.pl)).html('T&nbsp;');
 		$(elemfromidteam('#','trump',data.pl)).show();
 		gVars.trumpSetter = data.pl;
+		changeMode(gVars.showMode);
 		//preload trump image
 		var preloadLink = document.createElement('link');
 		preloadLink.href = 'img/cards/'+data.c+'.PNG';
@@ -1150,7 +1227,7 @@ socket.on('reconnect',function(){
 });
 
 socket.on('chat',function(data){
-	M.toast({html: data.msg,classes:'chatToast',displayLength:2000});
+	M.toast({html: data.msg,classes:'chatToast',displayLength:4000});
 	$('#chatlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.msg + '</li>');
 	$("#modal-chat>.modal-content").scrollTop($("#modal-chat>.modal-content")[0].scrollHeight);
 });
@@ -1312,8 +1389,10 @@ $(function(){
 	$('.trumpshow').hide();
 	$('#trumpset').hide();
 	gVars.sockMsgCount = 0;
+	gVars.showMode = 'sort';
 	gVars.timer = '';
 	gVars.trumpOpen = false;
+	gVars.card7 = '';
 	gVars.currentPlayerPos = 0;
 	gVars.isMobile = mobilecheck();
 	//UI resize 
@@ -1343,6 +1422,8 @@ $(function(){
 		});
     }
 	$('#imgload').hide();
-	$("#preload").remove();
-    $("#modal-roomlist").modal('open');
+	$("#modal-roomlist").modal('open');
+	setTimeout(function(){
+		$(".pload").remove();
+	},900);
 });

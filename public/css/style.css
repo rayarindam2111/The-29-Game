@@ -119,13 +119,15 @@ body {
 	width: 118px;
 	position: absolute;
 	background-size: cover;
+	border-radius: 12px;
+	transition: left .4s;
 }
 
 .movable {
 	bottom: 0;
 	border-radius: 12px;
 	box-shadow: 0 -1px 6px 2px rgba(21, 160, 160,.6);
-	transition: bottom .15s, box-shadow .1s;
+	transition: left .4s,bottom .15s, box-shadow .1s;
 }
 
 .movable:hover {
@@ -398,6 +400,11 @@ purple {
     white-space: nowrap;
     overflow-x: auto;
 	user-select:none;
+}
+
+.card7 {
+	border: 2px solid rgba(0,0,0,.72);
+	/*box-shadow: inset 14px 0px 34px -10px rgb(68, 129, 196)!important;*/
 }
 
 @keyframes textchange {
