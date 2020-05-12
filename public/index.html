@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&family=Bungee+Inline&family=Bungee+Outline&display=swap" rel="stylesheet">
-	<link type="text/css" rel="stylesheet" href="css/style.css"  media="screen,projection"/>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Slab&family=Bungee+Inline&family=Bungee+Outline&display=swap"
+		rel="stylesheet">
+	<link type="text/css" rel="stylesheet" href="css/style.css" media="screen,projection" />
 	<title>The 29 Game</title>
 	<link rel="icon" href="./favicon.png">
-	<meta name="viewport" content="user-scalable=no"/>
+	<meta name="viewport" content="user-scalable=no" />
 	<meta name="theme-color" content="#1b4b7c">
 	<meta charset="utf-8">
 	<meta name="description" content="The classic card game 29, now in your browser!">
@@ -16,44 +19,91 @@
 	<meta property="og:image" content="./favicon.png">
 	<meta property="og:description" content="The classic card game 29, now in your browser!">
 </head>
+
 <body style="overflow-x:hidden;">
-	<style class="pload">.l-p{overflow:visible;position:relative;background:#f3f3f3;border-radius:50%;width:120px;height:120px;display:flex;align-items:center;justify-content:center}.l-p::before{content:'';display:block;position:absolute;width:100%;height:100%;top:0;left:0;background-color:inherit;border-radius:inherit;transition:opacity .3s,transform .3s;animation:lp-anim 1s cubic-bezier(0.24,0,0.38,1) infinite;z-index:-1;}@keyframes lp-anim{0%{opacity:1;transform:scale(1)}50%{opacity:0;transform:scale(1.5)}100%{opacity:0;transform:scale(1.5)}}</style>
-	<div class="pload" style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.99);z-index:5000;">
-		<a class="l-p"><img width=64 height=64 src="data:image/png;base64,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"></a>
+	<style class="pload">
+		.l-p {
+			overflow: visible;
+			position: relative;
+			background: #f3f3f3;
+			border-radius: 50%;
+			width: 120px;
+			height: 120px;
+			display: flex;
+			align-items: center;
+			justify-content: center
+		}
+
+		.l-p::before {
+			content: '';
+			display: block;
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background-color: inherit;
+			border-radius: inherit;
+			transition: opacity .3s, transform .3s;
+			animation: lp-anim 1s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+			z-index: -1;
+		}
+
+		@keyframes lp-anim {
+			0% {
+				opacity: 1;
+				transform: scale(1)
+			}
+
+			50% {
+				opacity: 0;
+				transform: scale(1.5)
+			}
+
+			100% {
+				opacity: 0;
+				transform: scale(1.5)
+			}
+		}
+	</style>
+	<div class="pload"
+		style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.99);z-index:5000;">
+		<a class="l-p"><img width=64 height=64
+				src="data:image/png;base64,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"></a>
 	</div>
 	<div id="imgload" style="position:absolute;z-index:-1;opacity:0.02;"></div>
 	<script type="text/javascript">
-		var values = ['J','9','A','10','K','Q','8','7'];
+		var values = ['J', '9', 'A', '10', 'K', 'Q', '8', '7'];
 		var suits = ['S', 'D', 'C', 'H'];
-		var others = ["cards/BLUE_BACK.PNG","cards/GREEN_BACK.PNG","cards/PURPLE_BACK.PNG"];
-		for(var i = 0; i < suits.length; i++)
-			for(var x = 0; x < values.length; x++){	
+		var others = ["cards/BLUE_BACK.PNG", "cards/GREEN_BACK.PNG", "cards/PURPLE_BACK.PNG"];
+		for (var i = 0; i < suits.length; i++)
+			for (var x = 0; x < values.length; x++) {
 				var preloadLink = document.createElement("link");
-				preloadLink.href = "img/cards/"+values[x]+suits[i]+".PNG";
+				preloadLink.href = "img/cards/" + values[x] + suits[i] + ".PNG";
 				preloadLink.rel = "preload";
 				preloadLink.as = "image";
-				preloadLink.onload="alert('"+values[x]+suits[i]+"');";
+				preloadLink.onload = "alert('" + values[x] + suits[i] + "');";
 				document.head.appendChild(preloadLink);
 			}
-		
-		for(var i = 0; i < others.length; i++){
+
+		for (var i = 0; i < others.length; i++) {
 			var preloadLink = document.createElement("link");
-			preloadLink.href = "img/"+others[i];
+			preloadLink.href = "img/" + others[i];
 			preloadLink.rel = "preload";
 			preloadLink.as = "image";
 			document.head.appendChild(preloadLink);
 		}
-		
-		for(var i = 0; i < suits.length; i++)
-			for(var x = 0; x < values.length; x++){	
+
+		for (var i = 0; i < suits.length; i++)
+			for (var x = 0; x < values.length; x++) {
 				var imgSrc = document.createElement("img");
-				imgSrc.src = "img/cards/"+values[x]+suits[i]+".PNG";
+				imgSrc.src = "img/cards/" + values[x] + suits[i] + ".PNG";
 				document.getElementById("imgload").appendChild(imgSrc);
 			}
-			
-		for(var i = 0; i < others.length; i++){
+
+		for (var i = 0; i < others.length; i++) {
 			var imgSrc = document.createElement("img");
-			imgSrc.src = "img/"+others[i];
+			imgSrc.src = "img/" + others[i];
 			document.getElementById("imgload").appendChild(imgSrc);
 		}
 	</script>
@@ -62,25 +112,26 @@
 			<div class="cardcontainer" id="topcardbox" style="top: 0;"></div>
 			<div class="boxes top-box" style="top:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin">
-				  <div id="topname" class="row valign-wrapper">
-					<div class="col s3 flexcenter" style="justify-content:center">
-					 <img src="img/face-top.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="toptime">
+					<div id="topname" class="row valign-wrapper">
+						<div class="col s3 flexcenter" style="justify-content:center">
+							<img src="img/face-top.png" width=82 height=82 alt=""
+								class="active-border circle responsive-img" id="toptime">
+						</div>
+						<div class="col s4">
+							<h5 class="truncate">-</h5>
+						</div>
+						<div class="col s5">
+							<h6>
+								<div id="toptrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+								<div class="isb labelstat">R:</div>
+								<div id="topround" class="isb round">-</div>
+								<div class="isb labelstat">&nbsp;P:</div>
+								<div id="toppoint" class="isb score">-</div>
+								<div class="isb labelstat">&nbsp;B:</div>
+								<div id="topbid" class="isb trump">-</div>
+							</h6>
+						</div>
 					</div>
-					<div class="col s4">
-					  <h5 class="truncate">-</h5>
-					</div>
-					<div class="col s5">
-						<h6>
-						  <div id="toptrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
-						  <div class="isb labelstat">R:</div>
-						  <div id="topround" class="isb round">-</div>
-						  <div class="isb labelstat">&nbsp;P:</div>
-						  <div id="toppoint" class="isb score">-</div>
-						  <div class="isb labelstat">&nbsp;B:</div>
-						  <div id="topbid" class="isb trump">-</div>
-						</h6>
-					</div>
-				  </div>
 				</div>
 			</div>
 		</div>
@@ -90,25 +141,26 @@
 			<div class="cardcontainer" id="leftcardbox" style="left: 0;"></div>
 			<div class="boxes left-box" style="left:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
-				  <div id="leftname" class="row valign-wrapper">
-					<div class="col s3 flexcenter" style="justify-content:center">
-					  <img src="img/face-left.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="lefttime">
+					<div id="leftname" class="row valign-wrapper">
+						<div class="col s3 flexcenter" style="justify-content:center">
+							<img src="img/face-left.png" width=82 height=82 alt=""
+								class="active-border circle responsive-img" id="lefttime">
+						</div>
+						<div class="col s4">
+							<h5 class="truncate">-</h5>
+						</div>
+						<div class="col s5">
+							<h6>
+								<div id="lefttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+								<div class="isb labelstat">R:</div>
+								<div id="leftround" class="isb round">-</div>
+								<div class="isb labelstat">&nbsp;P:</div>
+								<div id="leftpoint" class="isb score">-</div>
+								<div class="isb labelstat">&nbsp;B:</div>
+								<div id="leftbid" class="isb trump">-</div>
+							</h6>
+						</div>
 					</div>
-					<div class="col s4">
-					  <h5 class="truncate">-</h5>
-					</div>
-					<div class="col s5">
-						<h6>
-						  <div id="lefttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
-						  <div class="isb labelstat">R:</div>
-						  <div id="leftround" class="isb round">-</div>
-						  <div class="isb labelstat">&nbsp;P:</div>
-						  <div id="leftpoint" class="isb score">-</div>
-						  <div class="isb labelstat">&nbsp;B:</div>
-						  <div id="leftbid" class="isb trump">-</div>
-						</h6>
-					</div>
-				  </div>
 				</div>
 			</div>
 		</div>
@@ -118,35 +170,37 @@
 			</div>
 		</div>
 		<div id="maintable" class="col s6 main col-center">
-				<div id="playerwait"><span style="padding-left:8px"><i class="material-icons">share</i></span>&nbsp;Waiting for Players</div>
-				<div class="centerplay" id="lefttable"><img src="" alt="" class="responsive-img"></div>
-				<div class="centerplay" id="bottomtable"><img src="" alt="" class="responsive-img"></div>
-				<div class="centerplay" id="righttable"><img src="" alt="" class="responsive-img"></div>
-				<div class="centerplay" id="toptable"><img src="" alt="" class="responsive-img"></div>
+			<div id="playerwait"><span style="padding-left:8px"><i class="material-icons">share</i></span>&nbsp;Waiting
+				for Players</div>
+			<div class="centerplay" id="lefttable"><img src="" alt="" class="responsive-img"></div>
+			<div class="centerplay" id="bottomtable"><img src="" alt="" class="responsive-img"></div>
+			<div class="centerplay" id="righttable"><img src="" alt="" class="responsive-img"></div>
+			<div class="centerplay" id="toptable"><img src="" alt="" class="responsive-img"></div>
 		</div>
 		<div class="col s1 main col-right">
 			<div class="cardcontainer" id="rightcardbox" style="right: 0;"></div>
 			<div class="boxes right-box" style="right:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
-				  <div id="rightname" class="row valign-wrapper">
-					<div class="col s3 flexcenter" style="justify-content:center">
-					  <img src="img/face-right.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="righttime">
+					<div id="rightname" class="row valign-wrapper">
+						<div class="col s3 flexcenter" style="justify-content:center">
+							<img src="img/face-right.png" width=82 height=82 alt=""
+								class="active-border circle responsive-img" id="righttime">
+						</div>
+						<div class="col s4">
+							<h5 class="truncate">-</h5>
+						</div>
+						<div class="col s5">
+							<h6>
+								<div id="righttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+								<div class="isb labelstat">R:</div>
+								<div id="rightround" class="isb round">-</div>
+								<div class="isb labelstat">&nbsp;P:</div>
+								<div id="rightpoint" class="isb score">-</div>
+								<div class="isb labelstat">&nbsp;B:</div>
+								<div id="rightbid" class="isb trump">-</div>
+							</h6>
+						</div>
 					</div>
-					<div class="col s4">
-					  <h5 class="truncate">-</h5>
-					</div>
-					<div class="col s5">
-						<h6>
-						  <div id="righttrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
-						  <div class="isb labelstat">R:</div>
-						  <div id="rightround" class="isb round">-</div>
-						  <div class="isb labelstat">&nbsp;P:</div>
-						  <div id="rightpoint" class="isb score">-</div>
-						  <div class="isb labelstat">&nbsp;B:</div>
-						  <div id="rightbid" class="isb trump">-</div>
-						</h6>
-					</div>
-				  </div>
 				</div>
 			</div>
 		</div>
@@ -156,35 +210,41 @@
 			<div class="cardcontainer" id="bottomcardbox" style="bottom: 0;"></div>
 			<div class="boxes bottom-box" style="bottom:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad">
-				  <div id="bottomname" class="row valign-wrapper">
-					<div class="col s3 flexcenter" style="justify-content:center">
-					  <img src="img/face-bottom.png" width=82 height=82 alt="" class="active-border circle responsive-img" id="bottomtime">
-					</div>
-					<div class="col s4">
-					  <h5 class="truncate">-</h5>
-					</div>
-					<div class="col s5">
-						<div style="display:inline-flex;width:100%">
-							<a href="#" id="changeView" class="btn orange darken-4 waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;padding:0 6px" disabled><i class="material-icons">low_priority</i></a>
-							<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter" style="box-shadow:none;justify-content:center;width:100%;margin-left:8px;" disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;PLAY</span></a>
+					<div id="bottomname" class="row valign-wrapper">
+						<div class="col s3 flexcenter" style="justify-content:center">
+							<img src="img/face-bottom.png" width=82 height=82 alt=""
+								class="active-border circle responsive-img" id="bottomtime">
 						</div>
-						<h6>
-						  <div id="bottomtrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
-						  <div class="isb labelstat">R:</div>
-						  <div id="bottomround" class="isb round">-</div>
-						  <div class="isb labelstat">&nbsp;P:</div>
-						  <div id="bottompoint" class="isb score">-</div>
-						  <div class="isb labelstat">&nbsp;B:</div>
-						  <div id="bottombid" class="isb trump">-</div>
-						</h6>
+						<div class="col s4">
+							<h5 class="truncate">-</h5>
+						</div>
+						<div class="col s5">
+							<div style="display:inline-flex;width:100%">
+								<a href="#" id="changeView"
+									class="btn orange darken-4 waves-effect waves-light flexcenter"
+									style="box-shadow:none;justify-content:center;padding:0 6px" disabled><i
+										class="material-icons">low_priority</i></a>
+								<a href="#" id="playMove" class="btn white waves-effect waves-light flexcenter"
+									style="box-shadow:none;justify-content:center;width:100%;margin-left:8px;"
+									disabled><i class="material-icons">arrow_upward</i><span>&nbsp;&nbsp;PLAY</span></a>
+							</div>
+							<h6>
+								<div id="bottomtrump" class="isb trumpshow red-text labelstat">T&nbsp;</div>
+								<div class="isb labelstat">R:</div>
+								<div id="bottomround" class="isb round">-</div>
+								<div class="isb labelstat">&nbsp;P:</div>
+								<div id="bottompoint" class="isb score">-</div>
+								<div class="isb labelstat">&nbsp;B:</div>
+								<div id="bottombid" class="isb trump">-</div>
+							</h6>
+						</div>
 					</div>
-				  </div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- Chat -->
-	<div  id="chatopen" class="fixed-chat scale-transition scale-out">
+	<div id="chatopen" class="fixed-chat scale-transition scale-out">
 		<a class="btn-floating btn-large red waves-effect waves-light" href="#">
 			<i class="large material-icons">chat</i>
 		</a>
@@ -207,7 +267,7 @@
 		</div>
 		<span></span>
 	</div>
-	
+
 	<!-- Modals -->
 	<div id="modal-joingame" class="modal modal-fixed-footer">
 		<div class="modal-content">
@@ -218,19 +278,20 @@
 			</div>
 			<div class="input-field">
 				<select id="teamselect" class="icons">
-				  <option value="" disabled selected>Select</option>
-				  <option value="purple" data-icon="img/purple.png" id="optpurple">Team Purple</option>
-				  <option value="green" data-icon="img/green.png" id="optgreen">Team Green</option>
+					<option value="" disabled selected>Select</option>
+					<option value="purple" data-icon="img/purple.png" id="optpurple">Team Purple</option>
+					<option value="green" data-icon="img/green.png" id="optgreen">Team Green</option>
 				</select>
 				<label>Choose your team</label>
 			</div>
-			<div style="display:flex;justify-content:center;"><img alt="" class="responsive-img" src="img/join.jpg"></div>
+			<div style="display:flex;justify-content:center;"><img alt="" class="responsive-img" src="img/join.jpg">
+			</div>
 		</div>
 		<div class="modal-footer">
-		  <a href="#!" class="waves-effect waves-red btn-flat" id="backtoroomlist"> GO BACK </a>
-		  <a href="#!" class="waves-effect waves-green btn-flat" id="joingame"> JOIN GAME </a>
+			<a href="#!" class="waves-effect waves-red btn-flat" id="backtoroomlist"> GO BACK </a>
+			<a href="#!" class="waves-effect waves-green btn-flat" id="joingame"> JOIN GAME </a>
 		</div>
-    </div>
+	</div>
 
 	<div id="modal-roomlist" class="modal modal-fixed-footer">
 		<div class="modal-content">
@@ -252,13 +313,16 @@
 			</ul>
 			<ul class="collapsible rooms-notloaded">
 				<li>
-					<div class="collapsible-header" id="addroomdock"><i class="material-icons">control_point</i>Add Room</div>
+					<div class="collapsible-header" id="addroomdock"><i class="material-icons">control_point</i>Add Room
+					</div>
 					<div class="collapsible-body">
 						<form id="form-addroom" action="#">
 							<label for="room_NEW">Room name</label>
-							<input placeholder="Room name cannot be blank or have special characters" id="room_NEW" type="text" class="validate">
+							<input placeholder="Room name cannot be blank or have special characters" id="room_NEW"
+								type="text" class="validate">
 							<label for="room_NEW_pass">Room password</label>
-							<input placeholder="Create a room password" id="room_NEW_pass" type="password" class="validate">
+							<input placeholder="Create a room password" id="room_NEW_pass" type="password"
+								class="validate">
 							<button type="submit" class="waves-effect waves-light btn">CREATE ROOM</button>
 						</form>
 					</div>
@@ -266,85 +330,105 @@
 			</ul>
 		</div>
 		<div class="modal-footer">
-			<a href="#!" id="roomrefresh" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">refresh</i> REFRESH </a>
+			<a href="#!" id="roomrefresh" class="waves-effect waves-green btn-flat flexcenter"
+				style="justify-content:center;"><i class="material-icons">refresh</i> REFRESH </a>
 		</div>
-    </div>
-	
+	</div>
+
 	<div id="modal-bid" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h4 class="m29 msize">Bid</h4>
-				<ul id="bidlog" class="collection">
-				</ul>
-				<ul id="bidchange" class="collection">
-					<li class="collection-item">
-						<form action="#">
-							<h5 class="center">Place your Bid:</h5>
-							<div class="flexcenter" style="justify-content:center;">
-								<p style="display:inline-block;width:90%" class="range-field">
-									<input type="range" id="bidrange" min="16" max="28" value="16"/>
-								</p>
-								<h5 id="bidupdate" class="center lime accent-4" style="display:inline-block;width:8%;margin:0;border-radius:20px;padding:5px;margin-left:8px;">-</h5>
-							</div>
-							<a id="bidraise" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">arrow_drop_up</i> PLACE BID</div></a>
-							<a id="bidpass" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">fiber_manual_record</i> PASS BID</div></a>
-						</form>
-					</li>
-				</ul>
-				<ul id="trumpset" class="collection">
-					<li class="collection-item">
-						<form action="#">
-							<h5 class="center">Choose Trump Suit:</h5>
-							<br>
-							<ul id="trumpOpt" class="tabs">
-								<li class="tab"><a class="active flexcenter" href="#dummyd">Hearts&nbsp;<img src="img/H.png" height=25 width=25></a></li>
-								<li class="tab"><a class="flexcenter" href="#dummyd">Spades&nbsp;<img src="img/S.png" height=25 width=25></a></li>
-								<li class="tab"><a class="flexcenter" href="#dummyd">Diamonds&nbsp;<img src="img/D.png" height=25 width=25></a></li>
-								<li class="tab"><a class="flexcenter" href="#dummyd">Clubs&nbsp;<img src="img/C.png" height=25 width=25></a></li>
-								<li class="tab"><a class="flexcenter" href="#dummyd">7<sup>th</sup>&nbsp;card&nbsp;<img src="img/7.png" height=25 width=25></a></li>
-							</ul>
-							<div id="dummyd" style="height:0;width:0;display:none;opacity:0"></div>
-							<hr>
-							<a id="trumpsetok" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;SET TRUMP</div></a>
-						</form>
-					</li>
-				</ul>
-				<ul id="biddouble" class="collection">
-					<li class="collection-item">
-						<form action="#">
-							<h5 id="doubletext" class="center">Double:</h5>
-							<br>
-							<div id = "biddoubleopt">
-							</div>
-							<hr>
-							<a id="biddoubleok" href="#" class="btn waves-effect waves-light"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;OK</div></a>
-						</form>
-					</li>
-				</ul>
+			<ul id="bidlog" class="collection">
+			</ul>
+			<ul id="bidchange" class="collection">
+				<li class="collection-item">
+					<form action="#">
+						<h5 class="center">Place your Bid:</h5>
+						<div class="flexcenter" style="justify-content:center;">
+							<p style="display:inline-block;width:90%" class="range-field">
+								<input type="range" id="bidrange" min="16" max="28" value="16" />
+							</p>
+							<h5 id="bidupdate" class="center lime accent-4"
+								style="display:inline-block;width:8%;margin:0;border-radius:20px;padding:5px;margin-left:8px;">
+								-</h5>
+						</div>
+						<a id="bidraise" href="#" class="btn waves-effect waves-light">
+							<div class="flexcenter"><i class="material-icons">arrow_drop_up</i> PLACE BID</div>
+						</a>
+						<a id="bidpass" href="#" class="btn waves-effect waves-light">
+							<div class="flexcenter"><i class="material-icons">fiber_manual_record</i> PASS BID</div>
+						</a>
+					</form>
+				</li>
+			</ul>
+			<ul id="trumpset" class="collection">
+				<li class="collection-item">
+					<form action="#">
+						<h5 class="center">Choose Trump Suit:</h5>
+						<br>
+						<ul id="trumpOpt" class="tabs">
+							<li class="tab"><a class="active flexcenter" href="#dummyd">Hearts&nbsp;<img src="img/H.png"
+										height=25 width=25></a></li>
+							<li class="tab"><a class="flexcenter" href="#dummyd">Spades&nbsp;<img src="img/S.png"
+										height=25 width=25></a></li>
+							<li class="tab"><a class="flexcenter" href="#dummyd">Diamonds&nbsp;<img src="img/D.png"
+										height=25 width=25></a></li>
+							<li class="tab"><a class="flexcenter" href="#dummyd">Clubs&nbsp;<img src="img/C.png"
+										height=25 width=25></a></li>
+							<li class="tab"><a class="flexcenter" href="#dummyd">7<sup>th</sup>&nbsp;card&nbsp;<img
+										src="img/7.png" height=25 width=25></a></li>
+						</ul>
+						<div id="dummyd" style="height:0;width:0;display:none;opacity:0"></div>
+						<hr>
+						<a id="trumpsetok" href="#" class="btn waves-effect waves-light">
+							<div class="flexcenter"><i class="material-icons">check</i>&nbsp;SET TRUMP</div>
+						</a>
+					</form>
+				</li>
+			</ul>
+			<ul id="biddouble" class="collection">
+				<li class="collection-item">
+					<form action="#">
+						<h5 id="doubletext" class="center">Double:</h5>
+						<br>
+						<div id="biddoubleopt">
+						</div>
+						<hr>
+						<a id="biddoubleok" href="#" class="btn waves-effect waves-light">
+							<div class="flexcenter"><i class="material-icons">check</i>&nbsp;OK</div>
+						</a>
+					</form>
+				</li>
+			</ul>
 		</div>
 		<div class="modal-footer">
 			<h6 class="center">BID FOR POINTS</h6>
 		</div>
-    </div>
-	
+	</div>
+
 	<div id="modal-trumpyesno" class="modal bottom-sheet">
 		<div class="modal-content center-align">
 			<div class="row">
 				<div class="col s12">
-				  <div class="card blue-grey darken-1">
-					<div class="card-content white-text">
-					  <span class="card-title">Open Trump?</span>
-					  <p>Are you sure you want to open the trump card?</p>
+					<div class="card blue-grey darken-1">
+						<div class="card-content white-text">
+							<span class="card-title">Open Trump?</span>
+							<p>Are you sure you want to open the trump card?</p>
+						</div>
+						<div class="card-action">
+							<a href="#" class="btn red waves-effect waves-light" id="trumpyes">
+								<div class="flexcenter"><i class="material-icons">check</i>&nbsp;YES</div>
+							</a>&nbsp;&nbsp;
+							<a href="#" class="btn waves-effect waves-light" id="trumpno">
+								<div class="flexcenter"><i class="material-icons">close</i>&nbsp;NO</div>
+							</a>
+						</div>
 					</div>
-					<div class="card-action">
-					  <a href="#" class="btn red waves-effect waves-light" id="trumpyes"><div class="flexcenter"><i class="material-icons">check</i>&nbsp;YES</div></a>&nbsp;&nbsp;
-					  <a href="#" class="btn waves-effect waves-light" id="trumpno"><div class="flexcenter"><i class="material-icons">close</i>&nbsp;NO</div></a>
-					</div>
-				  </div>
 				</div>
 			</div>
 		</div>
-    </div>
-	
+	</div>
+
 	<div id="modal-gameover" class="modal">
 		<div class="modal-content">
 			<h3 class="m29 bsize">Game Over</h3>
@@ -354,9 +438,10 @@
 			<br>
 		</div>
 		<div class="modal-footer">
-			<a href="./" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">refresh</i> GO TO HOME PAGE </a>
+			<a href="./" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i
+					class="material-icons">refresh</i> GO TO HOME PAGE </a>
 		</div>
-    </div>
+	</div>
 
 	<div id="modal-credits" class="modal modal-fixed-footer">
 		<div class="modal-content" style="background-color:#1a191c;">
@@ -369,15 +454,17 @@
 				<br>
 				A huge shout out to Subhojoy for handling the server end of things.
 				<br>
-				Special thanks to KM, MR(1,2), SD(1,2,3), KP, JS and SD1(+1 x2) for the innumerable calls and painful testing sessions. You guys are ❤
+				Special thanks to KM, MR(1,2), SD(1,2,3), KP, JS and SD1(+1 x2) for the innumerable calls and painful
+				testing sessions. You guys are ❤
 				<br>
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a href="#" id="closeCredits" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
+			<a href="#" id="closeCredits" class="waves-effect waves-green btn-flat flexcenter"
+				style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
 		</div>
-    </div>
-	
+	</div>
+
 	<div id="modal-chat" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<h3 class="m29 msize">Chat</h3><span>Click anywhere outside the chat window to close it</span>
@@ -403,13 +490,15 @@
 			</div>
 			<form id="form-chat" action="#">
 				<div class="input-field hover-text flexcenter">
-					<div style="width:90%"><input placeholder="Type a message" id="chatmessage" type="text" class="validate"></div>
-					<div style="width:10%"><button type="submit" class="waves-effect waves-light btn" style="width:90%;">SEND</button></div>
+					<div style="width:90%"><input placeholder="Type a message" id="chatmessage" type="text"
+							class="validate"></div>
+					<div style="width:10%"><button type="submit" class="waves-effect waves-light btn"
+							style="width:90%;">SEND</button></div>
 				</div>
 			</form>
 		</div>
-    </div>
-	
+	</div>
+
 	<div id="modal-share" class="modal">
 		<div class="modal-content">
 			<h3 class="m29 msize">Share</h3>
@@ -422,28 +511,36 @@
 				<a href="https://plus.google.com/share?url=https://sins29.herokuapp.com" target="_blank">
 					<img src="img/share/google.png" alt="Google">
 				</a>
-				<a href="https://twitter.com/share?url=https://sins29.herokuapp.com&amp;text=The%2029%20Game&amp;hashtags=the29game" target="_blank">
+				<a href="https://twitter.com/share?url=https://sins29.herokuapp.com&amp;text=The%2029%20Game&amp;hashtags=the29game"
+					target="_blank">
 					<img src="img/share/twitter.png" alt="Twitter">
 				</a>
-				<a href="http://reddit.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+				<a href="http://reddit.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game"
+					target="_blank">
 					<img src="img/share/reddit.png" alt="Reddit">
 				</a>
-				<a href="javascript:void((function()%7Bvar%20e=document.createElement('script');e.setAttribute('type','text/javascript');e.setAttribute('charset','UTF-8');e.setAttribute('src','https://assets.pinterest.com/js/pinmarklet.js?r='+Math.random()*99999999);document.body.appendChild(e)%7D)());">
+				<a
+					href="javascript:void((function()%7Bvar%20e=document.createElement('script');e.setAttribute('type','text/javascript');e.setAttribute('charset','UTF-8');e.setAttribute('src','https://assets.pinterest.com/js/pinmarklet.js?r='+Math.random()*99999999);document.body.appendChild(e)%7D)());">
 					<img src="img/share/pinterest.png" alt="Pinterest">
 				</a>
-				<a href="http://www.stumbleupon.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+				<a href="http://www.stumbleupon.com/submit?url=https://sins29.herokuapp.com&amp;title=The 29 Game"
+					target="_blank">
 					<img src="img/share/stumbleupon.png" alt="StumbleUpon">
 				</a>
-				<a href="http://www.tumblr.com/share/link?url=https://sins29.herokuapp.com&amp;title=The 29 Game" target="_blank">
+				<a href="http://www.tumblr.com/share/link?url=https://sins29.herokuapp.com&amp;title=The 29 Game"
+					target="_blank">
 					<img src="img/share/tumblr.png" alt="Tumblr">
 				</a>
-				<a href="mailto:?Subject=The 29 Game&amp;Body=Play%20a%20game%20of%2029%20 https://sins29.herokuapp.com" target="_blank">
+				<a href="mailto:?Subject=The 29 Game&amp;Body=Play%20a%20game%20of%2029%20 https://sins29.herokuapp.com"
+					target="_blank">
 					<img src="img/share/email.png" alt="Email">
 				</a>
-				<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https://sins29.herokuapp.com" target="_blank">
+				<a href="http://www.linkedin.com/shareArticle?mini=true&amp;url=https://sins29.herokuapp.com"
+					target="_blank">
 					<img src="img/share/linkedin.png" alt="LinkedIn">
 				</a>
-				<a href="https://bufferapp.com/add?url=https://sins29.herokuapp.com&amp;text=The 29 Game" target="_blank">
+				<a href="https://bufferapp.com/add?url=https://sins29.herokuapp.com&amp;text=The 29 Game"
+					target="_blank">
 					<img src="img/share/buffer.png" alt="Buffer">
 				</a>
 				<a href="http://www.digg.com/submit?url=https://sins29.herokuapp.com" target="_blank">
@@ -455,9 +552,10 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a href="#" id="closeShare" class="waves-effect waves-green btn-flat flexcenter" style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
+			<a href="#" id="closeShare" class="waves-effect waves-green btn-flat flexcenter"
+				style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
 		</div>
-    </div>
+	</div>
 
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript" src="js/materialize.min.js"></script>
@@ -465,12 +563,12 @@
 	<script type="text/javascript" src="js/script.js"></script>
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-163792566-1"></script>
 	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
 
-	  gtag('config', 'UA-163792566-1');
+		gtag('config', 'UA-163792566-1');
 	</script>
 </body>
+
 </html>
-        

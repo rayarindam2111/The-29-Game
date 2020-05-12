@@ -6,3 +6,6 @@ https://sins29.herokuapp.com
 
 Wikipedia:
 https://en.wikipedia.org/wiki/Twenty-eight_(card_game)
+
+Game rules:
+https://www.pagat.com/jass/29.html
