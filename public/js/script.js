@@ -237,6 +237,8 @@ $('#form-addroom').submit(function () {
 $('#form-chat').submit(function () {
 	if ($("#chatmessage").val().trim() == "")
 		return false;
+	if ($("#chatmessage").val().trim() == 'reconnectVoice') //hack to reconnect voice
+		setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 2000);
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + encodeHTML($("#chatmessage").val());
 	$("#chatmessage").val('');
 	socket.emit('chat', { 'id': gVars.curRoomID, 'msg': msg });
@@ -284,7 +286,7 @@ function roomenter_submit() {
 	});
 }
 
-/* start VoiceServer async end VoiceServer */ function joingame() {
+/* start VoiceServer  async  end VoiceServer */ function joingame() {
 	$('#chatopen').show();
 	$('#chatopen').addClass('scale-in');
 	playscreenTeamUpdate();

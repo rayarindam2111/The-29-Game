@@ -86,13 +86,13 @@ class audioChat {
                 document.body.appendChild(streamElem);
                 await navigator.mediaDevices.getUserMedia({ video: vidEnable, audio: true }).then(
                     function (stream) {
-                        console.log('Incoming call');
+                        console.log('Incoming call: ' + call.peer);
                         call.answer(stream); // Answer the call with an A/V stream.
                         call.on('stream',
                             function (remoteStream) {
                                 streamElem.srcObject = remoteStream;
                             });
-                        eCalls.addCall(call, streamElem , 'in');
+                        eCalls.addCall(call, streamElem , call.peer);
                     }).catch(
                         function (err) {
                             console.log('Failed to get local stream: ', err);
@@ -127,7 +127,7 @@ class audioChat {
                         function (remoteStream) {
                             streamElem.srcObject = remoteStream;
                         });
-                    eCalls.addCall(call, streamElem, callNow);
+                    eCalls.addCall(call, streamElem, call.peer);
                 }).catch(
                     function (err) {
                         console.log('Failed to get local stream: ', err);
@@ -189,5 +189,5 @@ function changeMuteVoice(ID, CID, MUTE) {
 }
 socket.on(socketText, function (data) {
     if (streamRunning)
-        voiceChat.socketCallback(data);
+        setTimeout(function(){voiceChat.socketCallback(data);},1000);
 });
