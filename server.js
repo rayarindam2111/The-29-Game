@@ -14,6 +14,9 @@ class rooms {
 		this.room_teampurple = [];
 		this.room_teamgreen = [];
 		this.room_game = [];
+		/* start VoiceServer */
+		this.room_voice = [];
+		/* end VoiceServer */
 	}
 
 	addRoom(name, pass, timestamp) {
@@ -24,6 +27,9 @@ class rooms {
 		this.room_teampurple.push([]);
 		this.room_teamgreen.push([]);
 		this.room_game.push('');
+		/* start VoiceServer */
+		this.room_voice.push([]);
+		/* end VoiceServer */
 		this.room_count += 1;
 		console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
 	}
@@ -37,6 +43,9 @@ class rooms {
 			this.room_timestamps.splice(index, 1);
 			this.room_teampurple.splice(index, 1);
 			this.room_teamgreen.splice(index, 1);
+			/* start VoiceServer */
+			this.room_voice.splice(index, 1);
+			/* end VoiceServer */
 			this.room_game.splice(index, 1);
 			this.room_count -= 1;
 			console.log(colors.bgBlue.red('Room deleted: ' + ID));
@@ -146,15 +155,6 @@ class rooms {
 			console.log(colors.bgRed.black('Trump receive error: ' + msg.id));
 	}
 
-	sendChat(msg) {
-		var index = this.room_ids.indexOf(msg.id);
-		if (index > -1) {
-			io.in(msg.id).emit('chat', { 'msg': msg.msg });
-		}
-		else
-			console.log(colors.bgRed.black('Chat receive error: ' + msg.id));
-	}
-
 	getRoomEmitLog(id) {
 		var index = this.room_ids.indexOf(id);
 		if (index > -1) {
@@ -165,6 +165,39 @@ class rooms {
 			return -1;
 		}
 	}
+
+	sendChat(msg) {
+		var index = this.room_ids.indexOf(msg.id);
+		if (index > -1) {
+			io.in(msg.id).emit('chat', { 'msg': msg.msg });
+		}
+		else
+			console.log(colors.bgRed.black('Chat receive error: ' + msg.id));
+	}
+
+	/* start VoiceServer */
+	sendVoice(msg) {
+		var index = this.room_ids.indexOf(msg.id); //id:roomid,cid:callerid,calls:calls to make,op:conn/del
+		if (index > -1) {
+			var uID = msg.id + msg.cid;
+			if (msg.op == 'conn') {
+				io.in(msg.id).emit('adc', { cid: uID, calls: this.room_voice[index] });
+				if (!(this.room_voice[index].indexOf(uID) > -1))
+					this.room_voice[index].push(uID);
+			}
+			else if (msg.op == 'del') {
+				var ri = this.room_voice[index].indexOf(uID);
+				if (ri > -1) {
+					this.room_voice[index].splice(ri, 1);
+				}
+			}
+		}
+		else
+			console.log(colors.bgRed.black('Voice receive error: ' + msg.id));
+	}
+	/* end VoiceServer */
+
+
 };
 
 class Cards {
@@ -707,7 +740,7 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//
+app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//, { maxAge: 1800000 }
 
 http.listen(port, function () {
 	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
@@ -789,5 +822,11 @@ io.on('connection', function (socket) {
 	socket.on('chat', function (msg) {
 		Rooms.sendChat(msg);
 	});
+
+	/* start VoiceServer */
+	socket.on('adc', function (msg) {
+		Rooms.sendVoice(msg);
+	});
+	/* end VoiceServer */
 
 });

@@ -407,6 +407,42 @@ purple {
 	/*box-shadow: inset 14px 0px 34px -10px rgb(68, 129, 196)!important;*/
 }
 
+.voicecalls, .voicecalls > i {
+	transition: all .1s;
+	cursor: pointer;
+}
+
+.voicecalls:hover {
+	width: 85px;
+	height: 85px;
+}
+
+.voicecalls:hover > i{
+	transform: scale(1.3);
+}
+
+.icon-player {
+	width: 82px;
+	height: 82px;
+	display: flex;
+	align-items: flex-end;
+	justify-content: flex-end;
+	font-size: 1rem;
+	position: absolute;
+	background: radial-gradient(#2700ff7a, #00e53c8f);
+	border-radius: 50% 50% 5px 50%;
+}
+
+.icon-player > i {
+	font-size:inherit;
+}
+
+.icon-player > img {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 @keyframes textchange {
   0% {content:'';}
   34% {content:'.';}

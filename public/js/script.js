@@ -7,6 +7,7 @@ function arrayRotate(arr, count) {
 const encodeHTML = (input) => {
 	return $('<div/>').text(input).html();
 }
+
 /*
 function encodeHTML(s) {
 	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -283,7 +284,7 @@ function roomenter_submit() {
 	});
 }
 
-function joingame() {
+/* start VoiceServer async end VoiceServer */ function joingame() {
 	$('#chatopen').show();
 	$('#chatopen').addClass('scale-in');
 	playscreenTeamUpdate();
@@ -303,6 +304,15 @@ function joingame() {
 	window.onbeforeunload = function () {
 		return "Are you sure you want to leave the game?";
 	}
+
+	gVars.matchRunning = true;
+
+	/* start VoiceServer */
+	//audioOnly = window.audioOnly || true;
+	//await navigator.mediaDevices.getUserMedia({video:!audioOnly,audio:true}).then((stream)=>{}).catch((err)=>{});
+	startVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID);
+	/* end VoiceServer */
+
 	if (!gVars.isMobile) {
 		var full = document.documentElement;
 		if (full.requestFullscreen)
@@ -314,7 +324,6 @@ function joingame() {
 		else if (full.msRequestFullscreen)
 			full.msRequestFullscreen();
 	}
-	gVars.matchRunning = true;
 }
 
 function teamselectrefresh() {
@@ -340,6 +349,16 @@ function teamselectrefresh() {
 	$('#teamselect').formSelect();
 }
 
+/* start VoiceServer */
+function idteamfromelem(elem) {
+	var carr = ['green0', 'purple0', 'green1', 'purple1'];
+	var direction = ['w', 'n', 'e', 's'];
+	arrayRotate(direction, carr.indexOf('s') - carr.indexOf(gVars.myteam + gVars.myUserID));
+	var indexPos = direction.indexOf(elem);
+	return carr[indexPos];
+}
+/* end VoiceServer */
+
 function elemfromidteam(selector, suffix, teamAndID) {
 	var carr = ['green0', 'purple0', 'green1', 'purple1']; //order of play
 	var direction = ['w', 'n', 'e', 's'];
@@ -360,9 +379,9 @@ function elemfromidteam(selector, suffix, teamAndID) {
 
 function playscreenTeamUpdate() {
 	for (var i = 0; i < gVars.greenplayers.length; i++)
-		$(elemfromidteam('#', 'name', 'green' + i) + '>div>h5').html(gVars.greenplayers[i]);
+		$(elemfromidteam('#', 'name>div>h5', 'green' + i)).html(gVars.greenplayers[i]);
 	for (var i = 0; i < gVars.purpleplayers.length; i++)
-		$(elemfromidteam('#', 'name', 'purple' + i) + '>div>h5').html(gVars.purpleplayers[i]);
+		$(elemfromidteam('#', 'name>div>h5', 'purple' + i)).html(gVars.purpleplayers[i]);
 }
 
 $('#bottomcardbox').click(function (event) {
@@ -532,6 +551,22 @@ $('#closeCredits').click(function () {
 	return false;
 });
 
+/* start VoiceServer */
+$('.voicecalls').click(function (elem) {
+	var c = $(elem.currentTarget);
+	if (c.attr('data-mute') == 'off') {
+		changeMuteVoice(gVars.curRoomID, idteamfromelem(c.attr('data-pos')), true);
+		c.attr('data-mute', 'on');
+		c.children('i').html('mic_off');
+	}
+	else {
+		changeMuteVoice(gVars.curRoomID, idteamfromelem(c.attr('data-pos')), false);
+		c.attr('data-mute', 'off');
+		c.children('i').html('mic');
+	}
+});
+/* end VoiceServer */
+
 $('#modal-chat>div.modal-footer>div').click(function (e) {
 	if (!$(e.target).hasClass('chip'))
 		return false;
@@ -612,7 +647,7 @@ function cardPlayed(player, card, deckcards) {
 	var unqIndex = gVars.myteam + gVars.myUserID;
 	var cur = playerFromNumber(numberFromPlayer(player));
 	$(elemfromidteam('#', 'table', player)).css('z-index', gVars.currentPlayerPos * 10);
-	$(elemfromidteam('#', 'table', player) + '>img').attr('src', 'img/cards/' + card + '.PNG');
+	$(elemfromidteam('#', 'table>img', player)).attr('src', 'img/cards/' + card + '.PNG');
 	$(elemfromidteam('#', 'table', player)).show();
 	gVars.sound_play.play();
 	generateStack(deckcards, elemfromidteam('#', 'cardbox', cur.player), unqIndex == cur.player ? 'nocolor' : cur.team);
@@ -676,6 +711,9 @@ function playProcess(data) {
 				}
 				$('#winmessage').append(text + '</tbody></table>');
 				$('#modal-gameover').modal('open');
+				/* start VoiceServer */
+				//endVoice();
+				/* end VoiceServer */
 			}
 
 			for (var i = 0; i < 4; i++) {
@@ -1227,6 +1265,9 @@ socket.on('reconnect', function () {
 	//M.toast({html: 'Reconnected',displayLength:1500});
 	if (gVars.matchRunning)
 		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount });
+	/* start VoiceServer */
+	setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 3000);
+	/* end VoiceServer */
 });
 
 socket.on('chat', function (data) {

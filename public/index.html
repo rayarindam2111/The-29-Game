@@ -113,9 +113,12 @@
 			<div class="boxes top-box" style="top:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin">
 					<div id="topname" class="row valign-wrapper">
-						<div class="col s3 flexcenter" style="justify-content:center">
-							<img src="img/face-top.png" width=82 height=82 alt=""
-								class="active-border circle responsive-img" id="toptime">
+						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
+							<div class="icon-player voicecalls" data-pos="n" data-mute="off">
+								<i class="tiny material-icons">mic</i>
+								<img src="img/face-top.png" width=82 height=82 alt=""
+									class="active-border responsive-img" id="toptime">
+							</div>
 						</div>
 						<div class="col s4">
 							<h5 class="truncate">-</h5>
@@ -142,9 +145,12 @@
 			<div class="boxes left-box" style="left:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
 					<div id="leftname" class="row valign-wrapper">
-						<div class="col s3 flexcenter" style="justify-content:center">
-							<img src="img/face-left.png" width=82 height=82 alt=""
-								class="active-border circle responsive-img" id="lefttime">
+						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
+							<div class="icon-player voicecalls" data-pos="w" data-mute="off">
+								<i class="tiny material-icons">mic</i>
+								<img src="img/face-left.png" width=82 height=82 alt=""
+									class="active-border responsive-img" id="lefttime">
+							</div>
 						</div>
 						<div class="col s4">
 							<h5 class="truncate">-</h5>
@@ -182,9 +188,12 @@
 			<div class="boxes right-box" style="right:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
 					<div id="rightname" class="row valign-wrapper">
-						<div class="col s3 flexcenter" style="justify-content:center">
-							<img src="img/face-right.png" width=82 height=82 alt=""
-								class="active-border circle responsive-img" id="righttime">
+						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
+							<div class="icon-player voicecalls" data-pos="e" data-mute="off">
+								<i class="tiny material-icons">mic</i>
+								<img src="img/face-right.png" width=82 height=82 alt=""
+									class="active-border responsive-img" id="righttime">
+							</div>
 						</div>
 						<div class="col s4">
 							<h5 class="truncate">-</h5>
@@ -211,9 +220,12 @@
 			<div class="boxes bottom-box" style="bottom:0;">
 				<div class="card-panel grey lighten-5 z-depth-1 lowpad">
 					<div id="bottomname" class="row valign-wrapper">
-						<div class="col s3 flexcenter" style="justify-content:center">
-							<img src="img/face-bottom.png" width=82 height=82 alt=""
-								class="active-border circle responsive-img" id="bottomtime">
+						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
+							<div class="icon-player" data-pos="s" data-mute="off" style="border-radius:50%">
+								<!--<i class="tiny material-icons">mic</i>-->
+								<img src="img/face-bottom.png" width=82 height=82 alt=""
+									class="active-border responsive-img" id="bottomtime">
+							</div>
 						</div>
 						<div class="col s4">
 							<h5 class="truncate">-</h5>
@@ -271,7 +283,7 @@
 	<!-- Modals -->
 	<div id="modal-joingame" class="modal modal-fixed-footer">
 		<div class="modal-content">
-			<h4 class="mw29 msize">Join Game</h4>
+			<h4 class="m29 msize">Join Game</h4>
 			<div class="input-field">
 				<input id="username" type="text" class="validate">
 				<label for="username">Your Name</label>
@@ -561,6 +573,12 @@
 	<script type="text/javascript" src="js/materialize.min.js"></script>
 	<script type="text/javascript" src="js/socket.io.js"></script>
 	<script type="text/javascript" src="js/script.js"></script>
+	<!-- start VoiceServer -->
+	<script type="text/javascript" src="js/peerjs.min.js"></script>
+	<script type="text/javascript" src="js/voiceserver.js"></script>
+	<!-- end VoiceServer -->
+
+
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-163792566-1"></script>
 	<script>
 		window.dataLayer = window.dataLayer || [];
