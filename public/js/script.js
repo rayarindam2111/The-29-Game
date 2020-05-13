@@ -286,7 +286,7 @@ function roomenter_submit() {
 	});
 }
 
-/* start VoiceServer  async  end VoiceServer */ function joingame() {
+/* start VoiceServer */ async /* end VoiceServer */ function joingame() {
 	$('#chatopen').show();
 	$('#chatopen').addClass('scale-in');
 	playscreenTeamUpdate();
@@ -310,9 +310,7 @@ function roomenter_submit() {
 	gVars.matchRunning = true;
 
 	/* start VoiceServer */
-	//audioOnly = window.audioOnly || true;
-	//await navigator.mediaDevices.getUserMedia({video:!audioOnly,audio:true}).then((stream)=>{}).catch((err)=>{});
-	startVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID);
+	await startVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID);
 	/* end VoiceServer */
 
 	if (!gVars.isMobile) {

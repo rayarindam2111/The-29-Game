@@ -429,7 +429,8 @@ purple {
 	justify-content: flex-end;
 	font-size: 1rem;
 	position: absolute;
-	background: radial-gradient(#2700ff7a, #00e53c8f);
+	background: rgba(39,0,255,.48);
+	background: radial-gradient(rgba(39,0,255,.48), rgba(0,229,60,.56));
 	border-radius: 50% 50% 5px 50%;
 }
 

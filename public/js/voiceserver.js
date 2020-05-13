@@ -69,15 +69,16 @@ class audioChat {
         socket.emit(this.socketLink, { id: this.roomID, cid: this.cID, op: 'conn' });
     }
 
-    init(roomid, callerid) {
+    async init(roomid, callerid) {
         this.roomID = roomid;
         this.cID = callerid;
         this.myID = roomid + callerid;
         try {
+			var vidEnable = !this.audioOnly;
+			await navigator.mediaDevices.getUserMedia({ video: vidEnable, audio: true }).then(function(s){myStream=s}).catch(function (err){console.log('Failed to get local stream: ', err);return;});
             this.myPeer = new Peer(this.myID, { host: this.host, port: this.port, path: this.path });
             this.registerID();
-
-            var vidEnable = !this.audioOnly;
+            
             var eCalls = this.existingCalls;
             this.myPeer.on('call', async function (call) {
                 var streamElem = document.createElement(vidEnable ? 'video' : 'audio');
@@ -87,7 +88,7 @@ class audioChat {
                 await navigator.mediaDevices.getUserMedia({ video: vidEnable, audio: true }).then(
                     function (stream) {
                         console.log('Incoming call: ' + call.peer);
-                        call.answer(stream); // Answer the call with an A/V stream.
+                        call.answer(myStream); // Answer the call with an A/V stream.
                         call.on('stream',
                             function (remoteStream) {
                                 streamElem.srcObject = remoteStream;
@@ -121,7 +122,7 @@ class audioChat {
                     streamElem.autoplay = true;
                     streamElem.volume = 1;
                     document.body.appendChild(streamElem);
-                    var call = peer.call(callNow, stream);
+                    var call = peer.call(callNow, myStream);
                     console.log('Calling: ' + callNow);
                     call.on('stream',
                         function (remoteStream) {
@@ -154,6 +155,7 @@ class audioChat {
     }
 };
 
+var myStream;
 var chatServer = 'vsins29.herokuapp.com';
 var port = document.location.protocol == 'http:' ? 80 : 443;
 var path = '/voice';
@@ -162,8 +164,8 @@ var socketText = 'adc';
 var voiceChat = new audioChat(socketText, audioOnly, chatServer, port, path);
 var streamRunning = false;
 
-function startVoice(ID, CID) {
-    voiceChat.init(ID, CID);
+async function startVoice(ID, CID) {
+    await voiceChat.init(ID, CID);
     streamRunning = true;
 }
 function reconnectVoice(ID, CID) {
@@ -187,6 +189,7 @@ function endVoice() {
 function changeMuteVoice(ID, CID, MUTE) {
     voiceChat.mute(ID, CID, MUTE);
 }
+
 socket.on(socketText, function (data) {
     if (streamRunning)
         setTimeout(function(){voiceChat.socketCallback(data);},1000);
