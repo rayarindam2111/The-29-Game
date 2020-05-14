@@ -658,7 +658,7 @@ class Game {
 		else if (this.points[this.nextPlayer(this.bid_winner, 'anti')] > 28 - this.bid_value)
 			round_state = this.teamwin(this.nextPlayer(this.bid_winner, 'anti'));
 
-		if (fromPlay)
+		if (fromPlay || (!fromPlay && round_state == 'go'))
 			this.nextPlayEmit(true, winner, round_state);
 
 		if (round_state == 'ro') {//roundover
