@@ -32,8 +32,10 @@ class callData {
 
     mute(ID, MUTE) {
         var ce = this.callIDexists(ID);
-        if (ce != -1)
+        if (ce != -1) {
             this.callLog[ce].streamElem.muted = MUTE;
+			console.log((MUTE?'Muted ':'Unmuted ') + ID);
+		}
         else
             console.log('Mute failed: ' + ID);
     }
@@ -137,7 +139,16 @@ class audioChat {
     }
 
     mute(ID, CID, MUTE) {
-        this.existingCalls.mute(ID + CID, MUTE);
+		if(ID + CID == this.myID) // mute self stream
+			try {
+				myStream.getAudioTracks()[0].enabled = !MUTE;
+				console.log((MUTE?'Muted ':'Unmuted ') + this.myID);
+			}
+			catch(e) {
+				console.log('Mute failed: ' + this.myID);
+			}
+		else
+			this.existingCalls.mute(ID + CID, MUTE);
     }
 
     disconnect() {

@@ -310,6 +310,11 @@ function roomenter_submit() {
 	gVars.matchRunning = true;
 
 	/* start VoiceServer */
+	for(var i = 0; i < $('.icon-player').length; i++){
+		var team = playerFromNumber(numberFromPlayer(idteamfromelem($($('.icon-player')[i]).attr('data-pos')))).team;
+		$($('.icon-player')[i]).addClass(team=='green'?'greengrad':'purplegrad');
+	}
+		
 	await startVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID);
 	/* end VoiceServer */
 
@@ -552,7 +557,7 @@ $('#closeCredits').click(function () {
 });
 
 /* start VoiceServer */
-$('.voicecalls').click(function (elem) {
+$('.icon-player').click(function (elem) {
 	var c = $(elem.currentTarget);
 	if (c.attr('data-mute') == 'off') {
 		changeMuteVoice(gVars.curRoomID, idteamfromelem(c.attr('data-pos')), true);
