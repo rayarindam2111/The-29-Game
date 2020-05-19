@@ -28,6 +28,10 @@
 	border: 2px solid rgba(255,255,255,.5);
 }
 
+p>strong {
+	font-weight: bold;
+}
+
 html {
 	height: 100%;
 	font-family:-apple-system,BlinkMacSystemFont,Roboto,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;

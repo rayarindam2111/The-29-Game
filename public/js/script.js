@@ -368,9 +368,9 @@ function roomenter_submit() {
 
 function teamselectrefresh() {
 	if (gVars.purpleplayers.length > 0)
-		text = 'Players: ' + gVars.purpleplayers;
+		text = '<strong>Players:</strong> ' + gVars.purpleplayers;
 	else
-		text = 'Players: -';
+		text = '<strong>Players:</strong> -';
 	$('#optpurple>div>div>p').html(text);
 	if (gVars.purpleplayers.length == 2)
 		$('#optpurple').addClass('dSelect');
@@ -378,9 +378,9 @@ function teamselectrefresh() {
 		$('#optpurple').removeClass('dSelect');
 
 	if (gVars.greenplayers.length > 0)
-		text = 'Players: ' + gVars.greenplayers;
+		text = '<strong>Players:</strong> ' + gVars.greenplayers;
 	else
-		text = 'Players: -';
+		text = '<strong>Players:</strong> -';
 	$('#optgreen>div>div>p').html(text);
 	if (gVars.greenplayers.length == 2)
 		$('#optgreen').addClass('dSelect');
@@ -735,12 +735,14 @@ function enableTrump(select) {
 }
 
 function playProcess(data) {
+	var timeEnd;
 	if (data.op.re == 'ro') {
 		M.toast({ html: 'New Round', displayLength: 2000 });
 		gVars.card7 = '';
 	}
 	else if (data.op.re == 'go') {
 		gVars.matchRunning = false;
+		timeEnd = Date.now();
 		M.toast({ html: 'Game Over', displayLength: 2000 });
 		window.onbeforeunload = null;
 	}
@@ -757,8 +759,12 @@ function playProcess(data) {
 	if (data.op.fp) {
 		setTimeout(function () {
 			if (data.op.re == 'go') {
+				var winHours = parseInt((timeEnd - gVars.startTime)/(1000*60*60));
+				winHours = (winHours<10)?zeroPad(winHours,2):winHours.toString();
+				var winMins = zeroPad(parseInt((timeEnd - gVars.startTime)/(1000*60))%60,2);
+				var winSecs = zeroPad(parseInt((timeEnd - gVars.startTime)/1000)%60,2);
 				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
-				$('#winmessage').html('<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> wins the game.');
+				$('#winmessage').html('<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> wins the game in <red>'+winHours+':'+winMins+':'+winSecs+'</red>.');
 				var text = '<table><thead><tr><th>Player Name</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
@@ -896,6 +902,7 @@ var gVars = {
 	sockMsgCount: '',  // socket msg received count
 	card7: '',         // 7th card, '' if not used
 	showMode: '',      // 'sort', 'original' : cards shown in deck
+	startTime: '',     // match start time obtained from Date.now()
 
 	set curRoomID(data) {
 		curRoomID = data;
@@ -1052,6 +1059,12 @@ var gVars = {
 	},
 	get showMode() {
 		return showMode;
+	},
+	set startTime(data) {
+		startTime = data;
+	},
+	get startTime() {
+		return startTime;
 	}
 };
 
@@ -1143,6 +1156,8 @@ socket.on('prf', function (data) {
 
 socket.on('cst', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
+	if(gVars.startTime == '')
+		gVars.startTime = Date.now();
 	$('#playerwait').hide();
 	$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
 
@@ -1493,6 +1508,7 @@ $(function () {
 	$('.range-field>span').css('width', '30px!important');
 	$('.trumpshow').hide();
 	$('#trumpset').hide();
+	gVars.startTime = '';
 	gVars.myteam = '';
 	gVars.sockMsgCount = 0;
 	gVars.showMode = 'sort';
