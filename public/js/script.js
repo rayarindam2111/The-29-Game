@@ -8,6 +8,11 @@ const encodeHTML = (input) => {
 	return $('<div/>').text(input).html();
 }
 
+function zeroPad(num, padlen) {
+    var pad = new Array(1 + padlen).join('0');
+    return (pad + num).slice(-pad.length);
+}
+
 /*
 function encodeHTML(s) {
 	return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -56,6 +61,19 @@ function indexOfMax(arr) {
 
 	return maxIndex;
 }
+
+/* start VoiceServer */
+function voiceCallback(callID,direction) {
+	var pl = callID.slice(gVars.curRoomID.length);
+	var elem = elemfromidteam('.','Pcard',pl);
+	$(elem).addClass('callAnim');
+	$(elem+'>i').html(direction=='out'?'call_made':'call_received');
+	setTimeout(function(){
+		$(elem).removeClass('callAnim');
+		$(elem+'>i').html($(elem).attr('data-mute') == 'off'?'mic':'mic_off');
+	},4600);
+}
+/* end VoiceServer */
 
 function timeout(percent, elem, team, first) {
 	var icircle = percent * 360 / 100;
@@ -213,10 +231,10 @@ $("#roomrefresh").click(function () {
 });
 
 $('#form-addroom').submit(function () {
-	var usr = $('#room_NEW').val();
+	var usr = $('#room_NEW').val().trim();
 	var pass = $('#room_NEW_pass').val();
 	var timestamp = Date.now();
-	if (usr.trim() == "" || checkSpChars(usr)) {
+	if (usr == "" || checkSpChars(usr) || usr.length>10) {
 		$('#room_NEW').val('');
 		$('#room_NEW_pass').val('');
 		return false;
@@ -252,10 +270,10 @@ $('#backtoroomlist').click(function () {
 });
 
 $('#joingame').click(function () {
-	var usrN = $('#username').val();
-	if (usrN.trim() == "" || checkSpChars(usrN)) {
+	var usrN = $('#username').val().trim();
+	if (usrN == "" || checkSpChars(usrN) || usrN.length>15) {
 		$('#username').val('');
-		M.toast({ html: 'Name cannot be blank or have special characters', displayLength: 3000 });
+		M.toast({ html: 'Name cannot be blank, have special characters or be more than 15 characters long', displayLength: 4000 });
 		return false;
 	}
 	gVars.myname = usrN;
@@ -293,10 +311,18 @@ function roomenter_submit() {
 	if (gVars.myteam == 'green') {
 		$('#playMove').removeClass('white');
 		$('#playMove').addClass('green');
+		$('.top-box>div.lowpad').css('border-bottom','4px solid #48994a');
+		$('.bottom-box>div.lowpad').css('border-top','4px solid #48994a');
+		$('.left-box>div.lowpad').css('border-bottom','4px solid #5e429b');
+		$('.right-box>div.lowpad').css('border-top','4px solid #5e429b');
 	}
 	else {
 		$('#playMove').removeClass('white');
 		$('#playMove').addClass('purple');
+		$('.top-box>div.lowpad').css('border-bottom','4px solid #5e429b');
+		$('.bottom-box>div.lowpad').css('border-top','4px solid #5e429b');
+		$('.left-box>div.lowpad').css('border-bottom','4px solid #48994a');
+		$('.right-box>div.lowpad').css('border-top','4px solid #48994a');
 	}
 	for (var i = 0; i < 4; i++) {
 		var t = playerFromNumber(i);
@@ -571,6 +597,11 @@ $('.icon-player').click(function (elem) {
 	}
 });
 /* end VoiceServer */
+
+$('#modal-gameover>div.modal-footer>a').click(function () {
+	endVoice();
+	window.location = './';
+});
 
 $('#modal-chat>div.modal-footer>div').click(function (e) {
 	if (!$(e.target).hasClass('chip'))
@@ -1019,8 +1050,8 @@ socket.on('roomlist', function (data) {
 	$('#rooms-list').html('');
 	for (var i = 0; i < data.number; i++) {
 		var d = new Date(data.timestamps[i]);
-		var timest = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds() + '  ' + d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
-		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp;&nbsp;&nbsp' + timest + '<span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="player(s)">' + data.users[i] + '</span></div><div class="collapsible-body"><form class="roomenter" action=""><label for="room_password">Password</label><input name="roomPASS" placeholder="Enter Room password" type="password" class="validate"><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
+		var timest = zeroPad(d.getHours(),2) + ':' + zeroPad(d.getMinutes(),2) + ':' + zeroPad(d.getSeconds(),2) + '  ' + zeroPad(d.getDate(),2) + '/' + zeroPad((d.getMonth() + 1),2) + '/' + zeroPad(d.getFullYear(),4);
+		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><label for="room_password">Password</label><input name="roomPASS" placeholder="Enter Room password" type="password" class="validate"><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
 	roomenter_submit();
 	$('#divroom').hide();
@@ -1268,11 +1299,13 @@ socket.on('reconnect', function () {
 	$('#network>span').show();
 	console.log('Reconnected');
 	//M.toast({html: 'Reconnected',displayLength:1500});
-	if (gVars.matchRunning)
+	if (gVars.matchRunning) {
 		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount });
-	/* start VoiceServer */
-	setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 3000);
-	/* end VoiceServer */
+		/* start VoiceServer */
+		if(voiceChat.myPeer._disconnected)
+			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 3000);
+		/* end VoiceServer */
+	}
 });
 
 socket.on('chat', function (data) {

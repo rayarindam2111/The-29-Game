@@ -95,6 +95,7 @@ class audioChat {
                             function (remoteStream) {
                                 streamElem.srcObject = remoteStream;
                             });
+						voiceCallback(call.peer,'in');
                         eCalls.addCall(call, streamElem , call.peer);
                     }).catch(
                         function (err) {
@@ -130,6 +131,7 @@ class audioChat {
                         function (remoteStream) {
                             streamElem.srcObject = remoteStream;
                         });
+					voiceCallback(call.peer,'out');
                     eCalls.addCall(call, streamElem, call.peer);
                 }).catch(
                     function (err) {

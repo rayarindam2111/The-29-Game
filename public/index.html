@@ -20,12 +20,13 @@
 	<meta property="og:description" content="The classic card game 29, now in your browser!">
 </head>
 
-<body style="overflow-x:hidden;">
+<body>
 	<style class="pload">
 		.l-p {
 			overflow: visible;
 			position: relative;
-			background: #f3f3f3;
+			background: #eae9ff;
+			background: radial-gradient(#fff,#eae9ff);
 			border-radius: 50%;
 			width: 120px;
 			height: 120px;
@@ -42,7 +43,7 @@
 			height: 100%;
 			top: 0;
 			left: 0;
-			background-color: inherit;
+			background-color: #eae9ff;
 			border-radius: inherit;
 			transition: opacity .3s, transform .3s;
 			animation: lp-anim 1s cubic-bezier(0.24, 0, 0.38, 1) infinite;
@@ -67,15 +68,14 @@
 		}
 	</style>
 	<div class="pload"
-		style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.99);z-index:5000;">
-		<a class="l-p"><img width=64 height=64
-				src="data:image/png;base64,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"></a>
+		style="position:fixed;height:100%;width:100%;margin:0;display:flex;align-items:center;justify-content:center;filter:hue-rotate(18deg);background:rgba(40,107,154,.994);background:radial-gradient(rgba(40,107,154,.994),rgba(17,89,140,.994));z-index:5000;">
+		<a class="l-p"><img width=80 height=80 src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAYAAACOEfKtAAAACXBIWXMAAAsTAAALEwEAmpwYAAANOGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDIgNzkuMTYwOTI0LCAyMDE3LzA3LzEzLTAxOjA2OjM5ICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIiB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyMC0wNS0xNFQyMjoyMDowOSswNTozMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAyMC0wNS0xNVQxNTo1NTozMiswNTozMCIgeG1wOk1vZGlmeURhdGU9IjIwMjAtMDUtMTVUMTU6NTU6MzIrMDU6MzAiIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ZmIwNjI4NzEtYmZhOS1lNzQxLWFlMzYtYjNlYjRlYjA2MjE1IiB4bXBNTTpEb2N1bWVudElEPSJhZG9iZTpkb2NpZDpwaG90b3Nob3A6OWQ0ZDljYjItN2M2Ni0wNTQ3LWEzY2YtNGQ1YWI0M2M5MDE2IiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6ZWU3ZjU1ZDEtODExMy1jOTQ2LTlkNWItNDM3MmYyMGJiYjdkIiB0aWZmOk9yaWVudGF0aW9uPSIxIiB0aWZmOlhSZXNvbHV0aW9uPSI3MjAwMDAvMTAwMDAiIHRpZmY6WVJlc29sdXRpb249IjcyMDAwMC8xMDAwMCIgdGlmZjpSZXNvbHV0aW9uVW5pdD0iMiIgZXhpZjpDb2xvclNwYWNlPSIxIiBleGlmOlBpeGVsWERpbWVuc2lvbj0iNTEyIiBleGlmOlBpeGVsWURpbWVuc2lvbj0iNTEyIj4gPHBob3Rvc2hvcDpUZXh0TGF5ZXJzPiA8cmRmOkJhZz4gPHJkZjpsaSBwaG90b3Nob3A6TGF5ZXJOYW1lPSIyIiBwaG90b3Nob3A6TGF5ZXJUZXh0PSIyIi8+IDxyZGY6bGkgcGhvdG9zaG9wOkxheWVyTmFtZT0iOSIgcGhvdG9zaG9wOkxheWVyVGV4dD0iOSIvPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOlRleHRMYXllcnM+IDxwaG90b3Nob3A6RG9jdW1lbnRBbmNlc3RvcnM+IDxyZGY6QmFnPiA8cmRmOmxpPjhERTk0MDM1NjU0NDAzQTJBODcxOUI1N0ZBQjYwNzk2PC9yZGY6bGk+IDxyZGY6bGk+YWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOjUzOGEyNWU1LTFiZDctZmM0NC04MmY1LWQyMWMxMzliMWYyNTwvcmRmOmxpPiA8cmRmOmxpPmFkb2JlOmRvY2lkOnBob3Rvc2hvcDo4ODIwOTcwMS0xY2U1LTgzNGQtOWFmMS05ZDE0NjdiYTE0MGI8L3JkZjpsaT4gPHJkZjpsaT5hZG9iZTpkb2NpZDpwaG90b3Nob3A6OTkxNmNkM2YtODUyYi0wZjRhLTkzMjEtMGVmOTE2ODNhYzRlPC9yZGY6bGk+IDxyZGY6bGk+YWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmJjZmIxMjlkLTg0ZmYtNmY0MC1iNWQ3LTQ4MGY1MjYzZWMxOTwvcmRmOmxpPiA8cmRmOmxpPmFkb2JlOmRvY2lkOnBob3Rvc2hvcDpjMzEwZGVkZS1hNDQ1LTVjNGYtYWIyMy0zNWIyOGMyNjdlZWU8L3JkZjpsaT4gPC9yZGY6QmFnPiA8L3Bob3Rvc2hvcDpEb2N1bWVudEFuY2VzdG9ycz4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDplZTdmNTVkMS04MTEzLWM5NDYtOWQ1Yi00MzcyZjIwYmJiN2QiIHN0RXZ0OndoZW49IjIwMjAtMDUtMTRUMjI6MjA6MDkrMDU6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAoV2luZG93cykiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjg5ODRhYzJjLWEyYTAtNGM0YS04NDU2LTM3ZGQ1MmMxY2FhYSIgc3RFdnQ6d2hlbj0iMjAyMC0wNS0xNFQyMjozMjo1NCswNTozMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIChXaW5kb3dzKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NDM2NTNlODMtZThjZS1kYzQxLWIzMWYtYTdjNmJjYzAzODBkIiBzdEV2dDp3aGVuPSIyMDIwLTA1LTE1VDE1OjU1OjMyKzA1OjMwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgKFdpbmRvd3MpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJjb252ZXJ0ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9wbmciLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImRlcml2ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImNvbnZlcnRlZCBmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvcG5nIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpmYjA2Mjg3MS1iZmE5LWU3NDEtYWUzNi1iM2ViNGViMDYyMTUiIHN0RXZ0OndoZW49IjIwMjAtMDUtMTVUMTU6NTU6MzIrMDU6MzAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjQzNjUzZTgzLWU4Y2UtZGM0MS1iMzFmLWE3YzZiY2MwMzgwZCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDplZTdmNTVkMS04MTEzLWM5NDYtOWQ1Yi00MzcyZjIwYmJiN2QiIHN0UmVmOm9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDplZTdmNTVkMS04MTEzLWM5NDYtOWQ1Yi00MzcyZjIwYmJiN2QiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz76LSKKAAAI6ElEQVR42u2cXWxURRSALyExmPjgJogvRpJNNDFRfNiEB0NMiGuQYCWk2SgxhKjJIqIBw8MmKkGiyBKjgobAQghigWKpFORXFihQEatbfqrIT1kbxPJjYRFraSvi8ZzdOzjcztw7c3+6bb0PJ9u925k797tn5pw5M2cMADBCcS8hhBBgCDAEGAIMJQQ4oACOXQUx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"></a>
 	</div>
 	<div id="imgload" style="position:absolute;z-index:-1;opacity:0.02;"></div>
 	<script type="text/javascript">
 		var values = ['J', '9', 'A', '10', 'K', 'Q', '8', '7'];
 		var suits = ['S', 'D', 'C', 'H'];
-		var others = ["cards/BLUE_BACK.PNG", "cards/GREEN_BACK.PNG", "cards/PURPLE_BACK.PNG"];
+		var others = ["cards/BLUE_BACK.PNG", "cards/GREEN_BACK.PNG", "cards/PURPLE_BACK.PNG" , "back.jpg"];
 		for (var i = 0; i < suits.length; i++)
 			for (var x = 0; x < values.length; x++) {
 				var preloadLink = document.createElement("link");
@@ -111,10 +111,10 @@
 		<div class="col s12 main loc-top">
 			<div class="cardcontainer" id="topcardbox" style="top: 0;"></div>
 			<div class="boxes top-box" style="top:0;">
-				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin" style="border-bottom:4px solid #304e58;">
 					<div id="topname" class="row valign-wrapper">
 						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
-							<div class="icon-player" data-pos="n" data-mute="off">
+							<div class="icon-player topPcard" data-pos="n" data-mute="off">
 								<i class="tiny material-icons">mic</i>
 								<img src="img/face-top.png" width=82 height=82 alt=""
 									class="active-border responsive-img" id="toptime">
@@ -143,10 +143,10 @@
 		<div class="col s1 main col-left">
 			<div class="cardcontainer" id="leftcardbox" style="left: 0;"></div>
 			<div class="boxes left-box" style="left:0;">
-				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin" style="border-bottom:4px solid #304e58;">
 					<div id="leftname" class="row valign-wrapper">
 						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
-							<div class="icon-player" data-pos="w" data-mute="off">
+							<div class="icon-player leftPcard" data-pos="w" data-mute="off">
 								<i class="tiny material-icons">mic</i>
 								<img src="img/face-left.png" width=82 height=82 alt=""
 									class="active-border responsive-img" id="lefttime">
@@ -186,10 +186,10 @@
 		<div class="col s1 main col-right">
 			<div class="cardcontainer" id="rightcardbox" style="right: 0;"></div>
 			<div class="boxes right-box" style="right:0;">
-				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="margin-top:0;">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad notopmargin" style="border-top:4px solid #304e58;">
 					<div id="rightname" class="row valign-wrapper">
 						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
-							<div class="icon-player" data-pos="e" data-mute="off">
+							<div class="icon-player rightPcard" data-pos="e" data-mute="off">
 								<i class="tiny material-icons">mic</i>
 								<img src="img/face-right.png" width=82 height=82 alt=""
 									class="active-border responsive-img" id="righttime">
@@ -218,10 +218,10 @@
 		<div class="col s12 main loc-bottom">
 			<div class="cardcontainer" id="bottomcardbox" style="bottom: 0;"></div>
 			<div class="boxes bottom-box" style="bottom:0;">
-				<div class="card-panel grey lighten-5 z-depth-1 lowpad">
+				<div class="card-panel grey lighten-5 z-depth-1 lowpad" style="border-top:4px solid #304e58;">
 					<div id="bottomname" class="row valign-wrapper">
 						<div class="col s3 flexcenter" style="justify-content:center;height:82px;">
-							<div class="icon-player" data-pos="s" data-mute="off">
+							<div class="icon-player bottomPcard" data-pos="s" data-mute="off">
 								<i class="tiny material-icons">mic</i>
 								<img src="img/face-bottom.png" width=82 height=82 alt=""
 									class="active-border responsive-img" id="bottomtime">
@@ -310,7 +310,7 @@
 			<div style="display: inline-block;width: 100%;">
 				<h4 style="display:inline-block;" class="left m29 msize">29: Select a game room</h4>
 				<h6 style="margin-top: 1.8rem;" class="right">
-					<a class="blue-text" id="credits" href="#">Made with ❤ and Javascript</a>
+					<a class="blue-text text-darken-3" id="credits" href="#">Made with ❤ and Javascript</a>
 				</h6>
 			</div>
 			<div class="collection" id="divroom">
@@ -330,7 +330,7 @@
 					<div class="collapsible-body">
 						<form id="form-addroom" action="#">
 							<label for="room_NEW">Room name</label>
-							<input placeholder="Room name cannot be blank or have special characters" id="room_NEW"
+							<input placeholder="Room name cannot be blank, have special characters or be more than 10 characters long" id="room_NEW"
 								type="text" class="validate">
 							<label for="room_NEW_pass">Room password</label>
 							<input placeholder="Create a room password" id="room_NEW_pass" type="password"

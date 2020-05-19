@@ -38,6 +38,7 @@ body {
 	background-position: center;
 	background-size: cover;
 	min-height: 361px;
+	overflow: hidden;
 }
 
 .row, .col{
@@ -217,7 +218,7 @@ body {
 }
 
 .lowpad {
-	padding: 12px!important;
+	padding: 10px 12px!important;
 }
 
 .deleteroom {
@@ -452,6 +453,64 @@ purple {
 
 .icon-player:hover > i{
 	transform: scale(1.3);
+}
+
+.callAnim {
+	animation: heartbeat 1.5s ease-in-out 3;
+}
+
+.callAnim::before {
+	content: '';
+	display: block;
+	position: absolute;
+	width: 82px;
+	height: 82px;
+	top: 0;
+	left: 0;
+	background: inherit;
+	border-radius: inherit;
+	transition: opacity .45s, transform .45s;
+	animation: call-anim 1.5s cubic-bezier(0.24,0,0.38,1) 3;
+	z-index: -1;
+}
+
+@keyframes heartbeat {
+  from {
+    transform: rotate(0deg);
+    transform-origin: center center;
+    animation-timing-function: ease-out;
+  }
+  10% {
+    transform: rotate(2deg);
+    animation-timing-function: ease-in;
+  }
+  17% {
+    transform: rotate(-2deg);
+    animation-timing-function: ease-out;
+  }
+  33% {
+    transform: rotate(3deg);
+    animation-timing-function: ease-in;
+  }
+  45% {
+    transform: rotate(0deg);
+    animation-timing-function: ease-out;
+  }
+}
+
+@keyframes call-anim {
+	0% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0;
+		transform: scale(1.5); /* 1.183 */
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.5); /* 1.183 */
+	}
 }
 
 @keyframes textchange {
