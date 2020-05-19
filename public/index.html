@@ -281,30 +281,6 @@
 	</div>
 
 	<!-- Modals -->
-	<div id="modal-joingame" class="modal modal-fixed-footer">
-		<div class="modal-content">
-			<h4 class="m29 msize">Join Game</h4>
-			<div class="input-field">
-				<input id="username" type="text" class="validate">
-				<label for="username">Your Name</label>
-			</div>
-			<div class="input-field">
-				<select id="teamselect" class="icons">
-					<option value="" disabled selected>Select</option>
-					<option value="purple" data-icon="img/purple.png" id="optpurple">Team Purple</option>
-					<option value="green" data-icon="img/green.png" id="optgreen">Team Green</option>
-				</select>
-				<label>Choose your team</label>
-			</div>
-			<div style="display:flex;justify-content:center;"><img alt="" class="responsive-img" src="img/join.jpg">
-			</div>
-		</div>
-		<div class="modal-footer">
-			<a href="#!" class="waves-effect waves-red btn-flat" id="backtoroomlist"> GO BACK </a>
-			<a href="#!" class="waves-effect waves-green btn-flat" id="joingame"> JOIN GAME </a>
-		</div>
-	</div>
-
 	<div id="modal-roomlist" class="modal modal-fixed-footer">
 		<div class="modal-content">
 			<div style="display: inline-block;width: 100%;">
@@ -344,6 +320,74 @@
 		<div class="modal-footer">
 			<a href="#!" id="roomrefresh" class="waves-effect waves-green btn-flat flexcenter"
 				style="justify-content:center;"><i class="material-icons">refresh</i> REFRESH </a>
+		</div>
+	</div>
+
+	<div id="modal-joingame" class="modal modal-fixed-footer">
+		<div class="modal-content">
+			<h4 class="m29 msize">Join Game</h4>
+			<label>Choose your team</label>
+			<div class="row" style="border:1px solid #9e9e9e;border-radius:2px;padding:12px 0;">
+				<div class="col s4 offset-s1">
+					<div class="card tsCard" id="optgreen">
+						<div class="row flexcenter" style="border-radius:2px;background:#3fa46b">
+							<div class="col s4 flexcenter">
+								<img src="img/green.png" alt="">
+							</div>
+							<div class="col s6">
+								<span class="card-title white-text">Team Green</span>
+							</div>
+							<div class="col s2">
+								<label>
+									<input name="teamGroup" type="checkbox"/>
+									<span></span>
+								</label>
+							</div>	
+						</div>
+						<div class="row">	
+							<div class="card-content">
+								<p></p>
+							</div>
+						</div>
+					
+					</div>
+				</div>
+				<div class="col s4 offset-s2">
+					<div class="card tsCard" id="optpurple" >
+						<div class="row flexcenter" style="border-radius:2px;background:#4d2c8d">
+							<div class="col s4 flexcenter">
+								<img src="img/purple.png" alt="">
+							</div>
+							<div class="col s6">
+								<span class="card-title white-text">Team Purple</span>
+							</div>
+							<div class="col s2">
+								<label>
+									<input name="teamGroup" type="checkbox"/>
+									<span></span>
+								</label>
+							</div>	
+						</div>
+						<div class="row">	
+							<div class="card-content">
+								<p></p>
+							</div>
+						</div>
+					
+					</div>
+				</div>
+			</div>
+			<br>
+			<div class="input-field">
+				<input id="username" type="text" class="validate" placeholder="Name cannot be blank, have special characters or be more than 15 characters long">
+				<label for="username">Choose your name</label>
+			</div>
+			<div style="display:flex;justify-content:center;"><img alt="" class="responsive-img" src="img/join.jpg" style="max-height:135px;">
+			</div>
+		</div>
+		<div class="modal-footer">
+			<a href="#!" class="waves-effect waves-red btn-flat" id="backtoroomlist"> GO BACK </a>
+			<a href="#!" class="waves-effect waves-green btn-flat" id="joingame"> JOIN GAME </a>
 		</div>
 	</div>
 
@@ -568,7 +612,7 @@
 				style="justify-content:center;"><i class="material-icons">close</i> CLOSE</a>
 		</div>
 	</div>
-
+	
 	<script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
 	<script type="text/javascript" src="js/materialize.min.js"></script>
 	<script type="text/javascript" src="js/socket.io.js"></script>

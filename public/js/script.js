@@ -162,8 +162,14 @@ function initModals() {
 	$('#modal-joingame').modal({
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
+			gVars.myteam = '';
+			$('#optgreen>div>div>label>input').attr('checked', false);
+			$('#optpurple>div>div>label>input').attr('checked', false);
 			$('#modal-credits').modal('close');
 			$('#joingame').removeAttr('disabled');
+		},
+		onOpenEnd: function (modal, trigger) {
+			$("#username").focus();
 		}
 	});
 	$('#modal-bid').modal({
@@ -273,11 +279,14 @@ $('#joingame').click(function () {
 	var usrN = $('#username').val().trim();
 	if (usrN == "" || checkSpChars(usrN) || usrN.length>15) {
 		$('#username').val('');
-		M.toast({ html: 'Name cannot be blank, have special characters or be more than 15 characters long', displayLength: 4000 });
+		$("#username").focus();
+		return false;
+	}
+	if (gVars.myteam == '') {
+		M.toast({ html: 'Please select a team!', displayLength: 2000 });
 		return false;
 	}
 	gVars.myname = usrN;
-	gVars.myteam = $("#teamselect").val();
 	M.toast({ html: 'Joining Game...', displayLength: 3000 });
 	$('#joingame').attr('disabled', '');
 	socket.emit('addplayer', { 'id': gVars.curRoomID, 'playername': gVars.myname, 'team': gVars.myteam });
@@ -359,25 +368,25 @@ function roomenter_submit() {
 
 function teamselectrefresh() {
 	if (gVars.purpleplayers.length > 0)
-		text = 'Team Purple - (Players: ' + gVars.purpleplayers + ')';
+		text = 'Players: ' + gVars.purpleplayers;
 	else
-		text = 'Team Purple - No Players';
-	$('#optpurple').html(text);
+		text = 'Players: -';
+	$('#optpurple>div>div>p').html(text);
 	if (gVars.purpleplayers.length == 2)
-		$('#optpurple').prop('disabled', true);
+		$('#optpurple').addClass('dSelect');
 	else
-		$('#optpurple').prop('disabled', false);
+		$('#optpurple').removeClass('dSelect');
 
 	if (gVars.greenplayers.length > 0)
-		text = 'Team Green - (Players: ' + gVars.greenplayers + ')';
+		text = 'Players: ' + gVars.greenplayers;
 	else
-		text = 'Team Green - No Players';
-	$('#optgreen').html(text);
+		text = 'Players: -';
+	$('#optgreen>div>div>p').html(text);
 	if (gVars.greenplayers.length == 2)
-		$('#optgreen').prop('disabled', true);
+		$('#optgreen').addClass('dSelect');
 	else
-		$('#optgreen').prop('disabled', false);
-	$('#teamselect').formSelect();
+		$('#optgreen').removeClass('dSelect');
+	//$('#teamselect').formSelect();
 }
 
 /* start VoiceServer */
@@ -579,6 +588,21 @@ $('#closeShare').click(function () {
 
 $('#closeCredits').click(function () {
 	$('#modal-credits').modal('close');
+	return false;
+});
+
+$('.tsCard').click(function(elem){
+	var c = $(elem.currentTarget);
+	if (c.attr('id') == 'optgreen') {
+		$('#optgreen>div>div>label>input').attr('checked', true);
+		$('#optpurple>div>div>label>input').attr('checked', false);
+		gVars.myteam = 'green';
+	}
+	else {
+		$('#optpurple>div>div>label>input').attr('checked', true);
+		$('#optgreen>div>div>label>input').attr('checked', false);
+		gVars.myteam = 'purple';
+	}
 	return false;
 });
 
@@ -1469,6 +1493,7 @@ $(function () {
 	$('.range-field>span').css('width', '30px!important');
 	$('.trumpshow').hide();
 	$('#trumpset').hide();
+	gVars.myteam = '';
 	gVars.sockMsgCount = 0;
 	gVars.showMode = 'sort';
 	gVars.timer = '';
