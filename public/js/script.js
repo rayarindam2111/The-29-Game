@@ -163,8 +163,6 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			gVars.myteam = '';
-			$('#optgreen>div>div>label>input').attr('checked', false);
-			$('#optpurple>div>div>label>input').attr('checked', false);
 			$('#modal-credits').modal('close');
 			$('#joingame').removeAttr('disabled');
 		},
@@ -367,6 +365,8 @@ function roomenter_submit() {
 }
 
 function teamselectrefresh() {
+	$('#optgreen>div>div>label>input').prop('checked', false);
+	$('#optpurple>div>div>label>input').prop('checked', false);
 	if (gVars.purpleplayers.length > 0)
 		text = '<strong>Players:</strong> ' + gVars.purpleplayers;
 	else
@@ -386,7 +386,6 @@ function teamselectrefresh() {
 		$('#optgreen').addClass('dSelect');
 	else
 		$('#optgreen').removeClass('dSelect');
-	//$('#teamselect').formSelect();
 }
 
 /* start VoiceServer */
@@ -594,13 +593,13 @@ $('#closeCredits').click(function () {
 $('.tsCard').click(function(elem){
 	var c = $(elem.currentTarget);
 	if (c.attr('id') == 'optgreen') {
-		$('#optgreen>div>div>label>input').attr('checked', true);
-		$('#optpurple>div>div>label>input').attr('checked', false);
+		$('#optgreen>div>div>label>input').prop('checked', true);
+		$('#optpurple>div>div>label>input').prop('checked', false);
 		gVars.myteam = 'green';
 	}
 	else {
-		$('#optpurple>div>div>label>input').attr('checked', true);
-		$('#optgreen>div>div>label>input').attr('checked', false);
+		$('#optpurple>div>div>label>input').prop('checked', true);
+		$('#optgreen>div>div>label>input').prop('checked', false);
 		gVars.myteam = 'purple';
 	}
 	return false;
@@ -765,7 +764,7 @@ function playProcess(data) {
 				var winSecs = zeroPad(parseInt((timeEnd - gVars.startTime)/1000)%60,2);
 				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
 				$('#winmessage').html('<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> wins the game in <red>'+winHours+':'+winMins+':'+winSecs+'</red>.');
-				var text = '<table><thead><tr><th>Player Name</th><th>Rounds</th></tr></thead><tbody>';
+				var text = '<table><thead><tr><th>Player</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
 					var xName = playerFromNumber(i);
@@ -773,13 +772,11 @@ function playProcess(data) {
 						xName.player = gVars.greenplayers[xName.id];
 					else
 						xName.player = gVars.purpleplayers[xName.id];
-					text += '<tr><td><span class="' + xName.team + '-text">' + xName.player + '</span></td><td><span class="red-text">' + data.op.rs[i] + '</span></td></tr>';
+					text += '<tr><td><span class="' + xName.team + '-text">' + xName.player + '</span></td><td><span class="' + xName.team + '-text">' + data.op.hw[i] + '</span></td><td><red>' + data.op.rs[i] + '</red></td></tr>';
 				}
-				$('#winmessage').append(text + '</tbody></table>');
+				text += '</tbody></table>';
+				$('#winmessage').append(text);
 				$('#modal-gameover').modal('open');
-				/* start VoiceServer */
-				//endVoice();
-				/* end VoiceServer */
 			}
 
 			for (var i = 0; i < 4; i++) {

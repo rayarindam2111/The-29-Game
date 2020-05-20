@@ -286,6 +286,8 @@ class Game {
 		this.emitlog = new Array();
 		this.emitlog[0] = new Array();
 		this.emitlog[1] = new Array();
+		
+		this.handsWon = [0,0,0,0];
 
 		this.resetRound();
 	}
@@ -539,11 +541,16 @@ class Game {
 			'op': { //options
 				'fp': firstplay,
 				'fc': this.firstcard,
-				'pt': this.points,
-				're': roundend, //'normal','roundover','gameover'
-				'rs': this.rounds_won
+				're': roundend //'normal','roundover','gameover'
 			}
 		};
+		if(roundend == 'go')
+			d.op.hw = this.handsWon;
+		if(firstplay){
+			d.op.pt = this.points;
+			d.op.rs = this.rounds_won;
+		}
+		
 		this.emitlog[0].push('play');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('play', d);
@@ -680,11 +687,12 @@ class Game {
 
 		//no pith won
 		var rWon = 0;
-		for (var i = 0; i < this.winlog.length; i++)
+		for (var i = 0; i < this.winlog.length; i++){
 			rWon += (this.teamFromNumber(this.winlog[i]) == this.teamFromNumber(this.bid_winner));
+			this.handsWon[this.winlog[i]]++;
+		}
 		var allwin = (rWon == 0 || rWon == this.winlog.length) ? 2 : 1;
-
-
+		
 		var inc = (this.teamFromNumber(player) == this.teamFromNumber(this.bid_winner)) ? 1 : -1;
 		this.rounds_won[this.bid_winner] += (inc * this.biddouble * allwin);
 		this.rounds_won[this.nextTeamPlayer(this.bid_winner)] += (inc * this.biddouble * allwin);
@@ -740,7 +748,7 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//, { maxAge: 1800000 }
+app.use(express.static(__dirname + '/public'));//, { maxAge: 1800000 }
 
 http.listen(port, function () {
 	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
