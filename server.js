@@ -300,6 +300,7 @@ class Game {
 		this.emitlog[1] = new Array();
 		
 		this.handsWon = [0,0,0,0];
+		this.pointsWon = [0,0,0,0];
 
 		this.resetRound();
 	}
@@ -340,6 +341,7 @@ class Game {
 		this.cards = new Array();
 		this.cards_on_table = new Array(); //4 cards on table at any time
 		this.winlog = new Array();
+		this.winpoints = new Array();
 
 		for (var i = 0; i < 4; i++)
 			this.cards[i] = new Array();
@@ -556,9 +558,11 @@ class Game {
 				're': roundend //'normal','roundover','gameover'
 			}
 		};
-		if(roundend == 'go')
+		if(roundend == 'go') {
 			d.op.hw = this.handsWon;
-		if(firstplay){
+			d.op.pw = this.pointsWon;
+		}
+		if(firstplay) {
 			d.op.pt = this.points;
 			d.op.rs = this.rounds_won;
 		}
@@ -651,6 +655,7 @@ class Game {
 				var winner = this.cards_on_table[this.indexOfMax(tArr)].player; //winner
 
 				this.winlog.push(winner);
+				this.winpoints.push(tPoints);
 
 				this.points[winner] += tPoints;
 				this.points[this.nextTeamPlayer(winner)] += tPoints;
@@ -702,6 +707,7 @@ class Game {
 		for (var i = 0; i < this.winlog.length; i++){
 			rWon += (this.teamFromNumber(this.winlog[i]) == this.teamFromNumber(this.bid_winner));
 			this.handsWon[this.winlog[i]]++;
+			this.pointsWon[this.winlog[i]] += this.winpoints[i];
 		}
 		var allwin = (rWon == 0 || rWon == this.winlog.length) ? 2 : 1;
 		

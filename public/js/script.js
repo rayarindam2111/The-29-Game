@@ -763,8 +763,8 @@ function playProcess(data) {
 				var winMins = zeroPad(parseInt((timeEnd - gVars.startTime)/(1000*60))%60,2);
 				var winSecs = zeroPad(parseInt((timeEnd - gVars.startTime)/1000)%60,2);
 				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
-				$('#winmessage').html('<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> wins the game in <red>'+winHours+':'+winMins+':'+winSecs+'</red>.');
-				var text = '<table><thead><tr><th>Player</th><th>Hands Won</th><th>Rounds Won</th></tr></thead><tbody>';
+				$('#winmessage').html('<div class="flexcenter fResult"><img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game in&nbsp;<red>' + winHours + ':' + winMins + ':' + winSecs + '</red>.</div>');
+				var text = '<table class="fResult"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
 					var xName = playerFromNumber(i);
@@ -772,7 +772,7 @@ function playProcess(data) {
 						xName.player = gVars.greenplayers[xName.id];
 					else
 						xName.player = gVars.purpleplayers[xName.id];
-					text += '<tr><td><span class="' + xName.team + '-text">' + xName.player + '</span></td><td><span class="' + xName.team + '-text">' + data.op.hw[i] + '</span></td><td><red>' + data.op.rs[i] + '</red></td></tr>';
+					text += '<tr><td><span class="' + xName.team + '-text">' + xName.player + '</span></td><td><span class="' + xName.team + '-text">' + data.op.pw[i] + '</span></td><td><span class="' + xName.team + '-text">' + data.op.hw[i] + '</span></td><td><red>' + data.op.rs[i] + '</red></td></tr>';
 				}
 				text += '</tbody></table>';
 				$('#winmessage').append(text);
