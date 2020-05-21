@@ -764,7 +764,7 @@ function playProcess(data) {
 				var winSecs = zeroPad(parseInt((timeEnd - gVars.startTime)/1000)%60,2);
 				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
 				$('#winmessage').html('<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> wins the game in <red>'+winHours+':'+winMins+':'+winSecs+'</red>.');
-				var text = '<table><thead><tr><th>Player</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
+				var text = '<table><thead><tr><th>Player</th><th>Hands Won</th><th>Rounds Won</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
 					var xName = playerFromNumber(i);

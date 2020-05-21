@@ -197,12 +197,11 @@ class rooms {
 	}
 	/* end VoiceServer */
 
-
 };
 
 class Cards {
 	constructor() {
-		this.values = ['8', 'A', '10', 'K', 'Q', 'J', '7', '9']; //6 not considered
+		this.values = ['10', '9', '8', 'K', 'Q', 'J', '7', 'A']; //6 not considered
 		this.suits = ['S', 'D', 'C', 'H'];
 		this.playable_deck = new Array();
 		for (var i = 0; i < this.suits.length; i++)
@@ -220,6 +219,18 @@ class Cards {
 		//randomize playable cards
 		this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
 		this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
+		
+		/* Fisher Yates shuffle */
+		var m = this.playable_deck.length, i, t;
+		while (m) {
+			i = Math.floor(Math.random() * m--);
+			t = this.playable_deck[m];
+			this.playable_deck[m] = this.playable_deck[i];
+			this.playable_deck[i] = t;
+		}
+		
+		/* Normal shuffle */
+		/*
 		for (var i = 0; i < 1000; i++) {
 			var location1 = Math.floor((Math.random() * this.playable_deck.length));
 			var location2 = Math.floor((Math.random() * this.playable_deck.length));
@@ -229,6 +240,7 @@ class Cards {
 				this.playable_deck[location2] = tmp;
 			}
 		}
+		*/
 
 		//check if one person gets all zero points cards or all Jacks
 		var playernum;
@@ -748,7 +760,7 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public'));//, { maxAge: 1800000 }
+app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//, { maxAge: 1800000 }
 
 http.listen(port, function () {
 	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
