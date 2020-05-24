@@ -533,6 +533,10 @@ table.fResult {
 	font-size: 2rem;
 }
 
+.changeop {
+	animation : opchange 1.2s linear infinite;
+}
+
 @keyframes octocat-wave {
 	0%,100%{transform:rotate(0)}
 	20%,60%{transform:rotate(-25deg)}
@@ -583,6 +587,10 @@ table.fResult {
   34% {content:'.';}
   67% {content:'..';}
   100% {content:'...';}
+}
+
+@keyframes opchange {
+	50% {opacity: 0;}
 }
 
 @keyframes bxs {

@@ -155,8 +155,6 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			sock_up_poprooms();
-			$('#chatopen').removeClass('scale-in');
-			$('#chatopen').hide();
 		}
 	});
 	$('#modal-joingame').modal({
@@ -188,7 +186,7 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			$('#modal-chat').modal('close');
-			$('#chatopen').hide();
+			$('#chatopen').removeClass('scale-in');
 		}
 	});
 	$('#modal-credits').modal({
@@ -312,8 +310,7 @@ function roomenter_submit() {
 }
 
 /* start VoiceServer */ async /* end VoiceServer */ function joingame() {
-	$('#chatopen').show();
-	$('#chatopen').addClass('scale-in');
+	$('.scale-out').addClass('scale-in');
 	playscreenTeamUpdate();
 	if (gVars.myteam == 'green') {
 		$('#playMove').removeClass('white');
@@ -1351,6 +1348,7 @@ socket.on('chat', function (data) {
 });
 
 socket.on('pong', function (latency) {
+	$('#network>i').removeClass('changeop');
 	$('#network>span').html('&nbsp;' + latency + 'ms');
 	var isChromium = !!window.chrome;
 	if (latency > 380)
@@ -1477,6 +1475,8 @@ class sound {
 }
 
 $(function () {
+	console.log('%cThe 29 Game','color:green;font-weight:bold;font-size:2rem;');
+	console.log('%c© Arindam Ray, 2020','color:red;font-weight:bold;font-size:1.5rem;');
 	gVars.sound_turn = new sound('img/ting.mp3', true);
 	gVars.sound_play = new sound('img/play.mp3');
 	if (!window.chrome)//not chromium
@@ -1528,7 +1528,6 @@ $(function () {
 				//event.orientation
 			});
 		});
-		M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
 	}
 	else {
 		$(window).resize(function () {
@@ -1542,7 +1541,9 @@ $(function () {
 	}
 	$('#imgload').hide();
 	$('#modal-roomlist').modal('open');
-	setTimeout(function () {
+	setTimeout(function(){
 		$('.pload').remove();
-	}, 900);
+		if (gVars.isMobile)
+			M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
+	}, 950);
 });
