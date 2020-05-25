@@ -30,6 +30,10 @@ class rooms {
 	}
 
 	addRoom(name, pass, timestamp) {
+		if(this.room_ids.length>=10){ //lim to ten. rooms.
+			console.log(colors.bgRed.black('Max. room limit reached'));
+			return false;
+		}
 		var index = this.room_ids.indexOf(name + timestamp);
 		if (index == -1) {
 			this.room_names.push(name);
@@ -44,9 +48,12 @@ class rooms {
 			/* end VoiceServer */
 			this.room_count += 1;
 			console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
+			return true;
 		}
-		else
+		else{
 			console.log(colors.bgRed.black('Room already exists: ' + name + timestamp));
+			return false;
+		}
 	}
 
 	removeRoom(ID) {
@@ -789,8 +796,8 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('addroom', function (msg) {
-		Rooms.addRoom(msg.name, msg.pass, msg.timestamp);
-		socket.emit('roomlist', Rooms.getRooms());
+		if(Rooms.addRoom(msg.name, msg.pass, msg.timestamp))
+			socket.emit('roomlist', Rooms.getRooms());
 	});
 
 	socket.on('login', function (msg) {
