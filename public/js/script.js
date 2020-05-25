@@ -258,10 +258,10 @@ $('#form-chat').submit(function () {
 	if ($("#chatmessage").val().trim() == "")
 		return false;
 	if ($("#chatmessage").val().trim() == 'reconnectVoice') //hack to reconnect voice
-		setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 2000);
+		setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 2000);
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + encodeHTML($("#chatmessage").val());
 	$("#chatmessage").val('');
-	socket.emit('chat', { 'id': gVars.curRoomID, 'msg': msg });
+	socket.emit('chat', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'msg': msg });
 	return false;
 });
 
@@ -285,7 +285,7 @@ $('#joingame').click(function () {
 	gVars.myname = usrN;
 	M.toast({ html: 'Joining Game...', displayLength: 3000 });
 	$('#joingame').attr('disabled', '');
-	socket.emit('addplayer', { 'id': gVars.curRoomID, 'playername': gVars.myname, 'team': gVars.myteam });
+	socket.emit('addplayer', { 'id': gVars.curRoomID, 'playername': gVars.myname, 'team': gVars.myteam, 'passw': gVars.curRoomPass });
 	return false;
 });
 
@@ -295,6 +295,7 @@ function roomenter_submit() {
 		var roomID = $(event.target).find("input[name=roomID]").val();
 		var passw = $(event.target).find("input[name=roomPASS]").val();
 		$(event.target).find("button").prop('disabled', true);
+		gVars.curRoomPass = passw;
 		socket.emit('login', { 'id': roomID, 'passw': passw });
 		return false;
 	});
@@ -345,7 +346,7 @@ function roomenter_submit() {
 		$($('.icon-player')[i]).addClass(team=='green'?'greengrad':'purplegrad');
 	}
 		
-	await startVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID);
+	await startVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID);
 	/* end VoiceServer */
 
 	if (!gVars.isMobile) {
@@ -507,13 +508,13 @@ $('#bidraise').click(function () {
 	$('#bidchange').hide();
 	if (gVars.raiseOrMatch == 'matched bid to&nbsp;' && parseInt($('#bidrange').attr('min')) != parseInt($('#bidrange').val()))
 		gVars.raiseOrMatch = 'raised bid to&nbsp;';
-	socket.emit('bid', { 'id': gVars.curRoomID, 'ps': false, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + gVars.raiseOrMatch + '<red>' + $('#bidrange').val() + '</red>', 'o': { 'iO': '' } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': false, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + gVars.raiseOrMatch + '<red>' + $('#bidrange').val() + '</red>', 'o': { 'iO': '' } });
 	return false;
 });
 
 $('#bidpass').click(function () {
 	$('#bidchange').hide();
-	socket.emit('bid', { 'id': gVars.curRoomID, 'ps': true, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;passed the bid', 'o': { 'iO': '' } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': true, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;passed the bid', 'o': { 'iO': '' } });
 	return false;
 });
 
@@ -522,13 +523,13 @@ $('#biddoubleok').click(function () {
 	var m = parseInt($('input[name="groupD"]:checked').val());
 	var t = gVars.bidDouble == 'D' ? 'double' : 'redouble';
 	var textm = (m == 1) ? 'did not ' + t : ((m == 2) ? 'doubled' : 'redoubled');
-	socket.emit('bid', { 'id': gVars.curRoomID, 'ps': '', 'am': '', 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + textm, 'o': { 'iO': gVars.bidDouble, 'm': m, 't': gVars.myteam } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': '', 'am': '', 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + textm, 'o': { 'iO': gVars.bidDouble, 'm': m, 't': gVars.myteam } });
 	return false;
 });
 
 $('#playMove').click(function () {
 	$('#playMove').attr('disabled', '');
-	socket.emit('play', { 'id': gVars.curRoomID, 'pl': gVars.myteam + gVars.myUserID, 'c': gVars.currentCard, 'fp': gVars.firstplay });
+	socket.emit('play', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'c': gVars.currentCard, 'fp': gVars.firstplay });
 	//cardPlayed(gVars.myteam+gVars.myUserID,gVars.currentCard);
 	return false;
 });
@@ -545,7 +546,7 @@ $('#changeView').click(function () {
 $('#trumpyes').click(function () {
 	$('#bottomcardbox').addClass('carddisabled');
 	$('#modal-trumpyesno').modal('close');
-	socket.emit('trump', { 'id': gVars.curRoomID, 'pl': gVars.myteam + gVars.myUserID, 'op': 'open' });
+	socket.emit('trump', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'open','s' : '', 'l' : '' });
 	return false;
 });
 
@@ -553,7 +554,7 @@ $('#trumpsetok').click(function () {
 	$('#trumpset').hide();
 	var tIndex = document.getElementById('trumpOpt').M_Tabs.index;
 	var tSuit = tIndex == 0 ? 'H' : tIndex == 1 ? 'S' : tIndex == 2 ? 'D' : tIndex == 3 ? 'C' : '7';
-	socket.emit('trump', { 'id': gVars.curRoomID, 'pl': gVars.myteam + gVars.myUserID, 's': tSuit, 'op': 'set', 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump' });
+	socket.emit('trump', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'set', 's': tSuit,  'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump' });
 	return false;
 });
 
@@ -627,7 +628,7 @@ $('#modal-chat>div.modal-footer>div').click(function (e) {
 	if (!$(e.target).hasClass('chip'))
 		return false;
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;<red>' + encodeHTML($(e.target).html()) + '</red>';
-	socket.emit('chat', { 'id': gVars.curRoomID, 'msg': msg });
+	socket.emit('chat', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'msg': msg });
 	$('#modal-chat>div.modal-footer>div').addClass('carddisabled');
 	setTimeout(function () { $('#modal-chat>div.modal-footer>div').removeClass('carddisabled') }, 3000);
 	return false;
@@ -1092,7 +1093,6 @@ socket.on('roomlist', function (data) {
 socket.on('login', function (data) {
 	if (data.success) {
 		gVars.curRoomName = data.roomN;
-		gVars.curRoomPass = data.roomP;
 		gVars.curRoomID = data.roomID;
 		gVars.purpleplayers = data.tp;
 		gVars.greenplayers = data.tg;
@@ -1101,6 +1101,7 @@ socket.on('login', function (data) {
 		teamselectrefresh();
 	}
 	else {
+		gVars.curRoomPass = '';
 		$(gVars.currentlogin).find("input[name=roomPASS]").val('');
 		$(gVars.currentlogin).find("input[name=roomPASS]").attr("placeholder", "Wrong password. Try again");
 		$(gVars.currentlogin).find("button").prop('disabled', false);
@@ -1333,10 +1334,10 @@ socket.on('reconnect', function () {
 	console.log('Reconnected');
 	//M.toast({html: 'Reconnected',displayLength:1500});
 	if (gVars.matchRunning) {
-		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount });
+		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw' : gVars.curRoomPass });
 		/* start VoiceServer */
 		if(voiceChat.myPeer._disconnected)
-			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.myteam + gVars.myUserID); }, 3000);
+			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 3000);
 		/* end VoiceServer */
 	}
 });
@@ -1492,7 +1493,7 @@ $(function () {
 		});
 	else {
 		$('#playerwait').click(function () {
-			$('#share-data').html('Play a game of 29 with me!<br>Roomname: ' + gVars.curRoomName + '<br>Password: ' + gVars.curRoomPass + '<br>Link: ' + '<a href="' + document.location.href + '" target="_blank">' + document.location.href + '</a>');
+			$('#share-data').html('Play a game of 29 with me!<br>Roomname: ' + encodeHTML(gVars.curRoomName) + '<br>Password: ' + encodeHTML(gVars.curRoomPass) + '<br>Link: ' + '<a href="' + document.location.href + '" target="_blank">' + document.location.href + '</a>');
 			$('#modal-share').modal('open');
 			return false;
 		});
@@ -1505,6 +1506,7 @@ $(function () {
 	$('.range-field>span').css('width', '30px!important');
 	$('.trumpshow').hide();
 	$('#trumpset').hide();
+	gVars.curRoomPass = '';
 	gVars.startTime = '';
 	gVars.myteam = '';
 	gVars.sockMsgCount = 0;

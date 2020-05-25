@@ -18,20 +18,35 @@ class rooms {
 		this.room_voice = [];
 		/* end VoiceServer */
 	}
+	
+	checkLogin(ID, pass, internal) {
+		var index = this.room_ids.indexOf(ID);
+		if (index == -1)
+			return { 'success': false, 'wrongpass': false };
+		else if (this.room_passwords[index] !== pass)
+			return { 'success': false, 'wrongpass': true };
+		else
+			return internal ? { 'success': true, 'index': index } : { 'success': true, 'roomID': this.room_ids[index], 'roomN': this.room_names[index], 'tp': this.room_teampurple[index], 'tg': this.room_teamgreen[index] };
+	}
 
 	addRoom(name, pass, timestamp) {
-		this.room_names.push(name);
-		this.room_passwords.push(pass);
-		this.room_timestamps.push(timestamp);
-		this.room_ids.push(name + timestamp);
-		this.room_teampurple.push([]);
-		this.room_teamgreen.push([]);
-		this.room_game.push('');
-		/* start VoiceServer */
-		this.room_voice.push([]);
-		/* end VoiceServer */
-		this.room_count += 1;
-		console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
+		var index = this.room_ids.indexOf(name + timestamp);
+		if (index == -1) {
+			this.room_names.push(name);
+			this.room_passwords.push(pass);
+			this.room_timestamps.push(timestamp);
+			this.room_ids.push(name + timestamp);
+			this.room_teampurple.push([]);
+			this.room_teamgreen.push([]);
+			this.room_game.push('');
+			/* start VoiceServer */
+			this.room_voice.push([]);
+			/* end VoiceServer */
+			this.room_count += 1;
+			console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
+		}
+		else
+			console.log(colors.bgRed.black('Room already exists: ' + name + timestamp));
 	}
 
 	removeRoom(ID) {
@@ -72,28 +87,18 @@ class rooms {
 		};
 	}
 
-	checkLogin(ID, pass) {
-		var index = this.room_ids.indexOf(ID);
-		if (index == -1)
-			return { 'success': false, 'wrongpass': false };
-		else if (this.room_passwords[index] !== pass)
-			return { 'success': false, 'wrongpass': true };
-		else
-			return { 'success': true, 'roomID': this.room_ids[index], 'roomN': this.room_names[index], 'roomP': this.room_passwords[index], 'tp': this.room_teampurple[index], 'tg': this.room_teamgreen[index] };
-	}
-
-	addPlayer(ID, name, team) {
-		var index = this.room_ids.indexOf(ID);
-		if (index > -1) {
-			if (team == 'purple' && this.room_teampurple[index].length < 2) {
-				var x = this.room_teampurple[index].push(name);
+	addPlayer(ID, pass, name, team) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			if (team == 'purple' && this.room_teampurple[login.index].length < 2) {
+				var x = this.room_teampurple[login.index].push(name);
 				console.log(colors.bgBlue.green('Player added to team in room: ' + name + '->' + team + '->' + ID));
-				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[index], 'teamgreen': this.room_teamgreen[index] };
+				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index] };
 			}
-			else if (team == 'green' && this.room_teamgreen[index].length < 2) {
-				var x = this.room_teamgreen[index].push(name);
+			else if (team == 'green' && this.room_teamgreen[login.index].length < 2) {
+				var x = this.room_teamgreen[login.index].push(name);
 				console.log(colors.bgBlue.green('Player added to team in room: ' + name + '->' + team + '->' + ID));
-				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[index], 'teamgreen': this.room_teamgreen[index] };
+				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index] };
 			}
 			else {
 				console.log(colors.bgRed.black('Player added to team in room failed: ' + name + '->' + team + '->' + ID));
@@ -106,59 +111,59 @@ class rooms {
 		}
 	}
 
-	getTeams(ID) {
-		var index = this.room_ids.indexOf(ID);
-		if (index > -1) {
-			return { 's': true, 'tp': this.room_teampurple[index], 'tg': this.room_teamgreen[index] };
+	getTeams(ID, pass) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			return { 's': true, 'tp': this.room_teampurple[login.index], 'tg': this.room_teamgreen[login.index] };
 		}
 		else
 			return { 's': false };
 	}
 
-	startGamePlay(ID) {
-		var index = this.room_ids.indexOf(ID);
-		if (index > -1) {
-			this.room_game[index] = new Game(ID);
+	startGamePlay(ID, pass) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			this.room_game[login.index] = new Game(ID);
 			console.log(colors.bgBlue.green('Game started for room: ' + ID));
 		}
 		else
 			console.log(colors.bgRed.black('Game start failed for room: ' + ID));
 	}
 
-	sendBidtoRoom(msg) {
-		var index = this.room_ids.indexOf(msg.id);
-		if (index > -1) {
-			this.room_game[index].bidReceive(msg.ps, msg.am, msg.pl, msg.l, msg.o);
+	sendBidtoRoom(ID, pass, ps, am, pl, l, o) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			this.room_game[login.index].bidReceive(ps, am, pl, l, o);
 		}
 		else
-			console.log(colors.bgRed.black('Bid receive error: ' + msg.id));
+			console.log(colors.bgRed.black('Bid receive error: ' + ID));
 	}
 
-	sendPlaytoRoom(msg) {
-		var index = this.room_ids.indexOf(msg.id);
-		if (index > -1) {
-			this.room_game[index].nextPlayReceive(msg.pl, msg.c, msg.fp);
+	sendPlaytoRoom(ID, pass, pl, c, fp) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			this.room_game[login.index].nextPlayReceive(pl, c, fp);
 		}
 		else
-			console.log(colors.bgRed.black('Play receive error: ' + msg.id));
+			console.log(colors.bgRed.black('Play receive error: ' + ID));
 	}
 
-	sendTrumptoRoom(msg) {
-		var index = this.room_ids.indexOf(msg.id);
-		if (index > -1) {
-			if (msg.op == 'open')
-				this.room_game[index].trumpOpenReceive(msg.pl);
-			else if (msg.op == 'set')
-				this.room_game[index].trumpSetReceive(msg.pl, msg.s, msg.l);
+	sendTrumptoRoom(ID, pass, op, pl, s, l) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			if (op == 'open')
+				this.room_game[login.index].trumpOpenReceive(pl);
+			else if (op == 'set')
+				this.room_game[login.index].trumpSetReceive(pl, s, l);
 		}
 		else
-			console.log(colors.bgRed.black('Trump receive error: ' + msg.id));
+			console.log(colors.bgRed.black('Trump receive error: ' + ID));
 	}
 
-	getRoomEmitLog(id) {
-		var index = this.room_ids.indexOf(id);
-		if (index > -1) {
-			return this.room_game[index] != '' ? this.room_game[index].getEmitLog() : -2;
+	getRoomEmitLog(ID, pass) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			return this.room_game[login.index] != '' ? this.room_game[login.index].getEmitLog() : -2;
 		}
 		else {
 			console.log(colors.bgRed.black('Room does not exist: ' + id));
@@ -166,41 +171,42 @@ class rooms {
 		}
 	}
 
-	sendChat(msg) {
-		var index = this.room_ids.indexOf(msg.id);
-		if (index > -1) {
-			io.in(msg.id).emit('chat', { 'msg': msg.msg });
+	sendChat(ID, pass, msg) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			io.in(ID).emit('chat', { 'msg': msg });
 		}
 		else
-			console.log(colors.bgRed.black('Chat receive error: ' + msg.id));
+			console.log(colors.bgRed.black('Chat receive error: ' + ID));
 	}
 
 	/* start VoiceServer */
-	sendVoice(msg) {
-		var index = this.room_ids.indexOf(msg.id); //id:roomid,cid:callerid,calls:calls to make,op:conn/del
-		if (index > -1) {
-			var uID = msg.id + msg.cid;
-			if (msg.op == 'conn') {
-				io.in(msg.id).emit('adc', { cid: uID, calls: this.room_voice[index] });
-				if (!(this.room_voice[index].indexOf(uID) > -1))
-					this.room_voice[index].push(uID);
+	sendVoice(ID, pass, cid, op) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			var uID = ID + cid;
+			if (op == 'conn') {
+				io.in(ID).emit('adc', { cid: uID, calls: this.room_voice[login.index] });
+				if (!(this.room_voice[login.index].indexOf(uID) > -1))
+					this.room_voice[login.index].push(uID);
 			}
-			else if (msg.op == 'del') {
-				var ri = this.room_voice[index].indexOf(uID);
+			else if (op == 'del') {
+				var ri = this.room_voice[login.index].indexOf(uID);
 				if (ri > -1) {
-					this.room_voice[index].splice(ri, 1);
+					this.room_voice[login.index].splice(ri, 1);
 				}
 			}
 		}
 		else
-			console.log(colors.bgRed.black('Voice receive error: ' + msg.id));
+			console.log(colors.bgRed.black('Voice receive error: ' + ID));
 	}
 	/* end VoiceServer */
 
 };
 
 class Cards {
-	constructor() {
+	constructor(startingPlayer) {
+		this.startingPlayer = startingPlayer;
 		this.values = ['10', '9', '8', 'K', 'Q', 'J', '7', 'A']; //6 not considered
 		this.suits = ['S', 'D', 'C', 'H'];
 		this.playable_deck = new Array();
@@ -242,7 +248,7 @@ class Cards {
 		}
 		*/
 
-		//check if one person gets all zero points cards or all Jacks
+		//check if one person gets all zero points cards or all Jacks or starting player gets zeros in 1st 4 cards
 		var playernum;
 		for (playernum = 0; playernum < 4; playernum++) {
 			var count = [0, 0]; //no. of [non zero point cards, jacks]
@@ -251,6 +257,7 @@ class Cards {
 				if (t.point != 0) count[0]++;
 				if (t.val == 'J') count[1]++;
 			}
+			if (playernum == this.startingPlayer && count[0] == 0) break;
 			for (var i = playernum * 4 + 16; i < playernum * 4 + 20; i++) {
 				var t = Cards.cardDetail(this.playable_deck[i]);
 				if (t.point != 0) count[0]++;
@@ -310,7 +317,7 @@ class Game {
 	}
 
 	resetRound() {
-		this.play_deck = new Cards().getPlayableCardsRandomized();
+		this.play_deck = new Cards(this.playerStart).getPlayableCardsRandomized();
 		this.trump_card = '';
 		this.trump_open = false;
 		this.trump_opener = '';
@@ -787,32 +794,32 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('login', function (msg) {
-		socket.emit('login', Rooms.checkLogin(msg.id, msg.passw));
+		socket.emit('login', Rooms.checkLogin(msg.id, msg.passw, false));
 	});
 
 	socket.on('addplayer', function (msg) {
-		var reply = Rooms.addPlayer(msg.id, msg.playername, msg.team);
+		var reply = Rooms.addPlayer(msg.id, msg.passw, msg.playername, msg.team);
 		socket.emit('addplayer', reply);
 		if (reply.success == true) {
 			socket.join(msg.id);
-			var r = Rooms.getTeams(msg.id);
+			var r = Rooms.getTeams(msg.id, msg.passw);
 			if (r.s) {
 				socket.to(msg.id).emit('prf', r);
 				if (r.tp.length + r.tg.length == 4) {
-					Rooms.startGamePlay(msg.id);
+					Rooms.startGamePlay(msg.id, msg.passw);
 				}
 			}
 		}
 	});
 
 	socket.on('recon', function (msg) {
-		var emitLog = Rooms.getRoomEmitLog(msg.id);
+		var emitLog = Rooms.getRoomEmitLog(msg.id, msg.passw);
 		if (emitLog == -1)
 			return;
 		socket.join(msg.id);
 		console.log(colors.bgBlue.red(msg.pl + ' reconnected in room ' + msg.id));
 		if (parseInt(msg.LM) == 0) {
-			var r = Rooms.getTeams(msg.id);
+			var r = Rooms.getTeams(msg.id. msg.passw);
 			if (r.s)
 				socket.emit('prf', r);
 		}
@@ -824,34 +831,34 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('deleteroom', function (msg) {
-		var check = Rooms.checkLogin(msg.id, msg.passw);
-		if (check.success == true)
+		var login = Rooms.checkLogin(msg.id, msg.passw, true);
+		if (login.success)
 			socket.emit('deleteroom', Rooms.removeRoom(msg.id));
-		else if (check.wrongpass == false)
+		else if (!login.wrongpass)
 			socket.emit('deleteroom', { 'success': false, 'wrongpass': false });
 		else
 			socket.emit('deleteroom', { 'success': false, 'wrongpass': true });
 	});
 
 	socket.on('bid', function (msg) {
-		Rooms.sendBidtoRoom(msg);
+		Rooms.sendBidtoRoom(msg.id, msg.passw, msg.ps, msg.am, msg.pl, msg.l, msg.o);
 	});
 
 	socket.on('play', function (msg) {
-		Rooms.sendPlaytoRoom(msg);
+		Rooms.sendPlaytoRoom(msg.id, msg.passw, msg.pl, msg.c, msg.fp);
 	});
 
 	socket.on('trump', function (msg) {
-		Rooms.sendTrumptoRoom(msg);
+		Rooms.sendTrumptoRoom(msg.id, msg.passw, msg.op, msg.pl, msg.s, msg.l);
 	});
 
 	socket.on('chat', function (msg) {
-		Rooms.sendChat(msg);
+		Rooms.sendChat(msg.id, msg.passw, msg.msg);
 	});
 
 	/* start VoiceServer */
 	socket.on('adc', function (msg) {
-		Rooms.sendVoice(msg);
+		Rooms.sendVoice(msg.id, msg.passw, msg.cid, msg.op);
 	});
 	/* end VoiceServer */
 

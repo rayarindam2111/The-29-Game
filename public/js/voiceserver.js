@@ -59,6 +59,7 @@ class audioChat {
         this.socketLink = socketLinkText;
         this.myID = '';
         this.roomID = '';
+		this.roomPass = '';
         this.host = host;
         this.port = port;
         this.path = path;
@@ -68,11 +69,12 @@ class audioChat {
     }
 
     registerID() {
-        socket.emit(this.socketLink, { id: this.roomID, cid: this.cID, op: 'conn' });
+        socket.emit(this.socketLink, { id: this.roomID, passw: this.roomPass, cid: this.cID, op: 'conn' });
     }
 
-    async init(roomid, callerid) {
+    async init(roomid, roompass, callerid) {
         this.roomID = roomid;
+		this.roomPass = roompass;
         this.cID = callerid;
         this.myID = roomid + callerid;
         try {
@@ -163,7 +165,7 @@ class audioChat {
     }
 
     endSession() {
-        socket.emit(this.socketLink, { id: this.roomID, cid: this.cID, op: 'del' });
+        //socket.emit(this.socketLink, { id: this.roomID, cid: this.cID, op: 'del' });
         this.disconnect();
     }
 };
@@ -177,11 +179,11 @@ var socketText = 'adc';
 var voiceChat = new audioChat(socketText, audioOnly, chatServer, port, path);
 var streamRunning = false;
 
-async function startVoice(ID, CID) {
-    await voiceChat.init(ID, CID);
+async function startVoice(ID, PASS, CID) {
+    await voiceChat.init(ID, PASS, CID);
     streamRunning = true;
 }
-function reconnectVoice(ID, CID) {
+function reconnectVoice(ID, PASS, CID) {
     streamRunning = false;
     try {
         voiceChat.disconnect();
@@ -189,7 +191,7 @@ function reconnectVoice(ID, CID) {
     } catch (e) { };
     voiceChat = new audioChat(socketText, audioOnly, chatServer, port, path);
     setTimeout(function () {
-        startVoice(ID, CID);
+        startVoice(ID, PASS, CID);
     }, 2000);
 }
 function endVoice() {
