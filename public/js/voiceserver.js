@@ -34,8 +34,8 @@ class callData {
         var ce = this.callIDexists(ID);
         if (ce != -1) {
             this.callLog[ce].streamElem.muted = MUTE;
-			console.log((MUTE?'Muted ':'Unmuted ') + ID);
-		}
+            console.log((MUTE ? 'Muted ' : 'Unmuted ') + ID);
+        }
         else
             console.log('Mute failed: ' + ID);
     }
@@ -59,7 +59,7 @@ class audioChat {
         this.socketLink = socketLinkText;
         this.myID = '';
         this.roomID = '';
-		this.roomPass = '';
+        this.roomPass = '';
         this.host = host;
         this.port = port;
         this.path = path;
@@ -74,15 +74,15 @@ class audioChat {
 
     async init(roomid, roompass, callerid) {
         this.roomID = roomid;
-		this.roomPass = roompass;
+        this.roomPass = roompass;
         this.cID = callerid;
         this.myID = roomid + callerid;
         try {
-			var vidEnable = !this.audioOnly;
-			await navigator.mediaDevices.getUserMedia({ video: vidEnable, audio: true }).then(function(s){myStream=s}).catch(function (err){console.log('Failed to get local stream: ', err);return;});
+            var vidEnable = !this.audioOnly;
+            await navigator.mediaDevices.getUserMedia({ video: vidEnable, audio: true }).then(function (s) { myStream = s }).catch(function (err) { console.log('Failed to get local stream: ', err); return; });
             this.myPeer = new Peer(this.myID, { host: this.host, port: this.port, path: this.path });
             this.registerID();
-            
+
             var eCalls = this.existingCalls;
             this.myPeer.on('call', async function (call) {
                 var streamElem = document.createElement(vidEnable ? 'video' : 'audio');
@@ -97,8 +97,8 @@ class audioChat {
                             function (remoteStream) {
                                 streamElem.srcObject = remoteStream;
                             });
-						voiceCallback(call.peer,'in');
-                        eCalls.addCall(call, streamElem , call.peer);
+                        voiceCallback(call.peer, 'in');
+                        eCalls.addCall(call, streamElem, call.peer);
                     }).catch(
                         function (err) {
                             console.log('Failed to get local stream: ', err);
@@ -133,7 +133,7 @@ class audioChat {
                         function (remoteStream) {
                             streamElem.srcObject = remoteStream;
                         });
-					voiceCallback(call.peer,'out');
+                    voiceCallback(call.peer, 'out');
                     eCalls.addCall(call, streamElem, call.peer);
                 }).catch(
                     function (err) {
@@ -143,16 +143,16 @@ class audioChat {
     }
 
     mute(ID, CID, MUTE) {
-		if(ID + CID == this.myID) // mute self stream
-			try {
-				myStream.getAudioTracks()[0].enabled = !MUTE;
-				console.log((MUTE?'Muted ':'Unmuted ') + this.myID);
-			}
-			catch(e) {
-				console.log('Mute failed: ' + this.myID);
-			}
-		else
-			this.existingCalls.mute(ID + CID, MUTE);
+        if (ID + CID == this.myID) // mute self stream
+            try {
+                myStream.getAudioTracks()[0].enabled = !MUTE;
+                console.log((MUTE ? 'Muted ' : 'Unmuted ') + this.myID);
+            }
+            catch (e) {
+                console.log('Mute failed: ' + this.myID);
+            }
+        else
+            this.existingCalls.mute(ID + CID, MUTE);
     }
 
     disconnect() {
@@ -207,5 +207,5 @@ function changeMuteVoice(ID, CID, MUTE) {
 
 socket.on(socketText, function (data) {
     if (streamRunning)
-        setTimeout(function(){voiceChat.socketCallback(data);},1000);
+        setTimeout(function () { voiceChat.socketCallback(data); }, 1000);
 });

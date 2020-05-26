@@ -9,8 +9,8 @@ const encodeHTML = (input) => {
 }
 
 function zeroPad(num, padlen) {
-    var pad = new Array(1 + padlen).join('0');
-    return (pad + num).slice(-pad.length);
+	var pad = new Array(1 + padlen).join('0');
+	return (pad + num).slice(-pad.length);
 }
 
 /*
@@ -63,15 +63,15 @@ function indexOfMax(arr) {
 }
 
 /* start VoiceServer */
-function voiceCallback(callID,direction) {
+function voiceCallback(callID, direction) {
 	var pl = callID.slice(gVars.curRoomID.length);
-	var elem = elemfromidteam('.','Pcard',pl);
+	var elem = elemfromidteam('.', 'Pcard', pl);
 	$(elem).addClass('callAnim');
-	$(elem+'>i').html(direction=='out'?'call_made':'call_received');
-	setTimeout(function(){
+	$(elem + '>i').html(direction == 'out' ? 'call_made' : 'call_received');
+	setTimeout(function () {
 		$(elem).removeClass('callAnim');
-		$(elem+'>i').html($(elem).attr('data-mute') == 'off'?'mic':'mic_off');
-	},4600);
+		$(elem + '>i').html($(elem).attr('data-mute') == 'off' ? 'mic' : 'mic_off');
+	}, 4600);
 }
 /* end VoiceServer */
 
@@ -161,6 +161,7 @@ function initModals() {
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
 			gVars.myteam = '';
+			$('#modal-leader').modal('close');
 			$('#modal-credits').modal('close');
 			$('#joingame').removeAttr('disabled');
 		},
@@ -177,6 +178,7 @@ function initModals() {
 			resetRound();
 			$('#modal-chat').modal('close');
 			$('#modal-share').modal('close');
+			$('#modal-leader').modal('close');
 		}
 	});
 	$('#modal-trumpyesno').modal({
@@ -185,6 +187,7 @@ function initModals() {
 	$('#modal-gameover').modal({
 		dismissible: false,
 		onOpenStart: function (modal, trigger) {
+			$('#modal-leader').modal('close');
 			$('#modal-chat').modal('close');
 			$('#chatopen').removeClass('scale-in');
 		}
@@ -206,6 +209,15 @@ function initModals() {
 	});
 	$('#modal-share').modal({
 		dismissible: true
+	});
+	$('#modal-leader').modal({
+		dismissible: true,
+		onOpenStart: function (modal, trigger) {
+			socket.emit('hst', '');
+		},
+		onCloseEnd: function (modal, trigger) {
+			$('.hstTab>ul').html('Loading...');
+		}
 	});
 }
 
@@ -236,7 +248,7 @@ $('#form-addroom').submit(function () {
 	var usr = $('#room_NEW').val().trim();
 	var pass = $('#room_NEW_pass').val();
 	var timestamp = Date.now();
-	if (usr == "" || checkSpChars(usr) || usr.length>10) {
+	if (usr == "" || checkSpChars(usr) || usr.length > 10) {
 		$('#room_NEW').val('');
 		$('#room_NEW_pass').val('');
 		return false;
@@ -261,7 +273,7 @@ $('#form-chat').submit(function () {
 		setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 2000);
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + encodeHTML($("#chatmessage").val());
 	$("#chatmessage").val('');
-	socket.emit('chat', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'msg': msg });
+	socket.emit('chat', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'msg': msg });
 	return false;
 });
 
@@ -273,7 +285,7 @@ $('#backtoroomlist').click(function () {
 
 $('#joingame').click(function () {
 	var usrN = $('#username').val().trim();
-	if (usrN == "" || checkSpChars(usrN) || usrN.length>15) {
+	if (usrN == "" || checkSpChars(usrN) || usrN.length > 15) {
 		$('#username').val('');
 		$("#username").focus();
 		return false;
@@ -316,18 +328,18 @@ function roomenter_submit() {
 	if (gVars.myteam == 'green') {
 		$('#playMove').removeClass('white');
 		$('#playMove').addClass('green');
-		$('.top-box>div.lowpad').css('border-bottom','4px solid #48994a');
-		$('.bottom-box>div.lowpad').css('border-top','4px solid #48994a');
-		$('.left-box>div.lowpad').css('border-bottom','4px solid #5e429b');
-		$('.right-box>div.lowpad').css('border-top','4px solid #5e429b');
+		$('.top-box>div.lowpad').css('border-bottom', '4px solid #48994a');
+		$('.bottom-box>div.lowpad').css('border-top', '4px solid #48994a');
+		$('.left-box>div.lowpad').css('border-bottom', '4px solid #5e429b');
+		$('.right-box>div.lowpad').css('border-top', '4px solid #5e429b');
 	}
 	else {
 		$('#playMove').removeClass('white');
 		$('#playMove').addClass('purple');
-		$('.top-box>div.lowpad').css('border-bottom','4px solid #5e429b');
-		$('.bottom-box>div.lowpad').css('border-top','4px solid #5e429b');
-		$('.left-box>div.lowpad').css('border-bottom','4px solid #48994a');
-		$('.right-box>div.lowpad').css('border-top','4px solid #48994a');
+		$('.top-box>div.lowpad').css('border-bottom', '4px solid #5e429b');
+		$('.bottom-box>div.lowpad').css('border-top', '4px solid #5e429b');
+		$('.left-box>div.lowpad').css('border-bottom', '4px solid #48994a');
+		$('.right-box>div.lowpad').css('border-top', '4px solid #48994a');
 	}
 	for (var i = 0; i < 4; i++) {
 		var t = playerFromNumber(i);
@@ -341,11 +353,11 @@ function roomenter_submit() {
 	gVars.matchRunning = true;
 
 	/* start VoiceServer */
-	for(var i = 0; i < $('.icon-player').length; i++){
+	for (var i = 0; i < $('.icon-player').length; i++) {
 		var team = playerFromNumber(numberFromPlayer(idteamfromelem($($('.icon-player')[i]).attr('data-pos')))).team;
-		$($('.icon-player')[i]).addClass(team=='green'?'greengrad':'purplegrad');
+		$($('.icon-player')[i]).addClass(team == 'green' ? 'greengrad' : 'purplegrad');
 	}
-		
+
 	await startVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID);
 	/* end VoiceServer */
 
@@ -508,13 +520,13 @@ $('#bidraise').click(function () {
 	$('#bidchange').hide();
 	if (gVars.raiseOrMatch == 'matched bid to&nbsp;' && parseInt($('#bidrange').attr('min')) != parseInt($('#bidrange').val()))
 		gVars.raiseOrMatch = 'raised bid to&nbsp;';
-	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': false, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + gVars.raiseOrMatch + '<red>' + $('#bidrange').val() + '</red>', 'o': { 'iO': '' } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'ps': false, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + gVars.raiseOrMatch + '<red>' + $('#bidrange').val() + '</red>', 'o': { 'iO': '' } });
 	return false;
 });
 
 $('#bidpass').click(function () {
 	$('#bidchange').hide();
-	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': true, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;passed the bid', 'o': { 'iO': '' } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'ps': true, 'am': $('#bidrange').val(), 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;passed the bid', 'o': { 'iO': '' } });
 	return false;
 });
 
@@ -523,13 +535,13 @@ $('#biddoubleok').click(function () {
 	var m = parseInt($('input[name="groupD"]:checked').val());
 	var t = gVars.bidDouble == 'D' ? 'double' : 'redouble';
 	var textm = (m == 1) ? 'did not ' + t : ((m == 2) ? 'doubled' : 'redoubled');
-	socket.emit('bid', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'ps': '', 'am': '', 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + textm, 'o': { 'iO': gVars.bidDouble, 'm': m, 't': gVars.myteam } });
+	socket.emit('bid', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'ps': '', 'am': '', 'pl': gVars.myteam + gVars.myUserID, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;' + textm, 'o': { 'iO': gVars.bidDouble, 'm': m, 't': gVars.myteam } });
 	return false;
 });
 
 $('#playMove').click(function () {
 	$('#playMove').attr('disabled', '');
-	socket.emit('play', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'c': gVars.currentCard, 'fp': gVars.firstplay });
+	socket.emit('play', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'c': gVars.currentCard, 'fp': gVars.firstplay });
 	//cardPlayed(gVars.myteam+gVars.myUserID,gVars.currentCard);
 	return false;
 });
@@ -546,7 +558,7 @@ $('#changeView').click(function () {
 $('#trumpyes').click(function () {
 	$('#bottomcardbox').addClass('carddisabled');
 	$('#modal-trumpyesno').modal('close');
-	socket.emit('trump', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'open','s' : '', 'l' : '' });
+	socket.emit('trump', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'open', 's': '', 'l': '' });
 	return false;
 });
 
@@ -554,7 +566,7 @@ $('#trumpsetok').click(function () {
 	$('#trumpset').hide();
 	var tIndex = document.getElementById('trumpOpt').M_Tabs.index;
 	var tSuit = tIndex == 0 ? 'H' : tIndex == 1 ? 'S' : tIndex == 2 ? 'D' : tIndex == 3 ? 'C' : '7';
-	socket.emit('trump', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'set', 's': tSuit,  'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump' });
+	socket.emit('trump', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'op': 'set', 's': tSuit, 'l': '<' + gVars.myteam + '>' + gVars.myname + '</' + gVars.myteam + '>&nbsp;set the Trump' });
 	return false;
 });
 
@@ -573,6 +585,11 @@ $('#chatopen').click(function () {
 	return false;
 });
 
+$('#leaderopen').click(function () {
+	$('#modal-leader').modal('open');
+	return false;
+});
+
 $('#credits').click(function () {
 	$('#modal-credits').modal('open');
 	return false;
@@ -588,7 +605,12 @@ $('#closeCredits').click(function () {
 	return false;
 });
 
-$('.tsCard').click(function(elem){
+$('#closeLeader').click(function () {
+	$('#modal-leader').modal('close');
+	return false;
+});
+
+$('.tsCard').click(function (elem) {
 	var c = $(elem.currentTarget);
 	if (c.attr('id') == 'optgreen') {
 		$('#optgreen>div>div>label>input').prop('checked', true);
@@ -628,7 +650,7 @@ $('#modal-chat>div.modal-footer>div').click(function (e) {
 	if (!$(e.target).hasClass('chip'))
 		return false;
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;<red>' + encodeHTML($(e.target).html()) + '</red>';
-	socket.emit('chat', { 'id': gVars.curRoomID, 'passw' : gVars.curRoomPass, 'msg': msg });
+	socket.emit('chat', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'msg': msg });
 	$('#modal-chat>div.modal-footer>div').addClass('carddisabled');
 	setTimeout(function () { $('#modal-chat>div.modal-footer>div').removeClass('carddisabled') }, 3000);
 	return false;
@@ -731,6 +753,19 @@ function enableTrump(select) {
 		$('#trumpcard').removeClass('carddisabled');
 }
 
+function timeAbs(time) {
+	var d = new Date(time);
+	return zeroPad(d.getHours(), 2) + ':' + zeroPad(d.getMinutes(), 2) + ':' + zeroPad(d.getSeconds(), 2) + '  ' + zeroPad(d.getDate(), 2) + '/' + zeroPad((d.getMonth() + 1), 2) + '/' + zeroPad(d.getFullYear(), 4);
+}
+
+function timeDiff(diff) {
+	var winHours = parseInt(diff / (1000 * 60 * 60));
+	winHours = (winHours < 10) ? zeroPad(winHours, 2) : winHours.toString();
+	var winMins = zeroPad(parseInt(diff / (1000 * 60)) % 60, 2);
+	var winSecs = zeroPad(parseInt(diff / 1000) % 60, 2);
+	return winHours + ':' + winMins + ':' + winSecs;
+}
+
 function playProcess(data) {
 	var timeEnd;
 	if (data.op.re == 'ro') {
@@ -756,12 +791,8 @@ function playProcess(data) {
 	if (data.op.fp) {
 		setTimeout(function () {
 			if (data.op.re == 'go') {
-				var winHours = parseInt((timeEnd - gVars.startTime)/(1000*60*60));
-				winHours = (winHours<10)?zeroPad(winHours,2):winHours.toString();
-				var winMins = zeroPad(parseInt((timeEnd - gVars.startTime)/(1000*60))%60,2);
-				var winSecs = zeroPad(parseInt((timeEnd - gVars.startTime)/1000)%60,2);
 				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
-				$('#winmessage').html('<div class="flexcenter fResult"><img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game in&nbsp;<red>' + winHours + ':' + winMins + ':' + winSecs + '</red>.</div>');
+				$('#winmessage').html('<div class="flexcenter fResult"><img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game in&nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
 				var text = '<table class="fResult"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
@@ -1081,8 +1112,7 @@ socket.on('roomlist', function (data) {
 	gVars.currentlogin = '';
 	$('#rooms-list').html('');
 	for (var i = 0; i < data.number; i++) {
-		var d = new Date(data.timestamps[i]);
-		var timest = zeroPad(d.getHours(),2) + ':' + zeroPad(d.getMinutes(),2) + ':' + zeroPad(d.getSeconds(),2) + '  ' + zeroPad(d.getDate(),2) + '/' + zeroPad((d.getMonth() + 1),2) + '/' + zeroPad(d.getFullYear(),4);
+		var timest = timeAbs(data.timestamps[i]);
 		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><label for="room_password">Password</label><input name="roomPASS" placeholder="Enter Room password" type="password" class="validate"><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
 	roomenter_submit();
@@ -1151,7 +1181,7 @@ socket.on('prf', function (data) {
 
 socket.on('cst', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
-	if(gVars.startTime == '')
+	if (gVars.startTime == '')
 		gVars.startTime = Date.now();
 	$('#playerwait').hide();
 	$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
@@ -1334,9 +1364,9 @@ socket.on('reconnect', function () {
 	console.log('Reconnected');
 	//M.toast({html: 'Reconnected',displayLength:1500});
 	if (gVars.matchRunning) {
-		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw' : gVars.curRoomPass });
+		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass });
 		/* start VoiceServer */
-		if(voiceChat.myPeer._disconnected)
+		if (voiceChat.myPeer._disconnected)
 			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 3000);
 		/* end VoiceServer */
 	}
@@ -1358,6 +1388,29 @@ socket.on('pong', function (latency) {
 		isChromium ? $('#network>i').css('background-image', 'linear-gradient(to right,#dd0 64%,rgba(255,255,255,.13) 64%)') : $('#network>i').css('color', '#dd0');
 	else
 		isChromium ? $('#network>i').css('background-image', 'linear-gradient(to right,#0d0 99%,#0d0 100%)') : $('#network>i').css('color', '#0d0');
+});
+
+socket.on('hst', function (data) {
+	const lData = data.games.reverse();
+	//history
+	$('#hstTab1>ul').html('');
+	for (var i = 0; i < lData.length; i++) {
+
+		var tabletext = '<table class="striped"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
+
+		for (var j = 0; j < 4; j++) {
+			var color = playerFromNumber(j).team;
+			tabletext += '<tr><td><span class="' + color + '-text">' + lData[i].pn[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gp[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gh[j] + '</span></td><td><red>' + lData[i].gr[j] + '</red></td></tr>';
+		}
+
+		tabletext += '</tbody></table>';
+
+		var winner = playerFromNumber(indexOfMax(lData[i].gr)).team;
+
+		var text = '<li><div class="collapsible-header"><i class="material-icons">home</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
+
+		$('#hstTab1>ul').append(text);
+	}
 });
 
 //document load
@@ -1476,8 +1529,8 @@ class sound {
 }
 
 $(function () {
-	console.log('%cThe 29 Game','color:green;font-weight:bold;font-size:2rem;');
-	console.log('%c© Arindam Ray, 2020','color:red;font-weight:bold;font-size:1.5rem;');
+	console.log('%cThe 29 Game', 'color:green;font-weight:bold;font-size:2rem;');
+	console.log('%c© Arindam Ray, 2020', 'color:red;font-weight:bold;font-size:1.5rem;');
 	gVars.sound_turn = new sound('img/ting.mp3', true);
 	gVars.sound_play = new sound('img/play.mp3');
 	if (!window.chrome)//not chromium
@@ -1543,7 +1596,7 @@ $(function () {
 	}
 	$('#imgload').hide();
 	$('#modal-roomlist').modal('open');
-	setTimeout(function(){
+	setTimeout(function () {
 		$('.pload').remove();
 		if (gVars.isMobile)
 			M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });

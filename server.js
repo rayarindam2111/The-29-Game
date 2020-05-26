@@ -2,6 +2,7 @@ var express = require('express'), app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http, { pingInterval: 6000, pingTimeout: 8000 }); // http,{pingInterval: 5000, pingTimeout: 60000}
 var port = process.env.PORT || 3000;
+const fs = require('fs');
 const colors = require('colors');
 
 class rooms {
@@ -18,7 +19,7 @@ class rooms {
 		this.room_voice = [];
 		/* end VoiceServer */
 	}
-	
+
 	checkLogin(ID, pass, internal) {
 		var index = this.room_ids.indexOf(ID);
 		if (index == -1)
@@ -30,7 +31,7 @@ class rooms {
 	}
 
 	addRoom(name, pass, timestamp) {
-		if(this.room_ids.length>=10){ //lim to ten. rooms.
+		if (this.room_ids.length >= 10) { //lim to ten. rooms.
 			console.log(colors.bgRed.black('Max. room limit reached'));
 			return false;
 		}
@@ -50,7 +51,7 @@ class rooms {
 			console.log(colors.bgBlue.green('Room added: ' + name + timestamp));
 			return true;
 		}
-		else{
+		else {
 			console.log(colors.bgRed.black('Room already exists: ' + name + timestamp));
 			return false;
 		}
@@ -209,6 +210,54 @@ class rooms {
 	}
 	/* end VoiceServer */
 
+	logRoom(ID, time, rounds, points, hands) {
+		var index = this.room_ids.indexOf(ID);
+		try {
+			const pName = [
+				this.room_teamgreen[index][0],
+				this.room_teampurple[index][0],
+				this.room_teamgreen[index][1],
+				this.room_teampurple[index][1]
+			];
+			const dataPack = {
+				rn: this.room_names[index],       // room name
+				rt: this.room_timestamps[index],  // room timestamp
+				pn: pName,                        // player names
+				wt: time,                         // win time
+				gr: rounds,                       // game rounds
+				gp: points,                       // game points
+				gh: hands                         // game hands
+			};
+			fs.readFile('public/log.json', function (err, data) {
+				if (err) {
+					throw err;
+				} else {
+					var obj = JSON.parse(data);
+					obj.games.push(dataPack);
+					var json = JSON.stringify(obj);
+					fs.writeFile('public/log.json', json, function (err) {
+						if (err)
+							throw err;
+					});
+				}
+			});
+		}
+		catch (e) {
+			console.log(colors.bgRed.black('Log error: ' + ID + '\nError: ' + e.message));
+		}
+	}
+
+	getHistory(socket) {
+		fs.readFile('public/log.json', function (err, data) {
+			if (err) {
+				console.log(colors.bgRed.black('Log retrieve error'));
+			} else {
+				var obj = JSON.parse(data);
+				socket.emit('hst', obj);
+			}
+		});
+	}
+
 };
 
 class Cards {
@@ -232,7 +281,7 @@ class Cards {
 		//randomize playable cards
 		this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
 		this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
-		
+
 		/* Fisher Yates shuffle */
 		var m = this.playable_deck.length, i, t;
 		while (m) {
@@ -241,7 +290,7 @@ class Cards {
 			this.playable_deck[m] = this.playable_deck[i];
 			this.playable_deck[i] = t;
 		}
-		
+
 		/* Normal shuffle */
 		/*
 		for (var i = 0; i < 1000; i++) {
@@ -305,17 +354,19 @@ class Cards {
 class Game {
 	constructor(roomID) {
 		this.roomID = roomID;
-		this.rounds_won = [0, 0, 0, 0]; //total rounds won
+
 		this.delayed_distribute = false;
 		this.playerStart = Math.floor((Math.random() * 4));
 
 		this.emitlog = new Array();
 		this.emitlog[0] = new Array();
 		this.emitlog[1] = new Array();
-		
-		this.handsWon = [0,0,0,0];
-		this.pointsWon = [0,0,0,0];
 
+		this.rounds_won = [0, 0, 0, 0]; //total rounds won
+		this.handsWon = [0, 0, 0, 0];
+		this.pointsWon = [0, 0, 0, 0];
+
+		this.startTime = Date.now();
 		this.resetRound();
 	}
 
@@ -572,15 +623,15 @@ class Game {
 				're': roundend //'normal','roundover','gameover'
 			}
 		};
-		if(roundend == 'go') {
+		if (roundend == 'go') {
 			d.op.hw = this.handsWon;
 			d.op.pw = this.pointsWon;
 		}
-		if(firstplay) {
+		if (firstplay) {
 			d.op.pt = this.points;
 			d.op.rs = this.rounds_won;
 		}
-		
+
 		this.emitlog[0].push('play');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('play', d);
@@ -696,7 +747,8 @@ class Game {
 		else if (this.points[this.nextPlayer(this.bid_winner, 'anti')] > 28 - this.bid_value)
 			round_state = this.teamwin(this.nextPlayer(this.bid_winner, 'anti'));
 
-		if (fromPlay || (!fromPlay && round_state == 'go'))
+		//if (fromPlay || (!fromPlay && (round_state == 'go' || round_state == 'ro')))
+		if (fromPlay || round_state == 'go' || round_state == 'ro')
 			this.nextPlayEmit(true, winner, round_state);
 
 		if (round_state == 'ro') {//roundover
@@ -705,10 +757,12 @@ class Game {
 		else if (round_state == 'go') {//gameover
 			try {
 				//delete current room
+				var gameTime = Date.now() - this.startTime;
+				Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon);
 				io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
 			}
 			catch (err) {
-				console.log(colors.bgRed.black('Room deletion failed: ' + this.roomID + '\nError: ' + err.message));
+				console.log(colors.bgRed.black('Ending game failed: ' + this.roomID + '\nError: ' + err.message));
 			}
 		}
 	}
@@ -718,13 +772,13 @@ class Game {
 
 		//no pith won
 		var rWon = 0;
-		for (var i = 0; i < this.winlog.length; i++){
+		for (var i = 0; i < this.winlog.length; i++) {
 			rWon += (this.teamFromNumber(this.winlog[i]) == this.teamFromNumber(this.bid_winner));
 			this.handsWon[this.winlog[i]]++;
 			this.pointsWon[this.winlog[i]] += this.winpoints[i];
 		}
 		var allwin = (rWon == 0 || rWon == this.winlog.length) ? 2 : 1;
-		
+
 		var inc = (this.teamFromNumber(player) == this.teamFromNumber(this.bid_winner)) ? 1 : -1;
 		this.rounds_won[this.bid_winner] += (inc * this.biddouble * allwin);
 		this.rounds_won[this.nextTeamPlayer(this.bid_winner)] += (inc * this.biddouble * allwin);
@@ -774,6 +828,14 @@ class Game {
 
 };
 
+if (!fs.existsSync('public/log.json')) {
+	var json = JSON.stringify({ games: [] });
+	fs.writeFile('public/log.json', json, function (err) {
+		if (err)
+			console.log(colors.bgRed.black('Log creation error'));
+	});
+}
+
 var Rooms = new rooms();
 
 app.get('/', function (req, res) {
@@ -796,7 +858,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('addroom', function (msg) {
-		if(Rooms.addRoom(msg.name, msg.pass, msg.timestamp))
+		if (Rooms.addRoom(msg.name, msg.pass, msg.timestamp))
 			socket.emit('roomlist', Rooms.getRooms());
 	});
 
@@ -826,7 +888,7 @@ io.on('connection', function (socket) {
 		socket.join(msg.id);
 		console.log(colors.bgBlue.red(msg.pl + ' reconnected in room ' + msg.id));
 		if (parseInt(msg.LM) == 0) {
-			var r = Rooms.getTeams(msg.id. msg.passw);
+			var r = Rooms.getTeams(msg.id.msg.passw);
 			if (r.s)
 				socket.emit('prf', r);
 		}
@@ -861,6 +923,10 @@ io.on('connection', function (socket) {
 
 	socket.on('chat', function (msg) {
 		Rooms.sendChat(msg.id, msg.passw, msg.msg);
+	});
+
+	socket.on('hst', function () {
+		Rooms.getHistory(socket);
 	});
 
 	/* start VoiceServer */
