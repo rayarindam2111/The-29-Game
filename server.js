@@ -6,7 +6,7 @@ const colors = require('colors');
 const port = process.env.PORT || 3000;
 var collection, maxElems = 10, aggFunc;
 
-const mURI = process.env.DB_URL;
+const mURI = process.env.DB_URL; 
 mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
 	if (err)
 		console.log(colors.bgRed.black('Database connection error'));
