@@ -171,9 +171,6 @@ function initModals() {
 	});
 	$('#modal-bid').modal({
 		dismissible: false,
-		onOpenEnd: function (modal, trigger) {
-			$('.tabs').tabs('updateTabIndicator');
-		},
 		onOpenStart: function (modal, trigger) {
 			resetRound();
 			$('#modal-chat').modal('close');
@@ -213,10 +210,17 @@ function initModals() {
 	$('#modal-leader').modal({
 		dismissible: true,
 		onOpenStart: function (modal, trigger) {
-			socket.emit('hst', '');
+			socket.emit('hst', { idx: 0 });
+			socket.emit('hst', { idx: 1 });
+			socket.emit('hst', { idx: 2 });
+			socket.emit('hst', { idx: 3 });
+		},
+		onOpenEnd: function (modal, trigger) {
+			$('#modal-leader>div.modal-content>ul>li.indicator').css('right', '904px');
+			//document.querySelector('#modal-leader>div>ul>li:nth-child(1)>a').dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		},
 		onCloseEnd: function (modal, trigger) {
-			$('.hstTab>ul').html('Loading...');
+			$('.hstTab').html('<div class="hstLoad">Loading...</div>');
 		}
 	});
 }
@@ -1391,25 +1395,44 @@ socket.on('pong', function (latency) {
 });
 
 socket.on('hst', function (data) {
-	const lData = data.games.reverse();
+	const idx = data.idx;
+	const lData = data.data;
 	//history
-	$('#hstTab1>ul').html('');
-	for (var i = 0; i < lData.length; i++) {
-
-		var tabletext = '<table class="striped"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
-
-		for (var j = 0; j < 4; j++) {
-			var color = playerFromNumber(j).team;
-			tabletext += '<tr><td><span class="' + color + '-text">' + lData[i].pn[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gp[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gh[j] + '</span></td><td><red>' + lData[i].gr[j] + '</red></td></tr>';
+	function gameHistory(index) {
+		var text = '<ul class="collapsible" style="box-shadow:none;margin-top:0">';
+		for (var i = 0; i < lData.length; i++) {
+			var tabletext = '<table class="striped"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
+			for (var j = 0; j < 4; j++) {
+				var color = playerFromNumber(j).team;
+				tabletext += '<tr><td><span class="' + color + '-text">' + lData[i].pn[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gp[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gh[j] + '</span></td><td><red>' + lData[i].gr[j] + '</red></td></tr>';
+			}
+			tabletext += '</tbody></table>';
+			var winner = playerFromNumber(indexOfMax(lData[i].gr)).team;
+			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">home</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
+			text += oneItem;
 		}
+		text += '</ul>';
+		if (lData.length == 0)
+			text = '<div class="hstNotFound">No record found.</div>';
+		$('#hstTab' + index).html(text);
+		$('#hstTab' + index + '>ul').collapsible();
+	}
+	function playerHistory(index) {
+		var text = '<table class="highlight striped centered"><thead><tr><th>Position</th><th>Player</th><th>' + (index == 1 ? 'Points' : 'Hands') + '</th><th>Date</th></tr></thead><tbody>';
+		for (var i = 0; i < lData.length; i++) {
+			text += '<tr><td class="flexcenter" style="justify-content:center"><i class="material-icons">star</i>&nbsp;' + (i + 1) + '</td><td>' + lData[i].pn + '</td><td><span class="red new badge" data-badge-caption="">' + (index == 1 ? lData[i].gp : lData[i].gh) + '</span></td><td><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></td></tr>';
+		}
+		text += '</tbody></table>';
+		if (lData.length == 0)
+			text = '<div class="hstNotFound">No record found.</div>';
+		$('#hstTab' + index).html(text);
+	}
 
-		tabletext += '</tbody></table>';
-
-		var winner = playerFromNumber(indexOfMax(lData[i].gr)).team;
-
-		var text = '<li><div class="collapsible-header"><i class="material-icons">home</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
-
-		$('#hstTab1>ul').append(text);
+	switch (idx) {
+		case 0: gameHistory(0); break;
+		case 1: playerHistory(1); break;
+		case 2: playerHistory(2); break;
+		case 3: gameHistory(3); break;
 	}
 });
 

@@ -555,6 +555,20 @@ table.fResult {
 	animation : opchange 1.2s linear infinite;
 }
 
+.hstLoad {
+	width: 100%;
+	padding: 20px 0;
+	font-size: 1.7em;
+	animation : opchange 1s linear infinite;
+}
+
+.hstNotFound {
+	width: 100%;
+	padding: 20px 0;
+	font-size: 1.7em;
+	color: #343434;
+}
+
 @keyframes octocat-wave {
 	0%,100%{transform:rotate(0)}
 	20%,60%{transform:rotate(-25deg)}

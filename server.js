@@ -1,9 +1,44 @@
-var express = require('express'), app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http, { pingInterval: 6000, pingTimeout: 8000 }); // http,{pingInterval: 5000, pingTimeout: 60000}
-var port = process.env.PORT || 3000;
-const fs = require('fs');
+const express = require('express'), app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http, { pingInterval: 6000, pingTimeout: 8000 });
+const mongoClient = require('mongodb').MongoClient;
 const colors = require('colors');
+const port = process.env.PORT || 3000;
+var collection, maxElems = 10, aggFunc;
+
+const mURI = process.env.DB_URL;
+mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+	if (err)
+		console.log(colors.bgRed.black('Database connection error'));
+	else {
+		collection = client.db('sins29').collection('games');
+		console.log(colors.bgBlue.green('Connected to database'));
+		aggFunc = [
+			//History
+			[{ '$sort': { 'rt': -1 } },
+			{ '$limit': maxElems },
+			{ '$project': { '_id': 0 } }],
+			//Most points
+			[{ '$project': { 'pn': 1, 'gp': 1, 'rt': 1, '_id': 0 } },
+			{ '$unwind': { 'path': '$gp', 'includeArrayIndex': 'mi' } },
+			{ '$limit': maxElems },
+			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
+			{ '$project': { 'mi': 0 } },
+			{ '$sort': { 'gp': -1 } }],
+			//Most hands
+			[{ '$project': { 'pn': 1, 'gh': 1, 'rt': 1, '_id': 0 } },
+			{ '$unwind': { 'path': '$gh', 'includeArrayIndex': 'mi' } },
+			{ '$limit': maxElems },
+			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
+			{ '$project': { 'mi': 0 } },
+			{ '$sort': { 'gh': -1 } }],
+			//Least Time
+			[{ '$sort': { 'wt': 1 } },
+			{ '$limit': maxElems },
+			{ '$project': { '_id': 0 } }]
+		];
+	}
+});
 
 class rooms {
 	constructor() {
@@ -31,7 +66,7 @@ class rooms {
 	}
 
 	addRoom(name, pass, timestamp) {
-		if (this.room_ids.length >= 10) { //lim to ten. rooms.
+		if (this.room_ids.length >= maxElems) { //lim to ten. rooms.
 			console.log(colors.bgRed.black('Max. room limit reached'));
 			return false;
 		}
@@ -228,34 +263,31 @@ class rooms {
 				gp: points,                       // game points
 				gh: hands                         // game hands
 			};
-			fs.readFile('public/log.json', function (err, data) {
-				if (err) {
-					throw err;
-				} else {
-					var obj = JSON.parse(data);
-					obj.games.push(dataPack);
-					var json = JSON.stringify(obj);
-					fs.writeFile('public/log.json', json, function (err) {
-						if (err)
-							throw err;
-					});
-				}
+			collection.insertOne(dataPack, (err, result) => {
+				if (err)
+					console.log(colors.bgRed.black('Database write error'));
+				else
+					console.log(colors.bgBlue.green('Game saved: ' + ID));
 			});
 		}
 		catch (e) {
-			console.log(colors.bgRed.black('Log error: ' + ID + '\nError: ' + e.message));
+			console.log(colors.bgRed.black('Could not save game: ' + ID + '\nError: ' + e.message));
 		}
 	}
 
-	getHistory(socket) {
-		fs.readFile('public/log.json', function (err, data) {
-			if (err) {
-				console.log(colors.bgRed.black('Log retrieve error'));
-			} else {
-				var obj = JSON.parse(data);
-				socket.emit('hst', obj);
-			}
-		});
+	getHistory(socket, aggNo) {
+		try {
+			//collection.find().toArray()
+			collection.aggregate(aggFunc[aggNo]).toArray((err, items) => {
+				if (err)
+					console.log(colors.bgRed.black('Database read error'));
+				else
+					socket.emit('hst', { idx: aggNo, data: items });
+			});
+		}
+		catch (e) {
+			console.log(colors.bgRed.black('Could not access saved games\nError: ' + e.message));
+		}
 	}
 
 };
@@ -828,14 +860,6 @@ class Game {
 
 };
 
-if (!fs.existsSync('public/log.json')) {
-	var json = JSON.stringify({ games: [] });
-	fs.writeFile('public/log.json', json, function (err) {
-		if (err)
-			console.log(colors.bgRed.black('Log creation error'));
-	});
-}
-
 var Rooms = new rooms();
 
 app.get('/', function (req, res) {
@@ -925,8 +949,8 @@ io.on('connection', function (socket) {
 		Rooms.sendChat(msg.id, msg.passw, msg.msg);
 	});
 
-	socket.on('hst', function () {
-		Rooms.getHistory(socket);
+	socket.on('hst', function (msg) {
+		Rooms.getHistory(socket, msg.idx);
 	});
 
 	/* start VoiceServer */
