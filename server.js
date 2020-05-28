@@ -6,7 +6,7 @@ const colors = require('colors');
 const port = process.env.PORT || 3000;
 var collection, maxElems = 10, aggFunc;
 
-const mURI = process.env.DB_URL; 
+const mURI = process.env.DB_URL;
 mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
 	if (err)
 		console.log(colors.bgRed.black('Database connection error'));
@@ -323,30 +323,17 @@ class Cards {
 			this.playable_deck[i] = t;
 		}
 
-		/* Normal shuffle */
-		/*
-		for (var i = 0; i < 1000; i++) {
-			var location1 = Math.floor((Math.random() * this.playable_deck.length));
-			var location2 = Math.floor((Math.random() * this.playable_deck.length));
-			if (location1 != location2) {
-				var tmp = this.playable_deck[location1];
-				this.playable_deck[location1] = this.playable_deck[location2];
-				this.playable_deck[location2] = tmp;
-			}
-		}
-		*/
-
 		//check if one person gets all zero points cards or all Jacks or starting player gets zeros in 1st 4 cards
 		var playernum;
 		for (playernum = 0; playernum < 4; playernum++) {
 			var count = [0, 0]; //no. of [non zero point cards, jacks]
-			for (var i = playernum * 4; i < playernum * 4 + 4; i++) {
+			for (var i = playernum * 4 + 16; i < playernum * 4 + 20; i++) {
 				var t = Cards.cardDetail(this.playable_deck[i]);
 				if (t.point != 0) count[0]++;
 				if (t.val == 'J') count[1]++;
 			}
-			if (playernum == this.startingPlayer && count[0] == 0) break;
-			for (var i = playernum * 4 + 16; i < playernum * 4 + 20; i++) {
+			if (this.startingPlayer == (3 - playernum) && count[0] == 0) break; //cards taken out in reverse later
+			for (var i = playernum * 4; i < playernum * 4 + 4; i++) {
 				var t = Cards.cardDetail(this.playable_deck[i]);
 				if (t.point != 0) count[0]++;
 				if (t.val == 'J') count[1]++;
