@@ -569,6 +569,16 @@ table.fResult {
 	color: #343434;
 }
 
+#chatopen>a:hover i, #leaderopen>a:hover i {
+	animation: squiggle-wave 560ms ease-in-out;
+}
+
+@keyframes squiggle-wave {
+	0%, 100% { transform: rotate(0); }
+	20%, 60% { transform: rotate(-13deg); }
+	40%, 80% { transform: rotate(5deg); }
+}
+
 @keyframes octocat-wave {
 	0%,100%{transform:rotate(0)}
 	20%,60%{transform:rotate(-25deg)}

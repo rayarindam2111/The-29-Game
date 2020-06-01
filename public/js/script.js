@@ -1408,7 +1408,7 @@ socket.on('hst', function (data) {
 			}
 			tabletext += '</tbody></table>';
 			var winner = playerFromNumber(indexOfMax(lData[i].gr)).team;
-			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">home</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
+			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">' + ((index == 0) ? 'home' : 'timeline') + '</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
 			text += oneItem;
 		}
 		text += '</ul>';
@@ -1420,7 +1420,7 @@ socket.on('hst', function (data) {
 	function playerHistory(index) {
 		var text = '<table class="highlight striped centered"><thead><tr><th>Position</th><th>Player</th><th>' + (index == 1 ? 'Points' : 'Hands') + '</th><th>Date</th></tr></thead><tbody>';
 		for (var i = 0; i < lData.length; i++) {
-			text += '<tr><td class="flexcenter" style="justify-content:center"><i class="material-icons">star</i>&nbsp;' + (i + 1) + '</td><td>' + lData[i].pn + '</td><td><span class="red new badge" data-badge-caption="">' + (index == 1 ? lData[i].gp : lData[i].gh) + '</span></td><td><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></td></tr>';
+			text += '<tr><td class="flexcenter" style="justify-content:center"><i class="material-icons">' + ((i < 3) ? 'stars' : 'star') + '</i>&nbsp;' + (i + 1) + '</td><td>' + lData[i].pn + '</td><td><span class="red new badge" data-badge-caption="">' + (index == 1 ? lData[i].gp : lData[i].gh) + '</span></td><td><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></td></tr>';
 		}
 		text += '</tbody></table>';
 		if (lData.length == 0)

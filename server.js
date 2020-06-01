@@ -2,6 +2,7 @@ const express = require('express'), app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, { pingInterval: 6000, pingTimeout: 8000 });
 const mongoClient = require('mongodb').MongoClient;
+const crypto = require('crypto');
 const colors = require('colors');
 const port = process.env.PORT || 3000;
 var collection, maxElems = 10, aggFunc;
@@ -21,17 +22,19 @@ mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (
 			//Most points
 			[{ '$project': { 'pn': 1, 'gp': 1, 'rt': 1, '_id': 0 } },
 			{ '$unwind': { 'path': '$gp', 'includeArrayIndex': 'mi' } },
-			{ '$limit': maxElems },
 			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
 			{ '$project': { 'mi': 0 } },
-			{ '$sort': { 'gp': -1 } }],
+			{ '$sort': { 'gp': -1 } },
+			{ '$limit': maxElems }
+			],
 			//Most hands
 			[{ '$project': { 'pn': 1, 'gh': 1, 'rt': 1, '_id': 0 } },
 			{ '$unwind': { 'path': '$gh', 'includeArrayIndex': 'mi' } },
-			{ '$limit': maxElems },
 			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
 			{ '$project': { 'mi': 0 } },
-			{ '$sort': { 'gh': -1 } }],
+			{ '$sort': { 'gh': -1 } },
+			{ '$limit': maxElems }
+			],
 			//Least Time
 			[{ '$sort': { 'wt': 1 } },
 			{ '$limit': maxElems },
@@ -209,7 +212,7 @@ class rooms {
 			return this.room_game[login.index] != '' ? this.room_game[login.index].getEmitLog() : -2;
 		}
 		else {
-			console.log(colors.bgRed.black('Room does not exist: ' + id));
+			console.log(colors.bgRed.black('Room does not exist: ' + ID));
 			return -1;
 		}
 	}
@@ -308,21 +311,34 @@ class Cards {
 		count -= this.playable_deck.length * Math.floor(count / this.playable_deck.length);
 		this.playable_deck.push.apply(this.playable_deck, this.playable_deck.splice(0, count));
 	}
+	
+	randomInt(min, max) {
+		var randbytes = parseInt(crypto.randomBytes(1).toString('hex'), 16);
+		var result = Math.floor(randbytes / 256 * (max - min + 1) + min);
+		
+		// fallback
+		if (result > max)
+			result = Math.floor(Math.random() * (max - min + 1)) + min;
 
+		return result;
+	}
+	
 	randomizeCards() {
-		//randomize playable cards
-		this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
-		this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
-
+		/*randomize playable cards*/
+		//this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
+		this.arrayRotate(this.randomInt(0, this.playable_deck.length - 1));
 		/* Fisher Yates shuffle */
 		var m = this.playable_deck.length, i, t;
 		while (m) {
-			i = Math.floor(Math.random() * m--);
+			//i = Math.floor(Math.random() * m--);
+			i = this.randomInt(0, --m);
 			t = this.playable_deck[m];
 			this.playable_deck[m] = this.playable_deck[i];
 			this.playable_deck[i] = t;
 		}
-
+		//this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
+		this.arrayRotate(-this.randomInt(0, this.playable_deck.length - 1));
+		
 		//check if one person gets all zero points cards or all Jacks or starting player gets zeros in 1st 4 cards
 		var playernum;
 		for (playernum = 0; playernum < 4; playernum++) {
@@ -394,6 +410,7 @@ class Game {
 	}
 
 	resetRound() {
+		this.playerStart = this.nextPlayer(this.playerStart, 'clock');
 		this.play_deck = new Cards(this.playerStart).getPlayableCardsRandomized();
 		this.trump_card = '';
 		this.trump_open = false;
@@ -429,7 +446,7 @@ class Game {
 
 		for (var i = 0; i < 4; i++)
 			this.cards[i] = new Array();
-		this.playerStart = this.nextPlayer(this.playerStart, 'clock');
+		
 		this.startGame(); //start bidding
 	}
 
