@@ -267,8 +267,8 @@ $('#form-addroom').submit(function () {
 	$('.rooms-notloaded').hide();
 	$('#divroom').show();
 	socket.emit('addroom', { 'name': usr, 'pass': pass, 'timestamp': timestamp });
-	$('#room_NEW').val('').removeClass('invalid');
-	$('#room_NEW_pass').val('').removeClass('invalid');
+	$('#room_NEW').val('').removeClass('invalid').removeClass('valid');;
+	$('#room_NEW_pass').val('').removeClass('invalid').removeClass('valid');;
 	$('#room_NEW~span.character-counter').html('');
 	$('#addroomdock').click();
 	return false;
@@ -292,15 +292,20 @@ $('#backtoroomlist').click(function () {
 });
 
 $('#joingame').click(function () {
+	var check = true;
 	var usrN = $('#username').val().trim();
 	if (usrN == "" || checkSpChars(usrN) || usrN.length > 15) {
 		$("#username").focus();
-		return false;
+		check = false;
 	}
 	if (gVars.myteam == '') {
-		M.toast({ html: 'Please select a team!', displayLength: 2000 });
-		return false;
+		$('#teamnotSelected').show();
+		$('#modal-joingame>div.modal-content>div.row').css('border', '1px solid #F44336');
+		check = false;
 	}
+	if (!check)
+		return false;
+
 	gVars.myname = usrN;
 	M.toast({ html: 'Joining Game...', displayLength: 3000 });
 	$('#joingame').attr('disabled', '');
@@ -312,7 +317,7 @@ function validateInput(elem, maxLength, checkSpecial) {
 	$(elem).on('input', function () {
 		var val = $(this).val().trim();
 		var check = val == "" || (checkSpecial && checkSpChars(val)) || (maxLength != -1 && val.length > maxLength);
-		check ? $(this).addClass('invalid') : $(this).removeClass('invalid');
+		check ? $(this).removeClass('valid').addClass('invalid') : $(this).removeClass('invalid').addClass('valid');
 		if (maxLength != -1)
 			$(elem + '~span.character-counter').html(val.length + '/' + maxLength);
 	});
@@ -633,6 +638,8 @@ $('#closeLeader').click(function () {
 
 $('.tsCard').click(function (elem) {
 	var c = $(elem.currentTarget);
+	$('#teamnotSelected').hide();
+	$('#modal-joingame>div.modal-content>div.row').css('border', '1px solid #4CAF50');
 	if (c.attr('id') == 'optgreen') {
 		$('#optgreen>div>div>label>input').prop('checked', true);
 		$('#optpurple>div>div>label>input').prop('checked', false);
