@@ -216,11 +216,12 @@ function initModals() {
 			socket.emit('hst', { idx: 3 });
 		},
 		onOpenEnd: function (modal, trigger) {
-			$('#modal-leader>div.modal-content>ul>li.indicator').css('right', '904px');
+			$('#modal-leader>div.modal-content>ul>li.indicator').css('right', '100%');
 			//document.querySelector('#modal-leader>div>ul>li:nth-child(1)>a').dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		},
 		onCloseEnd: function (modal, trigger) {
 			$('.hstTab').html('<div class="hstLoad">Loading...</div>');
+			$('#gameCounter').html('-');
 		}
 	});
 }
@@ -252,20 +253,23 @@ $('#form-addroom').submit(function () {
 	var usr = $('#room_NEW').val().trim();
 	var pass = $('#room_NEW_pass').val();
 	var timestamp = Date.now();
+
 	if (usr == "" || checkSpChars(usr) || usr.length > 10) {
-		$('#room_NEW').val('');
 		$('#room_NEW_pass').val('');
+		$('#room_NEW').focus();
 		return false;
 	}
 	if (pass.trim() == "") {
-		$('#room_NEW_pass').val('');
+		$('#room_NEW_pass').val('').focus();
 		return false;
 	}
+
 	$('.rooms-notloaded').hide();
 	$('#divroom').show();
 	socket.emit('addroom', { 'name': usr, 'pass': pass, 'timestamp': timestamp });
-	$('#room_NEW').val('');
-	$('#room_NEW_pass').val('');
+	$('#room_NEW').val('').removeClass('invalid');
+	$('#room_NEW_pass').val('').removeClass('invalid');
+	$('#room_NEW~span.character-counter').html('');
 	$('#addroomdock').click();
 	return false;
 });
@@ -290,7 +294,6 @@ $('#backtoroomlist').click(function () {
 $('#joingame').click(function () {
 	var usrN = $('#username').val().trim();
 	if (usrN == "" || checkSpChars(usrN) || usrN.length > 15) {
-		$('#username').val('');
 		$("#username").focus();
 		return false;
 	}
@@ -304,6 +307,16 @@ $('#joingame').click(function () {
 	socket.emit('addplayer', { 'id': gVars.curRoomID, 'playername': gVars.myname, 'team': gVars.myteam, 'passw': gVars.curRoomPass });
 	return false;
 });
+
+function validateInput(elem, maxLength, checkSpecial) {
+	$(elem).on('input', function () {
+		var val = $(this).val().trim();
+		var check = val == "" || (checkSpecial && checkSpChars(val)) || (maxLength != -1 && val.length > maxLength);
+		check ? $(this).addClass('invalid') : $(this).removeClass('invalid');
+		if (maxLength != -1)
+			$(elem + '~span.character-counter').html(val.length + '/' + maxLength);
+	});
+}
 
 function roomenter_submit() {
 	$('.roomenter').submit(function (event) {
@@ -450,6 +463,10 @@ $('#bottomcardbox').click(function (event) {
 
 $('#bidrange').on('input', function () {
 	$('#bidupdate').html($('#bidrange').val());
+});
+
+$('#ipColor').on('input', function () {
+	$('.bodyBack').css('filter', 'hue-rotate(' + $('#ipColor').val() + 'deg)');
 });
 
 function bidProcess(data) {
@@ -1117,8 +1134,9 @@ socket.on('roomlist', function (data) {
 	$('#rooms-list').html('');
 	for (var i = 0; i < data.number; i++) {
 		var timest = timeAbs(data.timestamps[i]);
-		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><label for="room_password">Password</label><input name="roomPASS" placeholder="Enter Room password" type="password" class="validate"><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
+		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
+	M.updateTextFields();
 	roomenter_submit();
 	$('#divroom').hide();
 	$('.rooms-notloaded').show();
@@ -1136,11 +1154,11 @@ socket.on('login', function (data) {
 	}
 	else {
 		gVars.curRoomPass = '';
-		$(gVars.currentlogin).find("input[name=roomPASS]").val('');
-		$(gVars.currentlogin).find("input[name=roomPASS]").attr("placeholder", "Wrong password. Try again");
+		var glogin = $(gVars.currentlogin).find("input[name=roomPASS]");
+		glogin.val('').attr("placeholder", "Error logging in. Try again").addClass('invalid').focus();
+		setTimeout(function () { glogin.removeClass('invalid'); }, 2000);
 		$(gVars.currentlogin).find("button").prop('disabled', false);
 	}
-
 });
 
 socket.on('addplayer', function (data) {
@@ -1165,13 +1183,15 @@ socket.on('deleteroom', function (data) {
 		sock_up_poprooms();
 	}
 	else if (data.wrongpass == true) {
-		$(gVars.currentlogin).find("input[name=roomPASS]").val('');
-		$(gVars.currentlogin).find("input[name=roomPASS]").attr("placeholder", "Wrong password. Try again");
+		var glogin = $(gVars.currentlogin).find("input[name=roomPASS]");
+		glogin.val('').attr("placeholder", "Wrong password. Try again").addClass('invalid').focus();
+		setTimeout(function () { glogin.removeClass('invalid'); }, 2000);
 		$(gVars.currentlogin).find("a").removeAttr('disabled');
 	}
 	else {
-		$(gVars.currentlogin).find("input[name=roomPASS]").val('');
-		$(gVars.currentlogin).find("input[name=roomPASS]").attr("placeholder", "Error - room may have been deleted already");
+		var glogin = $(gVars.currentlogin).find("input[name=roomPASS]");
+		glogin.val('').attr("placeholder", "Error - room may have been deleted already").addClass('invalid').focus();
+		setTimeout(function () { glogin.removeClass('invalid'); }, 2000);
 		$(gVars.currentlogin).find("a").removeAttr('disabled');
 	}
 });
@@ -1416,6 +1436,8 @@ socket.on('hst', function (data) {
 			text = '<div class="hstNotFound">No record found.</div>';
 		$('#hstTab' + index).html(text);
 		$('#hstTab' + index + '>ul').collapsible();
+		if (index == 0)
+			$('#gameCounter').html(data.c);
 	}
 	function playerHistory(index) {
 		var text = '<table class="highlight striped centered"><thead><tr><th>Position</th><th>Player</th><th>' + (index == 1 ? 'Points' : 'Hands') + '</th><th>Date</th></tr></thead><tbody>';
@@ -1575,6 +1597,9 @@ $(function () {
 		});
 	}
 	initModals();
+	validateInput('#room_NEW', 10, true);
+	validateInput('#room_NEW_pass', -1, false);
+	validateInput('#username', 15, true);
 	$('.collapsible').collapsible();
 	$('select').formSelect();
 	$('.tabs').tabs();

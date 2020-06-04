@@ -5,9 +5,11 @@ const mongoClient = require('mongodb').MongoClient;
 const crypto = require('crypto');
 const colors = require('colors');
 const port = process.env.PORT || 3000;
+const mURI = process.env.DB_URL;
 var collection, maxElems = 10, aggFunc;
 
-const mURI = process.env.DB_URL;
+console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.'));
+
 mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
 	if (err)
 		console.log(colors.bgRed.black('Database connection error'));
@@ -284,8 +286,17 @@ class rooms {
 			collection.aggregate(aggFunc[aggNo]).toArray((err, items) => {
 				if (err)
 					console.log(colors.bgRed.black('Database read error'));
-				else
-					socket.emit('hst', { idx: aggNo, data: items });
+				else {
+					if (aggNo == 0)
+						collection.estimatedDocumentCount({}, function (err, count) {
+							if (err)
+								console.log(colors.bgRed.black('Database read error'));
+							else
+								socket.emit('hst', { idx: aggNo, c: count, data: items });
+						});
+					else
+						socket.emit('hst', { idx: aggNo, data: items });
+				}
 			});
 		}
 		catch (e) {
@@ -311,18 +322,18 @@ class Cards {
 		count -= this.playable_deck.length * Math.floor(count / this.playable_deck.length);
 		this.playable_deck.push.apply(this.playable_deck, this.playable_deck.splice(0, count));
 	}
-	
+
 	randomInt(min, max) {
 		var randbytes = parseInt(crypto.randomBytes(1).toString('hex'), 16);
 		var result = Math.floor(randbytes / 256 * (max - min + 1) + min);
-		
+
 		// fallback
 		if (result > max)
 			result = Math.floor(Math.random() * (max - min + 1)) + min;
 
 		return result;
 	}
-	
+
 	randomizeCards() {
 		/*randomize playable cards*/
 		//this.arrayRotate(Math.floor((Math.random() * this.playable_deck.length)));
@@ -338,7 +349,17 @@ class Cards {
 		}
 		//this.arrayRotate(-Math.floor((Math.random() * this.playable_deck.length)));
 		this.arrayRotate(-this.randomInt(0, this.playable_deck.length - 1));
-		
+
+		for (var i = 0; i < 100; i++) {
+			var location1 = Math.floor((Math.random() * this.playable_deck.length));
+			var location2 = Math.floor((Math.random() * this.playable_deck.length));
+			if (location1 != location2) {
+				var tmp = this.playable_deck[location1];
+				this.playable_deck[location1] = this.playable_deck[location2];
+				this.playable_deck[location2] = tmp;
+			}
+		}
+
 		//check if one person gets all zero points cards or all Jacks or starting player gets zeros in 1st 4 cards
 		var playernum;
 		for (playernum = 0; playernum < 4; playernum++) {
@@ -446,7 +467,7 @@ class Game {
 
 		for (var i = 0; i < 4; i++)
 			this.cards[i] = new Array();
-		
+
 		this.startGame(); //start bidding
 	}
 
@@ -873,7 +894,7 @@ app.get('/', function (req, res) {
 app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//, { maxAge: 1800000 }
 
 http.listen(port, function () {
-	console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.\nListening on port ' + port));
+	console.log(colors.bgBlue.green('Listening on port ' + port));
 });
 
 io.on('connection', function (socket) {
