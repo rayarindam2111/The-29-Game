@@ -639,6 +639,7 @@ table.fResult {
 	overflow: hidden;
 	z-index: 4;
 	cursor: pointer;
+	user-select: none;
 	transition: all .4s;
 }
 
@@ -664,11 +665,26 @@ table.fResult {
 .modal-cover>.layer0 {
 	position: absolute;
 	right: 0;
-	width: 0%;
+	width: 55px;
 	height: 100%;
+	transform: translateX(55px);
 	z-index: 3;
 	background: #244467;
 	animation: 3s ease 1.5s infinite right-shift;
+}
+
+.modal-cover>.layer0::after {
+    content: "mouse";
+    font-family: 'Material Icons';
+    position: absolute;
+    top: calc(50% - 1em);
+    color: #fafafa;
+    right: 10px;
+    font-size: 2em;
+}
+
+.modal-cover:hover .layer0::after {
+    content: "";
 }
 
 .modal-cover:hover .layer1, .modal-cover:hover .layer2 {
@@ -677,10 +693,15 @@ table.fResult {
 
 .modal-cover>.layer1>.overlay-text {
 	padding: 0 40px;
+	margin: 0 auto;
 }
 
 .modal-cover>.layer1>.overlay-text>span {
 	display: block;
+	width: 100%;
+	text-align: center;
+	white-space: nowrap;
+	transition: all .4s;
 }
 
 .modal-cover>.layer1>.overlay-text>span:nth-child(1) {
@@ -698,6 +719,15 @@ table.fResult {
 	font-size: 1.2em;
 	line-height: 4em;
 	color: #efefef;
+	font-family: "Roboto Slab",Roboto,sans-serif;
+}
+
+.modal-cover:hover .layer1>.overlay-text>span:nth-child(1) {
+	width: 64%;
+}
+
+.modal-cover:hover .layer1>.overlay-text>span:nth-child(3) {
+	width: 36%;
 }
 
 .modal-cover>.layer2>i {
@@ -717,8 +747,8 @@ table.fResult {
 }
 
 @keyframes right-shift {
-	15%, 45% { width: 0%; }
-	30%,35% { width: 5%; }
+	15%, 45% { transform: translateX(55px); }
+	30%,35% { transform: translateX(0); }
 }
 
 @keyframes squiggle-wave {
