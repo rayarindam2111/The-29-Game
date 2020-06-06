@@ -684,6 +684,11 @@ $('#modal-chat>div.modal-footer>div').click(function (e) {
 	return false;
 });
 
+$('#modal-roomlist>.modal-cover').click(function () {
+	$(this).addClass('slide-out');
+	setTimeout(function () { $('#modal-roomlist>.modal-cover').hide(); }, 400);
+});
+
 function cardDetail(card) {
 	var suit = card.slice(card.length - 1, card.length);
 	var val = card.slice(0, card.length - 1);
@@ -1652,8 +1657,10 @@ $(function () {
 	$('#imgload').hide();
 	$('#modal-roomlist').modal('open');
 	setTimeout(function () {
-		$('.pload').remove();
-		if (gVars.isMobile)
-			M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
+		$('#pload').animate({ opacity: 0 }, 200, function () {
+			$('.pload').remove();
+			if (gVars.isMobile)
+				M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
+		});
 	}, 950);
 });

@@ -204,7 +204,7 @@ p>strong {
 	background-size: cover;
 	border-radius: 12px;
 	box-shadow: -2px -2px 15px -1px rgba(0,0,0,0.3);
-	animation: opacitychange .17s;
+	animation: .17s opacitychange;
 	display: none;
 	user-select: none;
 }
@@ -264,7 +264,7 @@ p>strong {
 }
 
 .animcards {
-	animation: opacitychange .8s;
+	animation: .8s opacitychange;
 }
 
 @keyframes opacitychange {
@@ -331,11 +331,11 @@ h6 {
 }
 
 .mvboxes {
-	animation: bxs 1.6s infinite;
+	animation: 1.6s infinite bxs;
 }
 
 .zio {
-	animation: zinout .6s;
+	animation: .6s zinout;
 }
 
 .isb {
@@ -356,7 +356,7 @@ h6 {
 }
 
 #playerwait:after{
-	animation: textchange 1.5s infinite linear;
+	animation: 1.5s linear infinite textchange;
     content: '';
     display: inline-block;
     min-width: 30px;
@@ -403,13 +403,25 @@ purple {
 
 .m29 {
   font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
-  background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
+	background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
   -webkit-text-stroke: 1px #0c233a;
   -webkit-background-clip: text;
   -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
   background-size: 30px 30px;
   background-position: 0 0;
-  animation: stripes 1s linear infinite;
+  animation: 1s linear infinite stripes;
+  user-select: none;
+}
+
+.m29-home {
+  font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
+  background: linear-gradient(-45deg, #ff8949 25%, #9bc1e6 25%, #71afef 50%, #ff8949 50%, #ff8949 75%, #9bc1e6 75%, #71afef);
+  -webkit-text-stroke: 1px #0c233a;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
+  background-size: 45px 45px;
+  background-position: 0 0;
+  animation: 1.8s linear infinite stripes-home;
   user-select: none;
 }
 
@@ -495,7 +507,7 @@ purple {
 }
 
 .callAnim {
-	animation: heartbeat 1.5s ease-in-out 3;
+	animation: 1.5s ease-in-out 3 heartbeat;
 }
 
 .callAnim::before {
@@ -509,7 +521,7 @@ purple {
 	background: inherit;
 	border-radius: inherit;
 	transition: opacity .45s, transform .45s;
-	animation: call-anim 1.5s cubic-bezier(0.24,0,0.38,1) 3;
+	animation: 1.5s cubic-bezier(0.24,0,0.38,1) 3 call-anim;
 	z-index: -1;
 }
 
@@ -534,7 +546,7 @@ purple {
 }
 
 .github-corner:hover .octo-arm {
-	animation: octocat-wave 560ms ease-in-out;
+	animation: 560ms ease-in-out octocat-wave;
 }
 
 .hueChange {
@@ -601,14 +613,14 @@ table.fResult {
 }
 
 .changeop {
-	animation : opchange 1.2s linear infinite;
+	animation: 1.2s linear infinite opchange;
 }
 
 .hstLoad {
 	width: 100%;
 	padding: 20px 0;
 	font-size: 1.7em;
-	animation : opchange 1s linear infinite;
+	animation: 1s linear infinite opchange;
 }
 
 .hstNotFound {
@@ -618,8 +630,95 @@ table.fResult {
 	color: #343434;
 }
 
+.modal-cover {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+	z-index: 4;
+	cursor: pointer;
+	transition: all .4s;
+}
+
+.modal-cover>.layer1, .modal-cover>.layer2{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	transition: all .4s;
+}
+
+.modal-cover>.layer1 {
+	background: #e65100;
+	left: 0;
+	z-index: 2;
+}
+
+.modal-cover>.layer2 {
+	background: #244467;
+	right: 0;
+	z-index: 1;
+}
+
+.modal-cover>.layer0 {
+	position: absolute;
+	right: 0;
+	width: 0%;
+	height: 100%;
+	z-index: 3;
+	background: #244467;
+	animation: 3s ease 1.5s infinite right-shift;
+}
+
+.modal-cover:hover .layer1, .modal-cover:hover .layer2 {
+	width: 70%;
+}
+
+.modal-cover>.layer1>.overlay-text {
+	padding: 0 40px;
+}
+
+.modal-cover>.layer1>.overlay-text>span {
+	display: block;
+}
+
+.modal-cover>.layer1>.overlay-text>span:nth-child(1) {
+	font-size: 16em;
+	line-height: 1em;
+}
+
+.modal-cover>.layer1>.overlay-text>span:nth-child(2) {
+	font-size: 4em;
+	font-family: "Bungee",Roboto,sans-serif;
+	color: #fafafa;
+}
+
+.modal-cover>.layer1>.overlay-text>span:nth-child(3) {
+	font-size: 1.2em;
+	line-height: 4em;
+	color: #efefef;
+}
+
+.modal-cover>.layer2>i {
+    position: absolute;
+	right: 0;
+	width: 36%;
+    color: white;
+    font-size: 16em;
+}
+
+.slide-out {
+	 margin-left: -100%;
+}
+
 #chatopen>a:hover i, #leaderopen>a:hover i {
-	animation: squiggle-wave 560ms ease-in-out;
+	animation: 560ms ease-in-out squiggle-wave;
+}
+
+@keyframes right-shift {
+	15%, 45% { width: 0%; }
+	30%,35% { width: 5%; }
 }
 
 @keyframes squiggle-wave {
@@ -699,5 +798,11 @@ table.fResult {
 @keyframes stripes {
   100% {
     background-position: 30px 0, 30px 0, 30px 0;
+  }
+}
+
+@keyframes stripes-home {
+  100% {
+    background-position: 45px 0, 45px 0, 45px 0;
   }
 }
