@@ -686,7 +686,7 @@ $('#modal-chat>div.modal-footer>div').click(function (e) {
 
 $('#modal-roomlist>.modal-cover').click(function () {
 	$(this).addClass('slide-out');
-	setTimeout(function () { $('#modal-roomlist>.modal-cover').hide(); }, 400);
+	setTimeout(function () { $('#modal-roomlist>.modal-cover').hide().remove(); }, 400);
 	return false;
 });
 

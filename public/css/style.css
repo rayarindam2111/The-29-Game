@@ -673,18 +673,30 @@ table.fResult {
 	animation: 3s ease 1.5s infinite right-shift;
 }
 
-.modal-cover>.layer0::after {
-    content: "mouse";
-    font-family: 'Material Icons';
-    position: absolute;
-    top: calc(50% - 1em);
-    color: #fafafa;
-    right: 10px;
-    font-size: 2em;
+.modal-cover>.layer0:after {
+	content: "mouse";
+	font-family: 'Material Icons';
+	height: 90px;
+	width: 90px;
+	position: absolute;
+	top: 50%;
+	left: -52px;
+	border-radius: 50%;
+	margin-top: -45px;
+	padding-left: 18px;
+	display: flex;
+	align-items: center;
+	color: #fafafa;
+	background: #244467;
+	font-size: 2em;
+	opacity: 0;
+	transition: opacity .1s;
+	animation: .1s ease .4s forwards op-full;
 }
 
-.modal-cover:hover .layer0::after {
-    content: "";
+.modal-cover:hover .layer0:after {
+    opacity: 0;
+	animation: none;
 }
 
 .modal-cover:hover .layer1, .modal-cover:hover .layer2 {
@@ -744,6 +756,11 @@ table.fResult {
 
 #chatopen>a:hover i, #leaderopen>a:hover i {
 	animation: 560ms ease-in-out squiggle-wave;
+}
+
+@keyframes op-full {
+	0% { opacity: 0; }
+	100% {opacity: 1; }
 }
 
 @keyframes right-shift {
