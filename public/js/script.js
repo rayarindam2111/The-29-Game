@@ -33,6 +33,7 @@ function playerFromNumber(number) {
 		case 1: return { 'player': 'purple0', 'id': 0, 'team': 'purple' };
 		case 2: return { 'player': 'green1', 'id': 1, 'team': 'green' };
 		case 3: return { 'player': 'purple1', 'id': 1, 'team': 'purple' };
+		default: return -1;
 	}
 }
 
@@ -228,6 +229,7 @@ function initModals() {
 
 function resetRound() {
 	clearInterval(gVars.timer);
+	gVars.timer = '';
 	for (var i = 0; i < 4; i++) {
 		var t = playerFromNumber(i);
 		timeout(0, elemfromidteam('#', 'time', t.player), t.team, false);
@@ -438,13 +440,10 @@ function elemfromidteam(selector, suffix, teamAndID) {
 	var indexPos = carr.indexOf(teamAndID);
 	switch (direction[indexPos]) {
 		case 'w': return selector + 'left' + suffix;
-			break;
 		case 'n': return selector + 'top' + suffix;
-			break;
 		case 'e': return selector + 'right' + suffix;
-			break;
 		case 's': return selector + 'bottom' + suffix;
-			break;
+		default: return '-1';
 	}
 }
 
@@ -816,7 +815,6 @@ function playProcess(data) {
 	enableTrump(false);
 	gVars.sound_turn.stop();
 	var player = gVars.myteam + gVars.myUserID;
-	clearInterval(gVars.timer);
 	for (var i = 0; i < 4; i++) {
 		var t = playerFromNumber(i);
 		timeout(0, elemfromidteam('#', 'time', t.player), t.team, false);
@@ -905,29 +903,33 @@ function playProcess(data) {
 }
 
 function startTimer(data, player) {
-	gVars.timerCount = 0;
-	var telem = elemfromidteam('#', 'time', data.pl);
-	//mark
-	var xName = playerFromNumber(numberFromPlayer(data.pl));
-	if (xName.team == 'green')
-		xName.player = gVars.greenplayers[xName.id];
-	else
-		xName.player = gVars.purpleplayers[xName.id];
+	try {
+		gVars.timerCount = 0;
+		var telem = elemfromidteam('#', 'time', data.pl);
+		//mark
+		var xName = playerFromNumber(numberFromPlayer(data.pl));
+		if (xName.team == 'green')
+			xName.player = gVars.greenplayers[xName.id];
+		else
+			xName.player = gVars.purpleplayers[xName.id];
 
-	$('.boxes>div').removeClass('mvboxes');
-	$(elemfromidteam('.', '-box>div', data.pl)).addClass('mvboxes');
-	if (player == data.pl)
-		gVars.sound_turn.play();
+		$('.boxes>div').removeClass('mvboxes');
+		$(elemfromidteam('.', '-box>div', data.pl)).addClass('mvboxes');
+		if (player == data.pl)
+			gVars.sound_turn.play();
 
-	gVars.timer = setInterval(function () {
-		gVars.timerCount = (gVars.timerCount + .5) % 100;
-		if (gVars.timerCount == 99)
-			if (player == data.pl)
-				M.toast({ html: 'Please play a card', classes: 'red darken-1', displayLength: 3000 });
-			else
-				M.toast({ html: xName.player + ' has not played a card for a long time', classes: 'red darken-1', displayLength: 3000 });
-		timeout(gVars.timerCount, telem, xName.team, false);
-	}, 300);
+		gVars.timer = setInterval(function () {
+			gVars.timerCount = (gVars.timerCount + .5) % 100;
+			if (gVars.timerCount == 99)
+				if (player == data.pl)
+					M.toast({ html: 'Please play a card', classes: 'red darken-1', displayLength: 3000 });
+				else
+					M.toast({ html: xName.player + ' has not played a card for a long time', classes: 'red darken-1', displayLength: 3000 });
+			timeout(gVars.timerCount, telem, xName.team, false);
+		}, 300);
+	} catch (e) {
+		console.log('Error receiving play: ' + e.message);
+	}
 }
 
 function zio(elem) {
@@ -1296,6 +1298,8 @@ socket.on('bidover', function (data) {
 
 socket.on('play', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
+	clearInterval(gVars.timer);
+	gVars.timer = '';
 	if (data.op.fp && data.lp == '') //absolute first time
 		setTimeout(function () {
 			playProcess(data);

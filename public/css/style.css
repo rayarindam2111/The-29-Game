@@ -630,6 +630,13 @@ table.fResult {
 	color: #343434;
 }
 
+#playerwait>span>i {
+	background: rgba(190,190,190,.6);
+	border-radius: 50%;
+	padding: 10px;
+}
+
+
 .modal-cover {
 	position: absolute;
 	width: 100%;
