@@ -1220,8 +1220,6 @@ socket.on('prf', function (data) {
 
 socket.on('cst', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
-	if (gVars.startTime == '')
-		gVars.startTime = Date.now();
 	$('#playerwait').hide();
 	$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
 
@@ -1248,6 +1246,10 @@ socket.on('cst', function (data) {
 			cards[i].push(cardlist[i * cPerMember + j]);
 		}
 	}
+	
+	if (gVars.startTime == '') { //absolute first time
+		gVars.startTime = Date.now();
+	}
 
 	if (data.d)
 		setTimeout(function () {
@@ -1261,6 +1263,17 @@ socket.on('bid', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	if (data.fb)
 		setTimeout(function () {
+			var sortingArray = gVars.allcards.slice();
+			sortingArray.sort(function (a, b) {
+				var aCard = cardDetail(a);
+				var bCard = cardDetail(b);
+				var aVal = aCard.rank + (aCard.suit == 'H' ? 500 : aCard.suit == 'S' ? 400 : aCard.suit == 'D' ? 300 : 200);
+				var bVal = bCard.rank + (bCard.suit == 'H' ? 500 : bCard.suit == 'S' ? 400 : bCard.suit == 'D' ? 300 : 200);
+				return bVal - aVal;
+			});
+			$('#cardsinbid').html('');
+			for(var i = 0; i < sortingArray.length; i++)
+				$('#cardsinbid').append('<img src="img/cards/' + sortingArray[i] + '.PNG" alt="' + sortingArray[i]+ '">');
 			$("#modal-bid").modal('open');
 			bidProcess(data);
 		}, data.d ? 3500 : 2500);

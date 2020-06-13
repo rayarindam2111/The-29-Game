@@ -207,6 +207,7 @@ p>strong {
 	animation: .17s opacitychange;
 	display: none;
 	user-select: none;
+	pointer-events: none;
 }
 
 #lefttable {
@@ -759,6 +760,20 @@ table.fResult {
 
 .slide-out {
 	 margin-left: -100%;
+}
+
+#cardsinbid {
+	height: 126px;
+	width: 100%;
+}
+
+#cardsinbid>img {
+	height: 120px;
+	width: auto;
+	margin-right: 12px;
+	box-shadow: 0 0 0 1px rgba(160,160,160,.5);
+	border-radius: 6px;
+	pointer-events: none;
 }
 
 #chatopen>a:hover i, #leaderopen>a:hover i {
