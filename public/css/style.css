@@ -416,7 +416,7 @@ purple {
 
 .m29-home {
   font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
-  background: linear-gradient(-45deg, #ff8949 25%, #9bc1e6 25%, #71afef 50%, #ff8949 50%, #ff8949 75%, #9bc1e6 75%, #71afef);
+  background-image: linear-gradient(-45deg, #ff8949 25%, #9bc1e6 25%, #71afef 50%, #ff8949 50%, #ff8949 75%, #9bc1e6 75%, #71afef);
   -webkit-text-stroke: 1px #0c233a;
   -webkit-background-clip: text;
   -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
@@ -778,6 +778,17 @@ table.fResult {
 
 #chatopen>a:hover i, #leaderopen>a:hover i {
 	animation: 560ms ease-in-out squiggle-wave;
+}
+
+.about29 {
+	font-size: 16em;
+	line-height: 1.15em;
+	background-image: linear-gradient(-45deg, #fff 25%, #9bc1e6 25%, #71afef 50%, #fff 50%, #fff 75%, #9bc1e6 75%, #71afef);
+	-webkit-text-stroke: 2px rgba(26, 25, 28, 0.69);
+}
+
+#rooms-list, .rooms-notloaded {
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 -1px 0px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2);
 }
 
 @keyframes op-full {

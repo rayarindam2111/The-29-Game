@@ -937,7 +937,7 @@ io.on('connection', function (socket) {
 		socket.join(msg.id);
 		console.log(colors.bgBlue.red(msg.pl + ' reconnected in room ' + msg.id));
 		if (parseInt(msg.LM) == 0) {
-			var r = Rooms.getTeams(msg.id,msg.passw);
+			var r = Rooms.getTeams(msg.id, msg.passw);
 			if (r.s)
 				socket.emit('prf', r);
 		}
