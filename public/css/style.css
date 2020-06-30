@@ -58,6 +58,20 @@ input[type=range]::-webkit-slider-thumb {
 	margin: -7px 0 0 0;
 }
 
+@media only screen and (min-width: 993px){
+	.toast {
+		margin-left: auto;
+		width: fit-content;
+	}
+}
+
+@media only screen and (max-width: 992px) and (min-width: 601px) {
+	.toast {
+		margin-right: auto;
+		width: fit-content;
+	}
+}
+
 p>strong {
 	font-weight: bold;
 }
@@ -159,7 +173,8 @@ p>strong {
 	position: absolute;
 	background-size: cover;
 	border-radius: 12px;
-	transition: left .4s;
+	will-change: left,bottom,box-shadow;
+	transition: left .4s ease-out;
 }
 
 .movable {
@@ -251,6 +266,7 @@ p>strong {
 	padding: 5px;
     border-radius: 50%;
     background-color:rgb(153, 184, 206);
+	will-change: background-image;
     background-image:
         linear-gradient(90deg, transparent 50%, rgb(56, 85, 95) 50%),
         linear-gradient(90deg, rgb(56, 85, 95) 50%, transparent 50%);
@@ -262,10 +278,6 @@ p>strong {
 
 .deleteroom {
 	margin-left: 5px;
-}
-
-.animcards {
-	animation: .8s opacitychange;
 }
 
 @keyframes opacitychange {
@@ -332,6 +344,7 @@ h6 {
 }
 
 .mvboxes {
+	will-change: box-shadow;
 	animation: 1.6s infinite bxs;
 }
 
@@ -381,12 +394,19 @@ purple {
 	color: #9c27b0!important; 
 }
 
-.share-buttons img {
-	width: 58px;
-	padding: 6px;
-	border: 0;
-	box-shadow: 0;
-	display: inline;
+.share-buttons a > div {
+	display: inline-block;
+    width: 52px;
+    height: 52px;
+	margin-right: 6px;
+	background: url('../img/share-sprite.webp');
+    background-size: cover;
+	border-radius: 50%;
+	transition: opacity .15s;
+}
+
+.share-buttons a > div:hover {
+	opacity: 0.5;
 }
 
 .chatToast {
@@ -405,9 +425,9 @@ purple {
 .m29 {
   font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
 	background: linear-gradient(-45deg, #78ef87 25%, #feac5e 25%, #c891fd 50%, #78ef87 50%, #78ef87 75%, #feac5e 75%, #c891fd);
-  -webkit-text-stroke: 1px #0c233a;
+  -webkit-text-stroke: 1px rgba(12,35,58,0.74);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
+  -webkit-text-fill-color: rgba(19, 48, 150, 0.2);
   background-size: 30px 30px;
   background-position: 0 0;
   animation: 1s linear infinite stripes;
@@ -491,6 +511,9 @@ purple {
 	position: absolute;
 	top: 0;
 	left: 0;
+	height: 82px;
+    width: 82px;
+	object-fit: cover;
 }
 
 .icon-player, .icon-player > i {
@@ -648,6 +671,7 @@ table.fResult {
 	z-index: 4;
 	cursor: pointer;
 	user-select: none;
+	will-change: margin-left;
 	transition: all .4s;
 }
 
@@ -655,6 +679,7 @@ table.fResult {
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	will-change: width;
 	transition: all .4s;
 }
 
@@ -678,6 +703,7 @@ table.fResult {
 	transform: translateX(55px);
 	z-index: 3;
 	background: #244467;
+	will-change: transform;
 	animation: 3s ease 1.5s infinite right-shift;
 }
 
@@ -698,6 +724,7 @@ table.fResult {
 	background: #244467;
 	font-size: 2em;
 	opacity: 0;
+	will-change: opacity;
 	transition: opacity .1s;
 	animation: .1s ease .4s forwards op-full;
 }
@@ -721,6 +748,7 @@ table.fResult {
 	width: 100%;
 	text-align: center;
 	white-space: nowrap;
+	will-change: width;
 	transition: all .4s;
 }
 
@@ -789,6 +817,11 @@ table.fResult {
 
 #rooms-list, .rooms-notloaded {
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 -1px 0px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.2);
+}
+
+.zoomcards {
+	transform-origin: bottom center;
+	animation: .6s zoomcards;
 }
 
 @keyframes op-full {
@@ -872,6 +905,12 @@ table.fResult {
 @keyframes zinout {
   0% {transform: scale(1);}
   50% {transform: scale(2.2);}
+  100% {transform: scale(1);}
+}
+
+@keyframes zoomcards {
+  0% {transform: scale(1);}
+  50% {transform: scale(1.18);}
   100% {transform: scale(1);}
 }
 

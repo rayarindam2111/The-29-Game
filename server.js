@@ -2,6 +2,8 @@ const express = require('express'), app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http, { pingInterval: 6000, pingTimeout: 8000 });
 const mongoClient = require('mongodb').MongoClient;
+const compression = require('compression');
+const helmet = require('helmet');
 const crypto = require('crypto');
 const colors = require('colors');
 const port = process.env.PORT || 3000;
@@ -226,6 +228,15 @@ class rooms {
 		}
 		else
 			console.log(colors.bgRed.black('Chat receive error: ' + ID));
+	}
+	
+	sendColor(ID, pass, val, player) {
+		var login = this.checkLogin(ID, pass, true);
+		if (login.success) {
+			io.in(ID).emit('color', { 'val': val, 'pl': player });
+		}
+		else
+			console.log(colors.bgRed.black('Color receive error: ' + ID));
 	}
 
 	/* start VoiceServer */
@@ -887,6 +898,16 @@ class Game {
 
 var Rooms = new rooms();
 
+app.use (function (req, res, next) {
+    if (req.get('X-Forwarded-Proto')=='https' || req.hostname == 'localhost') {
+        next();
+    } else if(req.get('X-Forwarded-Proto')!='https' && req.get('X-Forwarded-Port')!='443'){
+        res.redirect('https://' + req.hostname + req.url);
+    }
+});
+app.use(compression());
+app.use(helmet());
+
 app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
@@ -972,6 +993,10 @@ io.on('connection', function (socket) {
 
 	socket.on('chat', function (msg) {
 		Rooms.sendChat(msg.id, msg.passw, msg.msg);
+	});
+
+	socket.on('color', function (msg) {
+		Rooms.sendColor(msg.id, msg.passw, msg.val, msg.pl);
 	});
 
 	socket.on('hst', function (msg) {

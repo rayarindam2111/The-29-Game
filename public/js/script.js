@@ -100,14 +100,14 @@ function changeMode(mode) {
 			return bVal - aVal;
 		});
 
-	var result = $('#bottomcardbox>.playercards');
+	var jQcards = $('#bottomcardbox>.playercards');
 	var cs = [];
-	for (var i = 0; i < result.length; i++)
-		cs.push($(result[i]).attr('card'));
+	for (var i = 0; i < jQcards.length; i++)
+		cs.push($(jQcards[i]).attr('card'));
 
 	for (var i = 0; i < sortingArray.length; i++) {
 		var pos = cs.indexOf(sortingArray[i]);
-		$(result[pos]).css('left', i * gap).css('z-index', i + 10);
+		$(jQcards[pos]).css('left', i * gap).css('z-index', i + 10);
 	}
 }
 
@@ -115,7 +115,6 @@ function generateStack(cards, box, color) {
 	var gap = 50;
 	var imagewidth = 118;
 	var imageheight = 180;
-	$(box).html('');
 	if (color == 'nocolor') {
 		gVars.allcards = cards.slice();
 		if (gVars.showMode == 'sort')
@@ -126,20 +125,19 @@ function generateStack(cards, box, color) {
 				var bVal = bCard.rank + (bCard.suit == 'H' ? 500 : bCard.suit == 'S' ? 400 : bCard.suit == 'D' ? 300 : 200);
 				return bVal - aVal;
 			});
-		try {
-			$('.tooltipped').tooltip('destroy');
-			$('.material-tooltip').remove();
-		}
-		catch (e) {
-		}
+
+		$('.tooltipped').tooltip('destroy');
+		$(box).html('');
 		for (var i = 0; i < cards.length; i++)
-			$(box).append('<div class="playercards tooltipped ' + (gVars.card7 == cards[i] ? 'card7' : '') + '" data-position="top" data-tooltip="P: ' + cardDetail(cards[i]).point + '" style="left:' + (i * gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i + 10) + ';" card="' + cards[i] + '"></div>');
+			$(box).append('<div class="playercards tooltipped' + (gVars.card7 == cards[i] ? ' card7' : '') + '" data-position="top" data-tooltip="P: ' + cardDetail(cards[i]).point + '" style="left:' + (i * gap) + 'px;background-image:url(img/cards/' + cards[i] + '.PNG);z-index:' + (i + 10) + ';" card="' + cards[i] + '"></div>');
 		var elems = document.querySelectorAll('.tooltipped');
 		M.Tooltip.init(elems, { enterDelay: 0, exitDelay: 0, inDuration: 150, outDuration: 150 });
 	}
-	else
+	else {
+		$(box).html('');
 		for (var i = 0; i < cards.length; i++)
 			$(box).append('<div class="playercards" style="left:' + (i * gap) + 'px;background-image:url(img/cards/' + color.toUpperCase() + '_BACK.PNG);z-index:' + (i + 10) + ';"></div>');
+	}
 	var totWidth = imagewidth + (cards.length - 1) * gap;
 	$(box).css('width', (totWidth) + 'px');
 	$(box).css('padding-left', '5px');
@@ -226,7 +224,6 @@ function initModals() {
 
 function resetRound() {
 	clearInterval(gVars.timer);
-	gVars.timer = '';
 	for (var i = 0; i < 4; i++) {
 		var t = playerFromNumber(i);
 		timeout(0, elemfromidteam('#', 'time', t.player), t.team, false);
@@ -471,6 +468,10 @@ $('#ipColor').on('input', function () {
 	$('.bodyBack').css('filter', 'hue-rotate(' + $('#ipColor').val() + 'deg)');
 });
 
+$('#ipColor').on('change', function () {
+	socket.emit('color', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'pl': gVars.myteam + gVars.myUserID, 'val': $('#ipColor').val() });
+});
+
 function bidProcess(data) {
 	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>'
 		+ data.l
@@ -535,8 +536,10 @@ function bidProcess(data) {
 		var event = new CustomEvent('mousedown', {});
 		document.getElementById('bidrange').dispatchEvent(event);
 	}
-	else
+	else {
 		$('#bidchange').hide();
+		$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
+	}
 }
 
 $('#bidraise').click(function () {
@@ -715,11 +718,11 @@ function checkSuitEnable(arr, val) {
 }
 
 function hasSuit(suit, incCard7) {
-	for (var i = 0; i < $('#bottomcardbox>.playercards').length; i++) {
-		var elem = $('#bottomcardbox>.playercards')[i];
-		if (incCard7 && $(elem).hasClass('card7'))
+	var jQcards = $('#bottomcardbox>.playercards');
+	for (var i = 0; i < jQcards.length; i++) {
+		if (incCard7 && $(jQcards[i]).hasClass('card7'))
 			continue;
-		var card = cardDetail($(elem).attr('card'));
+		var card = cardDetail($(jQcards[i]).attr('card'));
 		if (suit == card.suit)
 			return true;
 	}
@@ -728,27 +731,26 @@ function hasSuit(suit, incCard7) {
 
 function onlycard7left() {
 	var flag = false;
-	var length = $('#bottomcardbox>.playercards').length;
-	for (var i = 0; i < length; i++) {
-		var elem = $('#bottomcardbox>.playercards')[i];
-		if ($(elem).hasClass('card7')) {
+	var jQcards = $('#bottomcardbox>.playercards');
+	for (var i = 0; i < jQcards.length; i++) {
+		if ($(jQcards[i]).hasClass('card7')) {
 			flag = true;
 			break;
 		}
 	}
-	return (length == 1) && flag;
+	return (jQcards.length == 1) && flag;
 }
 
 function enableCards(suits) {
-	for (var i = 0; i < $('#bottomcardbox>.playercards').length; i++) {
-		var elem = $('#bottomcardbox>.playercards')[i];
-		var card = cardDetail($(elem).attr('card'));
-		$(elem).removeClass('cardselected');
+	var jQcards = $('#bottomcardbox>.playercards');
+	for (var i = 0; i < jQcards.length; i++) {
+		var card = cardDetail($(jQcards[i]).attr('card'));
+		$(jQcards[i]).removeClass('cardselected');
 		if (checkSuitEnable(suits, card.suit)) {
-			$(elem).removeClass('carddisabled').addClass('movable');
+			$(jQcards[i]).removeClass('carddisabled').addClass('movable');
 		}
 		else {
-			$(elem).addClass('carddisabled').removeClass('movable');
+			$(jQcards[i]).addClass('carddisabled').removeClass('movable');
 		}
 	}
 }
@@ -771,11 +773,8 @@ function buildcardstack(data) {
 		var player = playerFromNumber(i);
 		generateStack(data[i], elemfromidteam('#', 'cardbox', player.player), unqIndex == player.player ? 'nocolor' : player.team);
 	}
-	$('#bottomcardbox').addClass("animcards");
-	$('#topcardbox').addClass("animcards");
-	$('#leftcardbox').addClass("animcards");
-	$('#rightcardbox').addClass("animcards");
-	M.toast({ html: 'Cards distributed - 4', displayLength: 2000 });
+
+	M.toast({ html: 'Cards distributed - 4', displayLength: 3100 });
 	$('#changeView').removeAttr('disabled');
 }
 
@@ -802,7 +801,9 @@ function timeDiff(diff) {
 function playProcess(data) {
 	var timeEnd = null;
 	if (data.op.re == 'ro') {
-		M.toast({ html: 'New Round', displayLength: 2000 });
+		setTimeout(function () {
+			M.toast({ html: 'New Round', displayLength: 2000 });
+		}, 800);
 		gVars.card7 = '';
 	}
 	else if (data.op.re == 'go') {
@@ -862,7 +863,7 @@ function playProcess(data) {
 			}
 			if (data.op.re != 'go')
 				startTimer(data, player);
-		}, (data.lp == '') ? 0 : 1500);
+		}, (data.lp == '') ? 0 : 2000);
 	}
 	else {
 		if (player == data.pl) {
@@ -1227,7 +1228,6 @@ socket.on('prf', function (data) {
 socket.on('cst', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	$('#playerwait').hide();
-	$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
 
 	var i = 0;
 	var cardcount = 0;
@@ -1264,11 +1264,16 @@ socket.on('cst', function (data) {
 		cPerMember = null;
 		data = null;
 		setTimeout(function () {
+			$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
 			buildcardstack(cards);
-		}, 1000);
+			$('.playercards').addClass('zoomcards');
+		}, 1500);
 	}
-	else
+	else {
+		$('#trumpcard>img').attr('src', 'img/cards/BLUE_BACK.PNG');
 		buildcardstack(cards);
+		$('.playercards').addClass('zoomcards');
+	}
 });
 
 socket.on('bid', function (data) {
@@ -1317,14 +1322,13 @@ socket.on('bidover', function (data) {
 			if ($(b).html() != memb)
 				zio(b);
 		}
-		M.toast({ html: playername.player + ' of Team ' + playername.team.toUpperCase() + ' won the bid', displayLength: 2000 });
-	}, 3000);
+		M.toast({ html: playername.player + ' of Team ' + playername.team.toUpperCase() + ' won the bid', displayLength: 3200 });
+	}, 2500);
 });
 
 socket.on('play', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	clearInterval(gVars.timer);
-	gVars.timer = '';
 	if (data.op.fp && data.lp == '') //absolute first time
 		setTimeout(function () {
 			playProcess(data);
@@ -1343,7 +1347,7 @@ socket.on('trump', function (data) {
 				enableCards([tCard.suit]);
 			else
 				enableCards(['S', 'C', 'H', 'D']);
-			M.toast({ html: 'You opened the Trump', classes: 'lime darken-3', displayLength: 3000 });
+			M.toast({ html: 'You opened the Trump', classes: 'lime darken-3', displayLength: 2400 });
 		}
 		else {
 			//mark
@@ -1352,7 +1356,7 @@ socket.on('trump', function (data) {
 				xName = gVars.greenplayers[xName.id];
 			else
 				xName = gVars.purpleplayers[xName.id];
-			M.toast({ html: xName + ' opened the Trump', classes: 'lime darken-3', displayLength: 3000 });
+			M.toast({ html: xName + ' opened the Trump', classes: 'lime darken-3', displayLength: 2400 });
 
 		}
 		gVars.trumpOpen = true;
@@ -1364,10 +1368,10 @@ socket.on('trump', function (data) {
 			if (data.c7 != 'f') {//7th card
 				$(elemfromidteam('#', 'trump', data.pl)).html('<img alt="T" src="img/' + cardDetail(data.c).suit + '.png" style="margin-bottom:-0.09rem;max-height:1.1rem;max-width:1.1rem;border:1px solid #000">');
 				gVars.card7 = data.c7;
-				for (var i = 0; i < $('#bottomcardbox>.playercards').length; i++) {
-					var elem = $('#bottomcardbox>.playercards')[i];
-					if ($(elem).attr('card') == gVars.card7) {
-						$(elem).addClass('card7');
+				var jQcards = $('#bottomcardbox>.playercards');
+				for (var i = 0; i < jQcards.length; i++) {
+					if ($(jQcards[i]).attr('card') == gVars.card7) {
+						$(jQcards[i]).addClass('card7');
 						break;
 					}
 				}
@@ -1388,6 +1392,8 @@ socket.on('trump', function (data) {
 		preloadLink.as = 'image';
 		document.head.appendChild(preloadLink);
 		var imgSrc = document.createElement('img');
+		imgSrc.width = '160';
+		imgSrc.height = '245';
 		imgSrc.src = 'img/cards/' + data.c + '.PNG';
 		document.getElementById('imgload').appendChild(imgSrc);
 	}
@@ -1402,7 +1408,7 @@ socket.on('marriage', function (data) {
 	else
 		playername.player = gVars.purpleplayers[playername.id];
 	setTimeout(function () {
-		M.toast({ html: playername.player + ' of Team ' + playername.team.toUpperCase() + '&nbsp;has a marriage!', classes: 'lime darken-3', displayLength: 4000 });
+		M.toast({ html: playername.player + ' of Team ' + playername.team.toUpperCase() + '&nbsp;has a marriage!', classes: 'lime darken-3', displayLength: 2500 });
 
 		for (var i = 0; i < 4; i++) {
 			var z = playerFromNumber(i);
@@ -1412,7 +1418,7 @@ socket.on('marriage', function (data) {
 			if ($(b).html() != memb)
 				zio(b);
 		}
-	}, data.d == 'play' ? 1400 : 500);
+	}, data.d == 'play' ? 1400 : 600);
 });
 
 socket.on('reconnect_attempt', function (number) {
@@ -1442,6 +1448,13 @@ socket.on('chat', function (data) {
 	M.toast({ html: data.msg, classes: 'chatToast', displayLength: 4000 });
 	$('#chatlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.msg + '</li>');
 	$("#modal-chat>.modal-content").scrollTop($("#modal-chat>.modal-content")[0].scrollHeight);
+});
+
+socket.on('color', function (data) {
+	if(data.pl != gVars.myteam + gVars.myUserID) {
+		$('#ipColor').val(data.val);
+		$('.bodyBack').css('filter', 'hue-rotate(' + data.val + 'deg)');
+	}
 });
 
 socket.on('pong', function (latency) {
@@ -1577,6 +1590,7 @@ $(function () {
 	gVars.card7 = '';
 	gVars.currentPlayerPos = 0;
 	gVars.isMobile = mobilecheck();
+	M.Tooltip.init(document.querySelectorAll('.tooltipped'), { enterDelay: 0, exitDelay: 0, inDuration: 150, outDuration: 150 });
 	//UI resize 
 	$('body').css('zoom', shiftzoom(1920, 1080));
 	if (gVars.isMobile) {
