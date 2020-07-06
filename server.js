@@ -898,6 +898,9 @@ class Game {
 		this.gameTimer = setTimeout(() => {
 			const round_state = 'go';
 			this.nextPlayEmit(true, '', round_state);
+			var gameTime = Date.now() - this.startTime;
+			Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon, this.gameMode);
+			io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
 			clearTimeout(this.gameTimer);
 		}, this.gameMode * 60 * 1000);
 	}
@@ -910,8 +913,6 @@ class Game {
 			this.startGameTimer();
 		}
 	}
-
-
 
 };
 
