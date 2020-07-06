@@ -20,7 +20,7 @@ function encodeHTML(s) {
 */
 
 function checkSpChars(t) {
-	return !(t.indexOf('&') == -1 && t.indexOf('<') == -1 && t.indexOf('>') == -1);
+	return !(t.indexOf('&') == -1 && t.indexOf('<') == -1 && t.indexOf('>') == -1 && t.indexOf(',') == -1 && t.indexOf('.') == -1);
 }
 
 function playerFromNumber(number) {
