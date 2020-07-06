@@ -831,6 +831,7 @@ class Game {
 		}
 		else if (round_state == 'go') {//gameover
 			try {
+				clearTimeout(this.gameTimer);
 				var gameTime = Date.now() - this.startTime;
 				Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon, this.gameMode);
 				io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
