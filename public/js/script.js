@@ -46,21 +46,14 @@ function numberFromPlayer(player) {
 }
 
 function indexOfMax(arr) {
-	if (arr.length === 0) {
+	if (arr.length < 2)
 		return -1;
-	}
-
-	var max = arr[0];
-	var maxIndex = 0;
-
-	for (var i = 1; i < arr.length; i++) {
-		if (arr[i] > max) {
-			maxIndex = i;
-			max = arr[i];
-		}
-	}
-
-	return maxIndex;
+	else if (arr[0] > arr[1])
+		return 0;
+	else if (arr[1] > arr[0])
+		return 1;
+	else
+		return -2;
 }
 
 /* start VoiceServer */
@@ -246,11 +239,12 @@ $("#roomrefresh").click(function () {
 });
 
 $('#form-addroom').submit(function () {
-	var usr = $('#room_NEW').val().trim();
+	var rname = $('#room_NEW').val().trim();
 	var pass = $('#room_NEW_pass').val();
+	var mode = $('#gModeSelect').val();
 	var timestamp = Date.now();
 
-	if (usr == "" || checkSpChars(usr) || usr.length > 10) {
+	if (rname == "" || checkSpChars(rname) || rname.length > 10) {
 		$('#room_NEW_pass').val('');
 		$('#room_NEW').focus();
 		return false;
@@ -262,9 +256,9 @@ $('#form-addroom').submit(function () {
 
 	$('.rooms-notloaded').hide();
 	$('#divroom').show();
-	socket.emit('addroom', { 'name': usr, 'pass': pass, 'timestamp': timestamp });
-	$('#room_NEW').val('').removeClass('invalid').removeClass('valid');;
-	$('#room_NEW_pass').val('').removeClass('invalid').removeClass('valid');;
+	socket.emit('addroom', { 'name': rname, 'pass': pass, 'timestamp': timestamp, 'mode': mode });
+	$('#room_NEW').val('').removeClass('invalid').removeClass('valid');
+	$('#room_NEW_pass').val('').removeClass('invalid').removeClass('valid');
 	$('#room_NEW~span.character-counter').html('');
 	$('#addroomdock').click();
 	return false;
@@ -342,6 +336,7 @@ function roomenter_submit() {
 }
 
 /* start VoiceServer */ async /* end VoiceServer */ function joingame() {
+	$('#timerGame>span').html(gVars.gameMode == 0 ? 'No Limit' : zeroPad(gVars.gameMode, 2) + ':00');
 	$('.scale-out').addClass('scale-in');
 	playscreenTeamUpdate();
 	if (gVars.myteam == 'green') {
@@ -824,8 +819,16 @@ function playProcess(data) {
 	if (data.op.fp) {
 		setTimeout(function () {
 			if (data.op.re == 'go') {
-				var winner = playerFromNumber(indexOfMax(data.op.rs)).team;
-				$('#winmessage').html('<div class="flexcenter fResult"><img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game in&nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
+				var pWin = indexOfMax(data.op.rs);
+				var winText;
+				if (pWin == 0 || pWin == 1) {
+					var winner = playerFromNumber(pWin).team;
+					winText = '<img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game';
+				}
+				else
+					winText = '<img src="img/matchdraw.png">Game drawn';
+
+				$('#winmessage').html('<div class="flexcenter fResult">' + winText + ' in &nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
 				var text = '<table class="fResult"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
@@ -925,6 +928,19 @@ function startTimer(data, player) {
 	}
 }
 
+function startGameTimer(duration) {
+	gVars.remainTimer = setInterval(function () {
+		var timeString = zeroPad(parseInt(duration / 60), 2) + ':' + zeroPad(duration % 60, 2);
+		$('#timerGame>span').html(timeString);
+		if (duration <= 30) {
+			$('#timerGame').css('color', duration % 2 ? '#fafafa' : '#ff4242');
+			if (duration == 0)
+				clearInterval(gVars.remainTimer);
+		}
+		duration -= 1;
+	}, 1000);
+}
+
 function setTim(currP, pName, pTeam, telem) {
 	gVars.timer = setInterval(function () {
 		gVars.timerCount = (gVars.timerCount + .5) % 100;
@@ -951,6 +967,7 @@ var gVars = {
 	myname: '',        // Current username
 	myteam: '',        // 'purple' or 'green'
 	myUserID: '',      // 0 or 1 based on location in array
+	gameMode: '',      // gamemode: 0 for normal, else duration in min
 	currentCard: '',   // 3C, current card selected
 	currentBid: '',     // 21, current bid value
 	raiseOrMatch: '',   // bid raise or match
@@ -960,6 +977,7 @@ var gVars = {
 	firstplay: '',     // if first play
 	timerCount: '',    // counter timer 0-100
 	timer: '',         // timer element
+	remainTimer: '',   // countdown timer for timed match
 	trumpSetter: '',   // player who set trump (green0,purple1 etc.)
 	sound_turn: '',    // sound for player turn
 	sound_play: '',    // sound for player play
@@ -1153,7 +1171,8 @@ socket.on('roomlist', function (data) {
 	$('#rooms-list').html('');
 	for (var i = 0; i < data.number; i++) {
 		var timest = timeAbs(data.timestamps[i]);
-		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
+		var mode = data.modes[i] == 0 ? 'Normal' : data.modes[i] + ' min';
+		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
 	M.updateTextFields();
 	roomenter_submit();
@@ -1186,6 +1205,7 @@ socket.on('addplayer', function (data) {
 		gVars.purpleplayers = data.teampurple;
 		gVars.greenplayers = data.teamgreen;
 		gVars.myUserID = data.playerid;
+		gVars.gameMode = data.mode;
 		$('#playerwait').show();
 		M.toast({ html: 'Game joined', displayLength: 3000 });
 		$("#modal-joingame").modal('close');
@@ -1255,6 +1275,10 @@ socket.on('cst', function (data) {
 
 	if (gVars.startTime == '') { //absolute first time
 		gVars.startTime = Date.now();
+		if (gVars.gameMode != 0) {
+			$('#timerGame').addClass('scale-in');
+			startGameTimer(gVars.gameMode * 60);
+		}
 	}
 
 	if (data.d) {
@@ -1451,7 +1475,7 @@ socket.on('chat', function (data) {
 });
 
 socket.on('color', function (data) {
-	if(data.pl != gVars.myteam + gVars.myUserID) {
+	if (data.pl != gVars.myteam + gVars.myUserID) {
 		$('#ipColor').val(data.val);
 		$('.bodyBack').css('filter', 'hue-rotate(' + data.val + 'deg)');
 	}
@@ -1482,8 +1506,17 @@ socket.on('hst', function (data) {
 				tabletext += '<tr><td><span class="' + color + '-text">' + lData[i].pn[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gp[j] + '</span></td><td><span class="' + color + '-text">' + lData[i].gh[j] + '</span></td><td><red>' + lData[i].gr[j] + '</red></td></tr>';
 			}
 			tabletext += '</tbody></table>';
-			var winner = playerFromNumber(indexOfMax(lData[i].gr)).team;
-			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">' + ((index == 0) ? 'home' : 'timeline') + '</i>' + lData[i].rn + '<span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span></div><div class="collapsible-body"><div class="hstWon"><span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
+
+			var pWin = indexOfMax(lData[i].gr);
+			var winText;
+			if (pWin == 0 || pWin == 1) {
+				var winner = playerFromNumber(pWin).team;
+				winText = '<span class="' + winner + '-text">Team ' + winner.toUpperCase() + '</span> won';
+			}
+			else
+				winText = 'Game drawn';
+			var mode = lData[i].gm == 0 ? 'Normal' : lData[i].gm + ' min';
+			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">' + ((index == 0) ? 'home' : 'timeline') + '</i>' + lData[i].rn + '<span class="white new badge" data-badge-caption=""><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><div class="hstWon">' + winText + ' in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
 			text += oneItem;
 		}
 		text += '</ul>';
@@ -1570,6 +1603,7 @@ $(function () {
 		});
 	}
 	initModals();
+	$('.dropdown-trigger').dropdown();
 	$('.collapsible').collapsible();
 	$('select').formSelect();
 	$('.tabs').tabs();

@@ -56,7 +56,8 @@ class rooms {
 		this.room_ids = [];
 		this.room_teampurple = [];
 		this.room_teamgreen = [];
-		this.room_game = [];
+		this.room_modes = [];
+		this.room_games = [];
 		/* start VoiceServer */
 		this.room_voice = [];
 		/* end VoiceServer */
@@ -72,7 +73,7 @@ class rooms {
 			return internal ? { 'success': true, 'index': index } : { 'success': true, 'roomID': this.room_ids[index], 'roomN': this.room_names[index], 'tp': this.room_teampurple[index], 'tg': this.room_teamgreen[index] };
 	}
 
-	addRoom(name, pass, timestamp) {
+	addRoom(name, pass, timestamp, mode) {
 		if (this.room_ids.length >= maxElems) { //lim to ten. rooms.
 			console.log(colors.bgRed.black('Max. room limit reached'));
 			return false;
@@ -85,7 +86,8 @@ class rooms {
 			this.room_ids.push(name + timestamp);
 			this.room_teampurple.push([]);
 			this.room_teamgreen.push([]);
-			this.room_game.push('');
+			this.room_games.push('');
+			this.room_modes.push(parseInt(mode));
 			/* start VoiceServer */
 			this.room_voice.push([]);
 			/* end VoiceServer */
@@ -111,7 +113,8 @@ class rooms {
 			/* start VoiceServer */
 			this.room_voice.splice(index, 1);
 			/* end VoiceServer */
-			this.room_game.splice(index, 1);
+			this.room_games.splice(index, 1);
+			this.room_modes.splice(index, 1);
 			this.room_count -= 1;
 			console.log(colors.bgBlue.red('Room deleted: ' + ID));
 			return { 'success': true };
@@ -133,7 +136,8 @@ class rooms {
 			'names': this.room_names,
 			'timestamps': this.room_timestamps,
 			'ids': this.room_ids,
-			'users': users
+			'users': users,
+			'modes': this.room_modes
 		};
 	}
 
@@ -143,12 +147,12 @@ class rooms {
 			if (team == 'purple' && this.room_teampurple[login.index].length < 2) {
 				var x = this.room_teampurple[login.index].push(name);
 				console.log(colors.bgBlue.green('Player added to team in room: ' + name + '->' + team + '->' + ID));
-				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index] };
+				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index], 'mode': this.room_modes[login.index] };
 			}
 			else if (team == 'green' && this.room_teamgreen[login.index].length < 2) {
 				var x = this.room_teamgreen[login.index].push(name);
 				console.log(colors.bgBlue.green('Player added to team in room: ' + name + '->' + team + '->' + ID));
-				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index] };
+				return { 'success': true, 'playerid': (x - 1), 'teampurple': this.room_teampurple[login.index], 'teamgreen': this.room_teamgreen[login.index], 'mode': this.room_modes[login.index] };
 			}
 			else {
 				console.log(colors.bgRed.black('Player added to team in room failed: ' + name + '->' + team + '->' + ID));
@@ -173,7 +177,7 @@ class rooms {
 	startGamePlay(ID, pass) {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
-			this.room_game[login.index] = new Game(ID);
+			this.room_games[login.index] = new Game(ID, this.room_modes[login.index]);
 			console.log(colors.bgBlue.green('Game started for room: ' + ID));
 		}
 		else
@@ -183,7 +187,7 @@ class rooms {
 	sendBidtoRoom(ID, pass, ps, am, pl, l, o) {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
-			this.room_game[login.index].bidReceive(ps, am, pl, l, o);
+			this.room_games[login.index].bidReceive(ps, am, pl, l, o);
 		}
 		else
 			console.log(colors.bgRed.black('Bid receive error: ' + ID));
@@ -192,7 +196,7 @@ class rooms {
 	sendPlaytoRoom(ID, pass, pl, c, fp) {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
-			this.room_game[login.index].nextPlayReceive(pl, c, fp);
+			this.room_games[login.index].nextPlayReceive(pl, c, fp);
 		}
 		else
 			console.log(colors.bgRed.black('Play receive error: ' + ID));
@@ -202,9 +206,9 @@ class rooms {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
 			if (op == 'open')
-				this.room_game[login.index].trumpOpenReceive(pl);
+				this.room_games[login.index].trumpOpenReceive(pl);
 			else if (op == 'set')
-				this.room_game[login.index].trumpSetReceive(pl, s, l);
+				this.room_games[login.index].trumpSetReceive(pl, s, l);
 		}
 		else
 			console.log(colors.bgRed.black('Trump receive error: ' + ID));
@@ -213,7 +217,7 @@ class rooms {
 	getRoomEmitLog(ID, pass) {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
-			return this.room_game[login.index] != '' ? this.room_game[login.index].getEmitLog() : -2;
+			return this.room_games[login.index] != '' ? this.room_games[login.index].getEmitLog() : -2;
 		}
 		else {
 			console.log(colors.bgRed.black('Room does not exist: ' + ID));
@@ -229,7 +233,7 @@ class rooms {
 		else
 			console.log(colors.bgRed.black('Chat receive error: ' + ID));
 	}
-	
+
 	sendColor(ID, pass, val, player) {
 		var login = this.checkLogin(ID, pass, true);
 		if (login.success) {
@@ -261,7 +265,7 @@ class rooms {
 	}
 	/* end VoiceServer */
 
-	logRoom(ID, time, rounds, points, hands) {
+	logRoom(ID, time, rounds, points, hands, mode) {
 		var index = this.room_ids.indexOf(ID);
 		try {
 			const pName = [
@@ -277,7 +281,8 @@ class rooms {
 				wt: time,                         // win time
 				gr: rounds,                       // game rounds
 				gp: points,                       // game points
-				gh: hands                         // game hands
+				gh: hands,                        // game hands
+				gm: mode                          // game mode
 			};
 			collection.insertOne(dataPack, (err, result) => {
 				if (err)
@@ -419,8 +424,10 @@ class Cards {
 };
 
 class Game {
-	constructor(roomID) {
+	constructor(roomID, gameMode) {
 		this.roomID = roomID;
+		this.gameMode = gameMode;
+		this.gameTimer = '';
 
 		this.delayed_distribute = false;
 		this.playerStart = Math.floor((Math.random() * 4));
@@ -824,9 +831,8 @@ class Game {
 		}
 		else if (round_state == 'go') {//gameover
 			try {
-				//delete current room
 				var gameTime = Date.now() - this.startTime;
-				Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon);
+				Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon, this.gameMode);
 				io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
 			}
 			catch (err) {
@@ -888,22 +894,35 @@ class Game {
 		this.nextBidEmit(this.bid_player, this.bid_winner, this.bid_value, false, log, 'D', 0);
 	}
 
+	startGameTimer() {
+		this.gameTimer = setTimeout(() => {
+			const round_state = 'go';
+			this.nextPlayEmit(true, '', round_state);
+			clearTimeout(this.gameTimer);
+		}, this.gameMode * 60 * 1000);
+	}
+
 	//external emit link
 	startGame() {
 		this.distributeCards(4, 4, this.delayed_distribute);  //give 4 cards to each of the 4 players
 		this.startBid();
+		if (this.gameMode != 0) {
+			this.startGameTimer();
+		}
 	}
+
+
 
 };
 
 var Rooms = new rooms();
 
-app.use (function (req, res, next) {
-    if (req.get('X-Forwarded-Proto')=='https' || req.hostname == 'localhost') {
-        next();
-    } else if(req.get('X-Forwarded-Proto')!='https' && req.get('X-Forwarded-Port')!='443'){
-        res.redirect('https://' + req.hostname + req.url);
-    }
+app.use(function (req, res, next) {
+	if (req.get('X-Forwarded-Proto') == 'https' || req.hostname == 'localhost') {
+		next();
+	} else if (req.get('X-Forwarded-Proto') != 'https' && req.get('X-Forwarded-Port') != '443') {
+		res.redirect('https://' + req.hostname + req.url);
+	}
 });
 app.use(compression());
 app.use(helmet());
@@ -928,7 +947,7 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('addroom', function (msg) {
-		if (Rooms.addRoom(msg.name, msg.pass, msg.timestamp))
+		if (Rooms.addRoom(msg.name, msg.pass, msg.timestamp, msg.mode))
 			socket.emit('roomlist', Rooms.getRooms());
 	});
 
