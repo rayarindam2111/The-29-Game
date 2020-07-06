@@ -354,11 +354,6 @@ h6 {
     color: #fafafa;
     z-index: 2000;
     user-select: none;
-    font-size: 1.1rem;
-}
-
-#modal-gameover {
-	z-index: 5000!important;
 }
 
 .mvboxes {

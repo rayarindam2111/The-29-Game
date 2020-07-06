@@ -804,6 +804,7 @@ function playProcess(data) {
 	else if (data.op.re == 'go') {
 		gVars.matchRunning = false;
 		timeEnd = Date.now();
+		clearInterval(gVars.remainTimer);
 		M.toast({ html: 'Game Over', displayLength: 2000 });
 		window.onbeforeunload = null;
 	}
@@ -1315,8 +1316,12 @@ socket.on('bid', function (data) {
 			$('#cardsinbid').html('');
 			for (var i = 0; i < sortingArray.length; i++)
 				$('#cardsinbid').append('<img src="img/cards/' + sortingArray[i] + '.PNG" alt="' + sortingArray[i] + '">');
-			$("#modal-bid").modal('open');
-			bidProcess(data);
+			
+			if(!M.Modal.getInstance($('#modal-gameover')).isOpen){
+				$("#modal-bid").modal('open');
+				bidProcess(data);
+			}
+
 		}, data.d ? 3500 : 2500);
 	else
 		bidProcess(data);
@@ -1356,7 +1361,7 @@ socket.on('play', function (data) {
 	if (data.op.fp && data.lp == '') //absolute first time
 		setTimeout(function () {
 			playProcess(data);
-		}, data.op.re == 'nl' ? 3700 : 4700);
+		}, data.op.re == 'nl' ? 3700 : 4000); //4000 was 4700
 	else
 		playProcess(data);
 });

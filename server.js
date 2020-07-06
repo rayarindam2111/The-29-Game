@@ -24,7 +24,8 @@ mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (
 			{ '$limit': maxElems },
 			{ '$project': { '_id': 0 } }],
 			//Most points
-			[{ '$project': { 'pn': 1, 'gp': 1, 'rt': 1, '_id': 0 } },
+			[{ '$match': { 'gm': 0 } },
+			{ '$project': { 'pn': 1, 'gp': 1, 'rt': 1, '_id': 0 } },
 			{ '$unwind': { 'path': '$gp', 'includeArrayIndex': 'mi' } },
 			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
 			{ '$project': { 'mi': 0 } },
@@ -32,7 +33,8 @@ mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (
 			{ '$limit': maxElems }
 			],
 			//Most hands
-			[{ '$project': { 'pn': 1, 'gh': 1, 'rt': 1, '_id': 0 } },
+			[{ '$match': { 'gm': 0 } },
+			{ '$project': { 'pn': 1, 'gh': 1, 'rt': 1, '_id': 0 } },
 			{ '$unwind': { 'path': '$gh', 'includeArrayIndex': 'mi' } },
 			{ '$addFields': { 'pn': { '$arrayElemAt': ['$pn', '$mi'] } } },
 			{ '$project': { 'mi': 0 } },
