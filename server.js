@@ -106,6 +106,9 @@ class rooms {
 	removeRoom(ID) {
 		var index = this.room_ids.indexOf(ID);
 		if (index > -1) {
+			try {
+				this.room_games[index].endGameTimer();
+			} catch(e) {};
 			this.room_ids.splice(index, 1);
 			this.room_names.splice(index, 1);
 			this.room_passwords.splice(index, 1);
@@ -833,7 +836,7 @@ class Game {
 		}
 		else if (round_state == 'go') {//gameover
 			try {
-				clearTimeout(this.gameTimer);
+				this.endGameTimer();
 				var gameTime = Date.now() - this.startTime;
 				Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon, this.gameMode);
 				io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
@@ -904,8 +907,13 @@ class Game {
 			var gameTime = Date.now() - this.startTime;
 			Rooms.logRoom(this.roomID, gameTime, this.rounds_won, this.pointsWon, this.handsWon, this.gameMode);
 			io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
-			clearTimeout(this.gameTimer);
 		}, this.gameMode * 60 * 1000);
+	}
+	
+	endGameTimer() {
+		try {
+			clearTimeout(this.gameTimer);
+		} catch(e) {};
 	}
 
 	//external emit link

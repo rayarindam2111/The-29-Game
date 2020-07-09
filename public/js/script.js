@@ -804,7 +804,12 @@ function playProcess(data) {
 	else if (data.op.re == 'go') {
 		gVars.matchRunning = false;
 		timeEnd = Date.now();
-		clearInterval(gVars.remainTimer);
+		if(gVars.gameMode != 0) {
+			gVars.sound_cdown.stop();
+			clearInterval(gVars.remainTimer);
+			$('#timerGame>span').html('00:00');
+			$('#timerGame').css('color', '#ff4242');
+		}
 		M.toast({ html: 'Game Over', displayLength: 2000 });
 		window.onbeforeunload = null;
 	}
@@ -827,9 +832,9 @@ function playProcess(data) {
 					winText = '<img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game';
 				}
 				else
-					winText = '<img src="img/matchdraw.png">Game drawn';
+					winText = '<img src="img/matchdraw.png">&nbsp;Game drawn';
 
-				$('#winmessage').html('<div class="flexcenter fResult">' + winText + ' in &nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
+				$('#winmessage').html('<div class="flexcenter fResult">' + winText + ' in&nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
 				var text = '<table class="fResult"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
@@ -935,8 +940,12 @@ function startGameTimer(duration) {
 		$('#timerGame>span').html(timeString);
 		if (duration <= 30) {
 			$('#timerGame').css('color', duration % 2 ? '#fafafa' : '#ff4242');
-			if (duration == 0)
+			if (duration == 30)
+				gVars.sound_cdown.play();
+			if (duration == 0) {
+				gVars.sound_cdown.stop();
 				clearInterval(gVars.remainTimer);
+			}
 		}
 		duration -= 1;
 	}, 1000);
@@ -982,175 +991,13 @@ var gVars = {
 	trumpSetter: '',   // player who set trump (green0,purple1 etc.)
 	sound_turn: '',    // sound for player turn
 	sound_play: '',    // sound for player play
+	sound_cdown: '',   // sound for countdown
 	isMobile: '',	    // if device is a mobile device
 	matchRunning: '',  // true/false, if a match has started & is running
 	sockMsgCount: '',  // socket msg received count
 	card7: '',         // 7th card, '' if not used
 	showMode: '',      // 'sort', 'original' : cards shown in deck
 	startTime: '',     // match start time obtained from Date.now()
-
-	set curRoomID(data) {
-		curRoomID = data;
-	},
-	get curRoomID() {
-		return curRoomID;
-	},
-	set curRoomName(data) {
-		curRoomName = data;
-	},
-	get curRoomName() {
-		return curRoomName;
-	},
-	set curRoomPass(data) {
-		curRoomPass = data;
-	},
-	get curRoomPass() {
-		return curRoomPass;
-	},
-	set currentlogin(data) {
-		currentlogin = data;
-	},
-	get currentlogin() {
-		return currentlogin;
-	},
-	set purpleplayers(data) {
-		purpleplayers = data;
-	},
-	get purpleplayers() {
-		return purpleplayers;
-	},
-	set greenplayers(data) {
-		greenplayers = data;
-	},
-	get greenplayers() {
-		return greenplayers;
-	},
-	set myname(data) {
-		myname = data;
-	},
-	get myname() {
-		return myname;
-	},
-	set myteam(data) {
-		myteam = data;
-	},
-	get myteam() {
-		return myteam;
-	},
-	set myUserID(data) {
-		myUserID = data;
-	},
-	get myUserID() {
-		return myUserID;
-	},
-	set currentCard(data) {
-		currentCard = data;
-	},
-	get currentCard() {
-		return currentCard;
-	},
-	set currentBid(data) {
-		currentBid = data;
-	},
-	get currentBid() {
-		return currentBid;
-	},
-	set raiseOrMatch(data) {
-		raiseOrMatch = data;
-	},
-	get raiseOrMatch() {
-		return raiseOrMatch;
-	},
-	set bidDouble(data) {
-		bidDouble = data;
-	},
-	get bidDouble() {
-		return bidDouble;
-	},
-	set trumpOpen(data) {
-		trumpOpen = data;
-	},
-	get trumpOpen() {
-		return trumpOpen;
-	},
-	set currentPlayerPos(data) {
-		currentPlayerPos = data;
-	},
-	get currentPlayerPos() {
-		return currentPlayerPos;
-	},
-	set firstplay(data) {
-		firstplay = data;
-	},
-	get firstplay() {
-		return firstplay;
-	},
-	set timerCount(data) {
-		timerCount = data;
-	},
-	get timerCount() {
-		return timerCount;
-	},
-	set timer(data) {
-		timer = data;
-	},
-	get timer() {
-		return timer;
-	},
-	set trumpSetter(data) {
-		trumpSetter = data;
-	},
-	get trumpSetter() {
-		return trumpSetter;
-	},
-	set sound_turn(data) {
-		sound_turn = data;
-	},
-	get sound_turn() {
-		return sound_turn;
-	},
-	set sound_play(data) {
-		sound_play = data;
-	},
-	get sound_play() {
-		return sound_play;
-	},
-	set isMobile(data) {
-		isMobile = data;
-	},
-	get isMobile() {
-		return isMobile;
-	},
-	set matchRunning(data) {
-		matchRunning = data;
-	},
-	get matchRunning() {
-		return matchRunning;
-	},
-	set sockMsgCount(data) {
-		sockMsgCount = data;
-	},
-	get sockMsgCount() {
-		return sockMsgCount;
-	},
-	set card7(data) {
-		card7 = data;
-	},
-	get card7() {
-		return card7;
-	},
-	set showMode(data) {
-		showMode = data;
-	},
-	get showMode() {
-		return showMode;
-	},
-	set startTime(data) {
-		startTime = data;
-	},
-	get startTime() {
-		return startTime;
-	}
 };
 
 function vh() {
@@ -1589,6 +1436,7 @@ $(function () {
 	console.log('%c© Arindam Ray, 2020', 'color:red;font-weight:bold;font-size:1.5rem;');
 	gVars.sound_turn = new sound('img/ting.mp3', true);
 	gVars.sound_play = new sound('img/play.mp3');
+	gVars.sound_cdown = new sound('img/cdown.mp3', true);
 	if (!window.chrome)//not chromium
 		$('#network>i').removeClass('network-icon');
 	if (navigator.share)
