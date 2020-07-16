@@ -807,7 +807,7 @@ function playProcess(data) {
 		if(gVars.gameMode != 0) {
 			gVars.sound_cdown.stop();
 			clearInterval(gVars.remainTimer);
-			$('#timerGame>span').html('00:00');
+			//$('#timerGame>span').html('00:00');
 			$('#timerGame').css('color', '#ff4242');
 		}
 		M.toast({ html: 'Game Over', displayLength: 2000 });
