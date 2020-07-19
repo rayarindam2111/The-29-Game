@@ -49,6 +49,15 @@ mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (
 	}
 });
 
+function storeDB(dataPack, ID) {
+	collection.insertOne(dataPack, (err, result) => {
+		if (err)
+			console.log(colors.bgRed.black('Database write error'));
+		else
+			console.log(colors.bgBlue.green('Game saved: ' + ID));
+	});
+}
+
 class rooms {
 	constructor() {
 		this.room_count = 0;
@@ -289,12 +298,7 @@ class rooms {
 				gh: hands,                        // game hands
 				gm: mode                          // game mode
 			};
-			collection.insertOne(dataPack, (err, result) => {
-				if (err)
-					console.log(colors.bgRed.black('Database write error'));
-				else
-					console.log(colors.bgBlue.green('Game saved: ' + ID));
-			});
+			storeDB(dataPack, ID);
 		}
 		catch (e) {
 			console.log(colors.bgRed.black('Could not save game: ' + ID + '\nError: ' + e.message));
@@ -902,6 +906,7 @@ class Game {
 
 	startGameTimer() {
 		this.gameTimer = setTimeout(() => {
+			this.endGameTimer();
 			const round_state = 'go';
 			this.nextPlayEmit(true, '', round_state);
 			var gameTime = Date.now() - this.startTime;
