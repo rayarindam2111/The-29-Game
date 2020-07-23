@@ -468,17 +468,17 @@ $('#ipColor').on('change', function () {
 });
 
 function bidProcess(data) {
-	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>'
-		+ data.l
-		+ '</li>');
-
+	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.l + '</li>');
+	
+	$('#trumpset').hide();
+	$('#biddouble').hide();
+	$('#bidchange').hide();
+	
 	if (data.bd == 'ST') {
 		if (gVars.myteam + gVars.myUserID == data.bw) {
 			$('#trumpset').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 		}
-		else
-			$('#trumpset').hide();
 		return;
 	}
 	else if (data.bd == 'D') {
@@ -490,8 +490,6 @@ function bidProcess(data) {
 			$('#biddouble').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 		}
-		else
-			$('#biddouble').hide();
 		return;
 	}
 	else if (data.bd == 'RD') {
@@ -503,12 +501,8 @@ function bidProcess(data) {
 			$('#biddouble').show();
 			$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 		}
-		else
-			$('#biddouble').hide();
 		return;
 	}
-	else
-		$('#biddouble').hide();
 
 	var player = gVars.myteam + gVars.myUserID;
 	gVars.currentBid = data.cb;
@@ -532,7 +526,6 @@ function bidProcess(data) {
 		document.getElementById('bidrange').dispatchEvent(event);
 	}
 	else {
-		$('#bidchange').hide();
 		$("#modal-bid>.modal-content").scrollTop($("#modal-bid>.modal-content")[0].scrollHeight);
 	}
 }

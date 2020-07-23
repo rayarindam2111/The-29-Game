@@ -778,8 +778,10 @@ class Game {
 			var index = this.cards[this.current_player].indexOf(card);
 			if (index > -1)
 				this.cards[this.current_player].splice(index, 1);
-			else
+			else {
 				console.log(colors.bgRed.black('Error removing card from player: ' + card + '->' + player));
+				return;
+			}
 
 			if (firstplay)
 				this.firstcard = card;
