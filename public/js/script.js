@@ -333,6 +333,13 @@ function roomenter_submit() {
 		socket.emit('deleteroom', { 'id': roomID, 'passw': passw });
 		return false;
 	});
+	
+	$('#rooms-list>li>.collapsible-header').click(function (e){
+		if(e.target !== e.currentTarget) return;
+		setTimeout(()=> {
+			$(this).parent().find('.roomenter>.input-field>input').focus();
+		}, 300);
+	});
 }
 
 /* start VoiceServer */ async /* end VoiceServer */ function joingame() {
@@ -392,7 +399,7 @@ function teamselectrefresh() {
 	$('#optgreen>div>div>label>input').prop('checked', false);
 	$('#optpurple>div>div>label>input').prop('checked', false);
 	if (gVars.purpleplayers.length > 0)
-		text = '<strong>Players:</strong> ' + gVars.purpleplayers;
+		text = '<strong>Players:</strong> ' + gVars.purpleplayers.join(', ');
 	else
 		text = '<strong>Players:</strong> -';
 	$('#optpurple>div>div>p').html(text);
@@ -402,7 +409,7 @@ function teamselectrefresh() {
 		$('#optpurple').removeClass('dSelect');
 
 	if (gVars.greenplayers.length > 0)
-		text = '<strong>Players:</strong> ' + gVars.greenplayers;
+		text = '<strong>Players:</strong> ' + gVars.greenplayers.join(', ');
 	else
 		text = '<strong>Players:</strong> -';
 	$('#optgreen>div>div>p').html(text);
@@ -657,7 +664,8 @@ $('.icon-player').click(function (elem) {
 });
 /* end VoiceServer */
 
-$('#modal-gameover>div.modal-footer>a').click(function () {
+$('#modal-gameover>div.modal-footer>a').click(function (e) {
+	e.preventDefault();
 	endVoice();
 	window.location = './';
 });
@@ -678,6 +686,13 @@ $('#modal-roomlist>.modal-cover').click(function () {
 	$(this).addClass('slide-out');
 	setTimeout(function () { $('#modal-roomlist>.modal-cover').hide().remove(); }, 400);
 	return false;
+});
+
+$('#addroomdock').click(function (e){
+	if(e.target !== e.currentTarget) return;
+	setTimeout(()=> {
+		$('#room_NEW').focus();
+	}, 300);
 });
 
 function cardDetail(card) {
@@ -828,7 +843,7 @@ function playProcess(data) {
 					winText = '<img src="img/matchdraw.png">&nbsp;Game drawn';
 
 				$('#winmessage').html('<div class="flexcenter fResult">' + winText + ' in&nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
-				var text = '<table class="fResult"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
+				var text = '<table class="fResult striped centered"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
 				for (var i = 0; i < 4; i++) {
 					//mark
 					var xName = playerFromNumber(i);
@@ -840,6 +855,7 @@ function playProcess(data) {
 				}
 				text += '</tbody></table>';
 				$('#winmessage').append(text);
+				$('#modal-gameover>.modal-content>h3').html('Game Over : ' + gVars.curRoomName);
 				$('#modal-gameover').modal('open');
 			}
 
@@ -1065,7 +1081,7 @@ socket.on('deleteroom', function (data) {
 	}
 	else if (data.wrongpass == true) {
 		var glogin = $(gVars.currentlogin).find("input[name=roomPASS]");
-		glogin.val('').attr("placeholder", "Wrong password. Try again").addClass('invalid').focus();
+		glogin.val('').attr("placeholder", "Error logging in. Try again").addClass('invalid').focus();
 		data = null;
 		setTimeout(function () { glogin.removeClass('invalid'); }, 2000);
 		$(gVars.currentlogin).find("a").removeAttr('disabled');
