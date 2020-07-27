@@ -8,7 +8,7 @@ const crypto = require('crypto');
 const colors = require('colors');
 const port = process.env.PORT || 3000;
 const mURI = process.env.DB_URL;
-var collection, maxElems = 10, aggFunc;
+var collection, maxElems = 200, aggFunc;
 
 console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.'));
 

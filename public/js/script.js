@@ -20,7 +20,11 @@ function encodeHTML(s) {
 */
 
 function checkSpChars(t) {
-	return !(t.indexOf('&') == -1 && t.indexOf('<') == -1 && t.indexOf('>') == -1 && t.indexOf(',') == -1 && t.indexOf('.') == -1);
+	try {
+		return !t.match('^[a-zA-Z0-9][a-zA-Z0-9-_ ]*$');
+	} catch (e) {
+		return !(t.indexOf('&') == -1 && t.indexOf('<') == -1 && t.indexOf('>') == -1 && t.indexOf(',') == -1 && t.indexOf('.') == -1);
+	}
 }
 
 function playerFromNumber(number) {
