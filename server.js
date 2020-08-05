@@ -775,7 +775,13 @@ class Game {
 			this.cards_on_table.push({ 'player': this.current_player, 'card': card });
 			this.lastplayer = this.numberFromPlayer(player);
 			this.lastplayercard = card;
-			var index = this.cards[this.current_player].indexOf(card);
+			var index;
+			if(this.cards[this.current_player])
+				index = this.cards[this.current_player].indexOf(card);
+			else {
+				console.log(colors.bgRed.black('Error removing card from player: ' + card + '->' + player));
+				return;
+			}
 			if (index > -1)
 				this.cards[this.current_player].splice(index, 1);
 			else {
