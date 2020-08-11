@@ -1325,7 +1325,8 @@ socket.on('reconnect', function () {
 	console.log('Reconnected');
 	//M.toast({html: 'Reconnected',displayLength:1500});
 	if (gVars.matchRunning) {
-		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass });
+		setTimeout(function () { socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass }); }, 1500);
+		
 		/* start VoiceServer */
 		if (voiceChat.myPeer._disconnected)
 			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 3000);

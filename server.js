@@ -10,6 +10,8 @@ const port = process.env.PORT || 3000;
 const mURI = process.env.DB_URL;
 var collection, maxElems = 10, aggFunc;
 
+const LOG_ENABLE = false;
+
 console.log(colors.bgYellow.black('The 29 Game.\nCopyright Arindam Ray, 2020.'));
 
 mongoClient.connect(mURI, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
@@ -564,6 +566,11 @@ class Game {
 		this.emitlog[0].push('cst');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('cst', d);
+		if (LOG_ENABLE){
+			console.log('----------------------------------------------');
+			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+		}
 	}
 
 	bidListRemove(player) {
@@ -671,6 +678,11 @@ class Game {
 		this.emitlog[0].push('bid');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('bid', d);
+		if (LOG_ENABLE){
+			console.log('----------------------------------------------');
+			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+		}
 	}
 
 	bidOver(player, log) {
@@ -682,6 +694,11 @@ class Game {
 		this.emitlog[0].push('bidover');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('bidover', d);
+		if (LOG_ENABLE){
+			console.log('----------------------------------------------');
+			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+		}
 		this.distributeCards(4, 4, false);
 		if (this.trump_card == '') { //7th card chosen
 			var val = Math.floor(Math.random() * (5 - 2 + 1)) + 2; // 2 to 5
@@ -690,6 +707,11 @@ class Game {
 			this.emitlog[0].push('trump');
 			this.emitlog[1].push(d);
 			io.in(this.roomID).emit('trump', d);
+			if (LOG_ENABLE){
+				console.log('----------------------------------------------');
+				console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+				console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+			}
 		}
 		this.nextPlayEmit(true, this.playerStart, 'nl');
 	}
@@ -719,6 +741,11 @@ class Game {
 		this.emitlog[0].push('play');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('play', d);
+		if (LOG_ENABLE){
+			console.log('----------------------------------------------');
+			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+		}
 	}
 
 	checkM(stack, trump) {
@@ -762,6 +789,11 @@ class Game {
 					this.emitlog[0].push('marriage');
 					this.emitlog[1].push(d);
 					io.in(this.roomID).emit('marriage', d);
+					if (LOG_ENABLE){
+						console.log('----------------------------------------------');
+						console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+						console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+					}
 					return true;
 				}
 			}
@@ -894,6 +926,11 @@ class Game {
 		this.emitlog[0].push('trump');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('trump', d);
+		if (LOG_ENABLE){
+			console.log('----------------------------------------------');
+			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+		}
 		var wincheck = this.checkMarriage('trump');
 		if (wincheck)
 			this.checkWin('', false);
@@ -908,6 +945,11 @@ class Game {
 			this.emitlog[0].push('trump');
 			this.emitlog[1].push(d);
 			io.in(this.roomID).emit('trump', d);
+			if (LOG_ENABLE){
+				console.log('----------------------------------------------');
+				console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
+				console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
+			}
 		}
 		this.nextBidEmit(this.bid_player, this.bid_winner, this.bid_value, false, log, 'D', 0);
 	}
@@ -995,7 +1037,7 @@ io.on('connection', function (socket) {
 		}
 	});
 
-	socket.on('recon', function (msg) {
+	socket.on('recon', async function (msg) {
 		var emitLog = Rooms.getRoomEmitLog(msg.id, msg.passw);
 		if (emitLog == -1)
 			return;
@@ -1008,9 +1050,11 @@ io.on('connection', function (socket) {
 		}
 		if (emitLog == -2)
 			return;
-		//console.log(parseInt(msg.LM)+'\t'+emitLog[0].length);
-		for (var i = parseInt(msg.LM) + 1; i <= emitLog[0].length; i++)
+		console.log(colors.bgBlue.red('Messages to retransmit: ' + (emitLog[0].length - parseInt(msg.LM))));
+		for (var i = parseInt(msg.LM) + 1; i <= emitLog[0].length; i++) {
 			socket.emit(emitLog[0][i - 1], emitLog[1][i - 1]);
+			await new Promise(r => setTimeout(r, 150));
+		}
 	});
 
 	socket.on('deleteroom', function (msg) {
