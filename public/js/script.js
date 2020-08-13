@@ -1040,7 +1040,7 @@ socket.on('roomlist', function (data) {
 		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="transparent new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="transparent new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span><span class="transparent new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
 	M.updateTextFields();
-	$('#rooms-list').collapsible();
+	$('#rooms-list').collapsible('destroy').collapsible();
 	roomenter_submit();
 	$('#divroom').hide();
 	$('.rooms-notloaded').show();
