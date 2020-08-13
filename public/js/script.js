@@ -273,6 +273,8 @@ $('#form-chat').submit(function () {
 		return false;
 	if ($("#chatmessage").val().trim() == 'reconnectVoice') //hack to reconnect voice
 		setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 2000);
+	if ($("#chatmessage").val().trim() == 'reconnectGame') //hack to reconnect Game
+		setTimeout(function () { socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass }); }, 2000);
 	var msg = '<' + gVars.myteam + '>' + gVars.myname + ':&nbsp;</' + gVars.myteam + '>&nbsp;' + encodeHTML($("#chatmessage").val());
 	$("#chatmessage").val('');
 	socket.emit('chat', { 'id': gVars.curRoomID, 'passw': gVars.curRoomPass, 'msg': msg });
@@ -337,10 +339,10 @@ function roomenter_submit() {
 		socket.emit('deleteroom', { 'id': roomID, 'passw': passw });
 		return false;
 	});
-	
-	$('#rooms-list>li>.collapsible-header').click(function (e){
-		if(e.target !== e.currentTarget) return;
-		setTimeout(()=> {
+
+	$('#rooms-list>li>.collapsible-header').click(function (e) {
+		if (e.target !== e.currentTarget) return;
+		setTimeout(() => {
 			$(this).parent().find('.roomenter>.input-field>input').focus();
 		}, 300);
 	});
@@ -480,11 +482,11 @@ $('#ipColor').on('change', function () {
 
 function bidProcess(data) {
 	$('#bidlog').append('<li class="collection-item flexcenter"><i class="material-icons">chevron_right</i>' + data.l + '</li>');
-	
+
 	$('#trumpset').hide();
 	$('#biddouble').hide();
 	$('#bidchange').hide();
-	
+
 	if (data.bd == 'ST') {
 		if (gVars.myteam + gVars.myUserID == data.bw) {
 			$('#trumpset').show();
@@ -692,9 +694,9 @@ $('#modal-roomlist>.modal-cover').click(function () {
 	return false;
 });
 
-$('#addroomdock').click(function (e){
-	if(e.target !== e.currentTarget) return;
-	setTimeout(()=> {
+$('#addroomdock').click(function (e) {
+	if (e.target !== e.currentTarget) return;
+	setTimeout(() => {
 		$('#room_NEW').focus();
 	}, 300);
 });
@@ -816,7 +818,7 @@ function playProcess(data) {
 	else if (data.op.re == 'go') {
 		gVars.matchRunning = false;
 		timeEnd = Date.now();
-		if(gVars.gameMode != 0) {
+		if (gVars.gameMode != 0) {
 			gVars.sound_cdown.stop();
 			clearInterval(gVars.remainTimer);
 			//$('#timerGame>span').html('00:00');
@@ -835,7 +837,7 @@ function playProcess(data) {
 	}
 
 	if (data.op.fp) {
-		setTimeout(function () {
+		function firstPlayDo() {
 			if (data.op.re == 'go') {
 				var pWin = indexOfMax(data.op.rs);
 				var winText;
@@ -885,7 +887,9 @@ function playProcess(data) {
 			}
 			if (data.op.re != 'go')
 				startTimer(data, player);
-		}, (data.lp == '') ? 0 : 2000);
+		}
+
+		(data.lp == '' || data.recon) ? firstPlayDo() : setTimeout(firstPlayDo, 2000);
 	}
 	else {
 		if (player == data.pl) {
@@ -1176,8 +1180,8 @@ socket.on('bid', function (data) {
 			$('#cardsinbid').html('');
 			for (var i = 0; i < sortingArray.length; i++)
 				$('#cardsinbid').append('<img src="img/cards/' + sortingArray[i] + '.PNG" alt="' + sortingArray[i] + '">');
-			
-			if(!M.Modal.getInstance($('#modal-gameover')).isOpen){
+
+			if (!M.Modal.getInstance($('#modal-gameover')).isOpen) {
 				$("#modal-bid").modal('open');
 				bidProcess(data);
 			}
@@ -1325,8 +1329,8 @@ socket.on('reconnect', function () {
 	console.log('Reconnected');
 	//M.toast({html: 'Reconnected',displayLength:1500});
 	if (gVars.matchRunning) {
-		setTimeout(function () { socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass }); }, 1500);
-		
+		socket.emit('recon', { 'id': gVars.curRoomID, 'pl': gVars.myname, 'LM': gVars.sockMsgCount, 'passw': gVars.curRoomPass });
+
 		/* start VoiceServer */
 		if (voiceChat.myPeer._disconnected)
 			setTimeout(function () { reconnectVoice(gVars.curRoomID, gVars.curRoomPass, gVars.myteam + gVars.myUserID); }, 3000);

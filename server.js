@@ -119,7 +119,7 @@ class rooms {
 		if (index > -1) {
 			try {
 				this.room_games[index].endGameTimer();
-			} catch(e) {};
+			} catch (e) { };
 			this.room_ids.splice(index, 1);
 			this.room_names.splice(index, 1);
 			this.room_passwords.splice(index, 1);
@@ -566,7 +566,7 @@ class Game {
 		this.emitlog[0].push('cst');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('cst', d);
-		if (LOG_ENABLE){
+		if (LOG_ENABLE) {
 			console.log('----------------------------------------------');
 			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -678,7 +678,7 @@ class Game {
 		this.emitlog[0].push('bid');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('bid', d);
-		if (LOG_ENABLE){
+		if (LOG_ENABLE) {
 			console.log('----------------------------------------------');
 			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -694,7 +694,7 @@ class Game {
 		this.emitlog[0].push('bidover');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('bidover', d);
-		if (LOG_ENABLE){
+		if (LOG_ENABLE) {
 			console.log('----------------------------------------------');
 			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -707,7 +707,7 @@ class Game {
 			this.emitlog[0].push('trump');
 			this.emitlog[1].push(d);
 			io.in(this.roomID).emit('trump', d);
-			if (LOG_ENABLE){
+			if (LOG_ENABLE) {
 				console.log('----------------------------------------------');
 				console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 				console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -741,7 +741,7 @@ class Game {
 		this.emitlog[0].push('play');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('play', d);
-		if (LOG_ENABLE){
+		if (LOG_ENABLE) {
 			console.log('----------------------------------------------');
 			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -789,7 +789,7 @@ class Game {
 					this.emitlog[0].push('marriage');
 					this.emitlog[1].push(d);
 					io.in(this.roomID).emit('marriage', d);
-					if (LOG_ENABLE){
+					if (LOG_ENABLE) {
 						console.log('----------------------------------------------');
 						console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 						console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -808,7 +808,7 @@ class Game {
 			this.lastplayer = this.numberFromPlayer(player);
 			this.lastplayercard = card;
 			var index;
-			if(this.cards[this.current_player])
+			if (this.cards[this.current_player])
 				index = this.cards[this.current_player].indexOf(card);
 			else {
 				console.log(colors.bgRed.black('Error removing card from player: ' + card + '->' + player));
@@ -926,7 +926,7 @@ class Game {
 		this.emitlog[0].push('trump');
 		this.emitlog[1].push(d);
 		io.in(this.roomID).emit('trump', d);
-		if (LOG_ENABLE){
+		if (LOG_ENABLE) {
 			console.log('----------------------------------------------');
 			console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 			console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -945,7 +945,7 @@ class Game {
 			this.emitlog[0].push('trump');
 			this.emitlog[1].push(d);
 			io.in(this.roomID).emit('trump', d);
-			if (LOG_ENABLE){
+			if (LOG_ENABLE) {
 				console.log('----------------------------------------------');
 				console.log(colors.bgYellow.black(this.emitlog[0].slice(-1)));
 				console.log(colors.bgYellow.black(this.emitlog[1].slice(-1)));
@@ -964,11 +964,11 @@ class Game {
 			io.in(this.roomID).emit('deleteroom', Rooms.removeRoom(this.roomID));
 		}, this.gameMode * 60 * 1000);
 	}
-	
+
 	endGameTimer() {
 		try {
 			clearTimeout(this.gameTimer);
-		} catch(e) {};
+		} catch (e) { };
 	}
 
 	//external emit link
@@ -998,7 +998,7 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
 
-app.use(express.static(__dirname + '/public', { maxAge: 1800000 }));//, { maxAge: 1800000 }
+app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));//, { maxAge: 1800000 }
 
 http.listen(port, function () {
 	console.log(colors.bgBlue.green('Listening on port ' + port));
@@ -1052,8 +1052,10 @@ io.on('connection', function (socket) {
 			return;
 		console.log(colors.bgBlue.red('Messages to retransmit: ' + (emitLog[0].length - parseInt(msg.LM))));
 		for (var i = parseInt(msg.LM) + 1; i <= emitLog[0].length; i++) {
-			socket.emit(emitLog[0][i - 1], emitLog[1][i - 1]);
-			await new Promise(r => setTimeout(r, 150));
+			var xEmit = emitLog[1][i - 1];
+			xEmit.recon = true;
+			socket.emit(emitLog[0][i - 1], xEmit);
+			/*await new Promise(r => setTimeout(r, 150));*/
 		}
 	});
 
