@@ -1222,7 +1222,7 @@ socket.on('bidover', function (data) {
 socket.on('play', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	clearInterval(gVars.timer);
-	if (data.op.fp && data.lp == '') //absolute first time
+	if (data.op.fp && data.lp == '' && !data.recon) //absolute first time
 		setTimeout(function () {
 			playProcess(data);
 		}, data.op.re == 'nl' ? 3700 : 4000); //4000 was 4700
