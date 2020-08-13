@@ -1037,9 +1037,10 @@ socket.on('roomlist', function (data) {
 	for (var i = 0; i < data.number; i++) {
 		var timest = timeAbs(data.timestamps[i]);
 		var mode = data.modes[i] == 0 ? 'Normal' : data.modes[i] + ' min';
-		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="white new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
+		$('#rooms-list').append('<li><div class="collapsible-header"><i class="material-icons">home</i>' + data.names[i] + '<span class="transparent new badge" data-badge-caption=""><span class="' + ((data.users[i] == 4) ? 'red' : 'green') + ' new badge" data-badge-caption="">' + data.users[i] + ' player(s)</span><span class="transparent new badge" data-badge-caption="" style="min-width:0"></span><span class="blue new badge" data-badge-caption="">' + timest + '</span><span class="transparent new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><form class="roomenter" action=""><div class="input-field"><input name="roomPASS" placeholder="Enter Room password" type="password"><label for="room_password">Password</label></div><input name="roomID" type="hidden" value="' + data.ids[i] + '"><button type="submit" class="waves-effect waves-light btn">ENTER ROOM</button><a href="#" class="btn red waves-effect waves-light deleteroom"> Delete Room</a></form></div></li>');
 	}
 	M.updateTextFields();
+	$('#rooms-list').collapsible();
 	roomenter_submit();
 	$('#divroom').hide();
 	$('.rooms-notloaded').show();
@@ -1386,7 +1387,7 @@ socket.on('hst', function (data) {
 			else
 				winText = 'Game drawn';
 			var mode = lData[i].gm == 0 ? 'Normal' : lData[i].gm + ' min';
-			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">' + ((index == 0) ? 'home' : 'timeline') + '</i>' + lData[i].rn + '<span class="white new badge" data-badge-caption=""><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span><span class="white new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><div class="hstWon">' + winText + ' in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
+			var oneItem = '<li><div class="collapsible-header"><i class="material-icons">' + ((index == 0) ? 'home' : 'timeline') + '</i>' + lData[i].rn + '<span class="transparent new badge" data-badge-caption=""><span class="new badge" data-badge-caption="">' + timeAbs(lData[i].rt) + '</span><span class="transparent new badge" data-badge-caption="" style="min-width:0"></span><span class="orange darken-2 new badge" data-badge-caption="">' + mode + '</span></span></div><div class="collapsible-body"><div class="hstWon">' + winText + ' in <red>' + timeDiff(lData[i].wt) + '</red>.</div><hr style="opacity:.2">' + tabletext + '</div></li>';
 			text += oneItem;
 		}
 		text += '</ul>';
