@@ -342,6 +342,7 @@ function roomenter_submit() {
 
 	$('#rooms-list>li>.collapsible-header').click(function (e) {
 		if (e.target !== e.currentTarget) return;
+		e = null;
 		setTimeout(() => {
 			$(this).parent().find('.roomenter>.input-field>input').focus();
 		}, 300);
@@ -696,6 +697,7 @@ $('#modal-roomlist>.modal-cover').click(function () {
 
 $('#addroomdock').click(function (e) {
 	if (e.target !== e.currentTarget) return;
+	e = null;
 	setTimeout(() => {
 		$('#room_NEW').focus();
 	}, 300);
@@ -808,7 +810,7 @@ function timeDiff(diff) {
 }
 
 function playProcess(data) {
-	var timeEnd = null;
+	let timeEnd = null;
 	if (data.op.re == 'ro') {
 		setTimeout(function () {
 			M.toast({ html: 'New Round', displayLength: 2000 });
@@ -829,30 +831,29 @@ function playProcess(data) {
 	}
 
 	enableTrump(false);
-	gVars.sound_turn.stop();
-	var player = gVars.myteam + gVars.myUserID;
-	for (var i = 0; i < 4; i++) {
-		var t = playerFromNumber(i);
+	let player = gVars.myteam + gVars.myUserID;
+	for (let i = 0; i < 4; i++) {
+		let t = playerFromNumber(i);
 		timeout(0, elemfromidteam('#', 'time', t.player), t.team, false);
 	}
 
 	if (data.op.fp) {
 		function firstPlayDo() {
 			if (data.op.re == 'go') {
-				var pWin = indexOfMax(data.op.rs);
-				var winText;
+				let pWin = indexOfMax(data.op.rs);
+				let winText;
 				if (pWin == 0 || pWin == 1) {
-					var winner = playerFromNumber(pWin).team;
+					let winner = playerFromNumber(pWin).team;
 					winText = '<img src="img/' + winner.toLowerCase() + '.png"><span class="' + winner + '-text">&nbsp;Team ' + winner.toUpperCase() + '</span>&nbsp;wins the game';
 				}
 				else
 					winText = '<img src="img/matchdraw.png">&nbsp;Game drawn';
 
 				$('#winmessage').html('<div class="flexcenter fResult">' + winText + ' in&nbsp;<red>' + timeDiff(timeEnd - gVars.startTime) + '</red>.</div>');
-				var text = '<table class="fResult striped centered"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
-				for (var i = 0; i < 4; i++) {
+				let text = '<table class="fResult striped centered"><thead><tr><th>Player</th><th>Points</th><th>Hands</th><th>Rounds</th></tr></thead><tbody>';
+				for (let i = 0; i < 4; i++) {
 					//mark
-					var xName = playerFromNumber(i);
+					let xName = playerFromNumber(i);
 					if (xName.team == 'green')
 						xName.player = gVars.greenplayers[xName.id];
 					else
@@ -865,11 +866,11 @@ function playProcess(data) {
 				$('#modal-gameover').modal('open');
 			}
 
-			for (var i = 0; i < 4; i++) {
-				var p = elemfromidteam('#', 'point', playerFromNumber(i).player);
-				var r = elemfromidteam('#', 'round', playerFromNumber(i).player);
-				var memp = $(p).html();
-				var memr = $(r).html();
+			for (let i = 0; i < 4; i++) {
+				let p = elemfromidteam('#', 'point', playerFromNumber(i).player);
+				let r = elemfromidteam('#', 'round', playerFromNumber(i).player);
+				let memp = $(p).html();
+				let memr = $(r).html();
 				$(p).html(data.op.pt[i]);
 				$(r).html(data.op.rs[i]);
 				if ($(p).html() != memp)
@@ -910,7 +911,7 @@ function playProcess(data) {
 		}
 		else {
 			gVars.firstplay = false;
-			var playSuit = cardDetail(data.op.fc);
+			let playSuit = cardDetail(data.op.fc);
 			if (hasSuit(playSuit.suit, gVars.card7 != 'f' && !gVars.trumpOpen)) {
 				enableCards([playSuit.suit]);
 			}
@@ -937,9 +938,9 @@ function startTimer(data, player) {
 		if (player == data.pl)
 			gVars.sound_turn.play();
 
-		var telem = elemfromidteam('#', 'time', data.pl);
+		let telem = elemfromidteam('#', 'time', data.pl);
 		//mark
-		var xName = playerFromNumber(numberFromPlayer(data.pl));
+		let xName = playerFromNumber(numberFromPlayer(data.pl));
 		if (xName.team == 'green')
 			xName.player = gVars.greenplayers[xName.id];
 		else
@@ -953,7 +954,7 @@ function startTimer(data, player) {
 
 function startGameTimer(duration) {
 	gVars.remainTimer = setInterval(function () {
-		var timeString = zeroPad(parseInt(duration / 60), 2) + ':' + zeroPad(duration % 60, 2);
+		let timeString = zeroPad(parseInt(duration / 60), 2) + ':' + zeroPad(duration % 60, 2);
 		$('#timerGame>span').html(timeString);
 		if (duration <= 30) {
 			$('#timerGame').css('color', duration % 2 ? '#fafafa' : '#ff4242');
@@ -972,7 +973,7 @@ function setTim(currP, pName, pTeam, telem) {
 	gVars.timer = setInterval(function () {
 		gVars.timerCount = (gVars.timerCount + .5) % 100;
 		if (gVars.timerCount == 99) {
-			var htmlData = currP ? 'Please play a card' : pName + ' has not played a card for a long time';
+			let htmlData = currP ? 'Please play a card' : pName + ' has not played a card for a long time';
 			M.toast({ html: htmlData, classes: 'red darken-1', displayLength: 3000 });
 		}
 		timeout(gVars.timerCount, telem, pTeam, false);
@@ -1223,6 +1224,7 @@ socket.on('bidover', function (data) {
 socket.on('play', function (data) {
 	gVars.sockMsgCount = gVars.sockMsgCount + 1;
 	clearInterval(gVars.timer);
+	gVars.sound_turn.stop();
 	if (data.op.fp && data.lp == '' && !data.recon) //absolute first time
 		setTimeout(function () {
 			playProcess(data);
@@ -1304,10 +1306,10 @@ socket.on('marriage', function (data) {
 	setTimeout(function () {
 		M.toast({ html: playername.player + ' of Team ' + playername.team.toUpperCase() + '&nbsp;has a marriage!', classes: 'lime darken-3', displayLength: 2500 });
 
-		for (var i = 0; i < 4; i++) {
-			var z = playerFromNumber(i);
-			var b = elemfromidteam('#', 'bid', z.player);
-			var memb = $(b).html();
+		for (let i = 0; i < 4; i++) {
+			let z = playerFromNumber(i);
+			let b = elemfromidteam('#', 'bid', z.player);
+			let memb = $(b).html();
 			$(b).html(data.b[i] + ((z.team == data.bdt) ? d : ''));
 			if ($(b).html() != memb)
 				zio(b);
