@@ -171,7 +171,7 @@ class audioChat {
 };
 
 var myStream;
-var chatServer = 'vsins29.herokuapp.com';
+var chatServer = 'vsins29.onrender.com';
 var port = document.location.protocol == 'http:' ? 80 : 443;
 var path = '/voice';
 var audioOnly = true;
