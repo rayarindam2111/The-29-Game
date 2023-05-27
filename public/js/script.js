@@ -1547,7 +1547,7 @@ $(function () {
 			.catch((error) => {
 				console.error(error);
 			});
-		fetch('//' + chatServer + '/serverPingCheck')
+		fetch('//' + chatServer + '/serverPingCheck', {mode: 'cors'})
 			.then((response) => {
 				if (response.status === 200) {
 					return response.text();
@@ -1560,5 +1560,5 @@ $(function () {
 			.catch((error) => {
 				console.error(error);
 			});
-	}, 1000);
+	}, 600000);
 });
