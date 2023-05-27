@@ -1547,15 +1547,12 @@ $(function () {
 			.catch((error) => {
 				console.error(error);
 			});
-		fetch('//' + chatServer + '/serverPingCheck', {mode: 'cors'})
+		fetch('//' + chatServer + '/serverPingCheck', { mode: 'no-cors' })
 			.then((response) => {
-				if (response.status === 200) {
-					return response.text();
-				}
-				throw new Error("Voice Server ping: [ERROR]");
+				return response;
 			})
 			.then((data) => {
-				console.info(`Voice Server ping: [OK], Data: [${data}]`);
+				console.info(`Voice Server ping: [OK]`);
 			})
 			.catch((error) => {
 				console.error(error);
