@@ -998,6 +998,10 @@ app.get('/', function (req, res) {
 	res.sendFile(__dirname + '/public/index.html');
 });
 
+app.get('/serverPingCheck', function (req, res) {
+	res.send((new Date()).toISOString());
+});
+
 app.use(express.static(__dirname + '/public', { maxAge: 3600000 }));//, { maxAge: 1800000 }
 
 http.listen(port, function () {

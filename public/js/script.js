@@ -1533,4 +1533,32 @@ $(function () {
 				M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
 		});
 	}, 950);
+	setInterval(async function () {
+		fetch('/serverPingCheck')
+			.then((response) => {
+				if (response.status === 200) {
+					return response.text();
+				}
+				throw new Error("Game Server ping: [ERROR]");
+			})
+			.then((data) => {
+				console.info(`Game Server ping: [OK], Data: [${data}]`);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+		fetch('//' + chatServer + '/serverPingCheck')
+			.then((response) => {
+				if (response.status === 200) {
+					return response.text();
+				}
+				throw new Error("Voice Server ping: [ERROR]");
+			})
+			.then((data) => {
+				console.info(`Voice Server ping: [OK], Data: [${data}]`);
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}, 1000);
 });
