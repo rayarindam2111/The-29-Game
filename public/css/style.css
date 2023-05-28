@@ -448,9 +448,10 @@ purple {
 }
 
 .m29-home {
+  -webkit-font-smoothing: antialiased;
   font-family: 'Bungee Inline','Roboto Slab',Roboto,sans-serif;
   background-image: linear-gradient(-45deg, #ff8949 25%, #9bc1e6 25%, #71afef 50%, #ff8949 50%, #ff8949 75%, #9bc1e6 75%, #71afef);
-  -webkit-text-stroke: 1px #0c233a;
+  -webkit-text-stroke: 2px rgba(12, 35, 58, 0.55);
   -webkit-background-clip: text;
   -webkit-text-fill-color: rgba(19, 48, 150, 0.26);
   background-size: 45px 45px;

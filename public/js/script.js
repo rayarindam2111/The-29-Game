@@ -213,7 +213,7 @@ function initModals() {
 			//document.querySelector('#modal-leader>div>ul>li:nth-child(1)>a').dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		},
 		onCloseEnd: function (modal, trigger) {
-			$('.hstTab').html('<div class="hstLoad">Loading...</div>');
+			$('.hstTab').html('<div class="hstLoad">Loading...<div class="progress"><div class="indeterminate"></div></div></div>');
 			$('#gameCounter').html('-');
 		}
 	});
@@ -1526,13 +1526,6 @@ $(function () {
 	}
 	$('#imgload').hide();
 	$('#modal-roomlist').modal('open');
-	setTimeout(function () {
-		$('#pload').animate({ opacity: 0 }, 200, function () {
-			$('.pload').remove();
-			if (gVars.isMobile)
-				M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
-		});
-	}, 950);
 	setInterval(async function () {
 		fetch('/serverPingCheck')
 			.then((response) => {
@@ -1558,4 +1551,11 @@ $(function () {
 				console.error(error);
 			});
 	}, 600000);
+	setTimeout(function () {
+		$('#pload').animate({ opacity: 0 }, 200, function () {
+			$('.pload').remove();
+			if (gVars.isMobile)
+				M.toast({ html: 'You can rotate your device to change the orientation!', displayLength: 2000 });
+		});
+	}, 950);
 });

@@ -66,6 +66,16 @@
 			z-index: -1;
 		}
 
+		.l-p::after {
+			content: '';
+			position: absolute;
+			border: 6px solid #eae9ff;
+			width: 116%;
+			height: 116%;
+			border-radius: 50%;
+			z-index: -1;
+		}
+
 		@keyframes lp-anim {
 			0% {
 				opacity: 1;
@@ -74,12 +84,12 @@
 
 			50% {
 				opacity: 0;
-				transform: scale(1.5)
+				transform: scale(1.7)
 			}
 
 			100% {
 				opacity: 0;
-				transform: scale(1.5)
+				transform: scale(1.7)
 			}
 		}
 	</style>
@@ -574,15 +584,27 @@
 			</ul>
 			<div id="hstTab0" class="hstTab">
 				<div class="hstLoad">Loading...</div>
+				<div class="progress">
+					<div class="indeterminate"></div>
+				</div>
 			</div>
 			<div id="hstTab1" class="hstTab">
 				<div class="hstLoad">Loading...</div>
+				<div class="progress">
+					<div class="indeterminate"></div>
+				</div>
 			</div>
 			<div id="hstTab2" class="hstTab">
 				<div class="hstLoad">Loading...</div>
+				<div class="progress">
+					<div class="indeterminate"></div>
+				</div>
 			</div>
 			<div id="hstTab3" class="hstTab">
 				<div class="hstLoad">Loading...</div>
+				<div class="progress">
+					<div class="indeterminate"></div>
+				</div>
 			</div>
 		</div>
 		<div class="modal-footer">
