@@ -339,7 +339,7 @@ h6 {
     border-radius: 2.5px;
 	color: #fafafa;
 	font-size: small;
-	z-index: 2000;
+	z-index: 1000;
 	user-select: none;
 }
 
@@ -352,7 +352,7 @@ h6 {
     padding: 5px 8px;
     border-radius: 2.5px;
     color: #fafafa;
-    z-index: 2000;
+    z-index: 1000;
     user-select: none;
 }
 
